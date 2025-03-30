@@ -1,0 +1,92 @@
+####### Instalar bibliotecas necessarias ####### 
+# install.packages("readxl") # para importar arquivo de dados com planilha de xlsx
+# install.packages("tidyverse") # para manipulacao de dados
+# install.packages("vcd") # para fazer grafico de tabela de contigencia
+
+####### Carregar bibliotecas necessarias #######
+library(tidyverse)
+library(readxl)
+library(vcd)
+
+####### Ler dados #######
+# Planilha com dados originais:
+dados <- read_excel("/Users/eduardosantos/Downloads/BD_completo_corrigido_12-02-2025.xlsx"
+                    ,sheet = "Sheet1")
+
+# Dicionario com explicacoes do campos:
+dicionario <- read_excel("/Users/eduardosantos/Downloads/BD_completo_corrigido_12-02-2025.xlsx"
+                    ,sheet = "Dicionário")
+
+
+####### Filtrar apenas registros que tenham tipo de parto diferente de nulo ####### 
+# Remover registros cujo tipo de parto é nulo:
+dadosFilt <- dados %>%
+  filter(!is.na(tipo_parto)) %>% # mantendo apenas registros que possuem tipo de parto
+  filter(!is.na(idade)) %>% # mantendo apenas registros que possuem registro de idade
+  filter(idade > 10 & idade < 35) %>% # mantendo apenas registros com idades entre 11 e 34 anos
+  filter(!(origem == "Adolescentes" & idade == 20)) # Removendo registros onde origem é "Adolescentes" e idade é 20
+
+# Total de tipo de gestante:
+summary(as.factor(dadosFilt$origem))
+
+# Checando que temos apenas registros com tipo de parto registrado (1: Normal, 2: Cesarea e 3: Forcipe)
+(contagensTipoParto <- table(dadosFilt$origem, dadosFilt$tipo_parto))
+names(dimnames(contagensTipoParto)) = c("Gestante", "Tipo de parto")
+colnames(contagensTipoParto) = c("Normal", "Cesárea", "Fórcipe")
+
+# Frequencia de tipo parto por tipo de gestante:
+(freqGeralTipoParto <- round(prop.table(contagensTipoParto
+                                  ,margin = 1),2)
+                        )
+
+# Checando que idades estao entre o intervalo de 11 e 34 anos:
+summary(dadosFilt$idade)
+
+# Checando idade vs. tipo de gestante:
+summary_by_origem <- dadosFilt %>%
+  group_by(origem) %>%
+  summarize(
+    min_age = min(idade, na.rm = TRUE),
+    q1_age = quantile(idade, 0.25, na.rm = TRUE),
+    median_age = median(idade, na.rm = TRUE),
+    mean_age = mean(idade, na.rm = TRUE),
+    q3_age = quantile(idade, 0.75, na.rm = TRUE),
+    max_age = max(idade, na.rm = TRUE),
+    n_obs = n()
+  )
+
+print(summary_by_origem)
+
+####### Grafico de associacao entre tipo de gestante e tipo de parto ####### 
+mosaic(contagensTipoParto
+       , shade=T
+       , legend=T)
+
+assoc(contagensTipoParto
+      , shade=T
+      , legend=T)
+
+
+
+
+####### Tipo de gestante por cor ####### 
+# Cor por tipo de gestante::
+(contagensCor <- table(dadosFilt$origem, dadosFilt$cor_cat))
+names(dimnames(contagensCor)) = c("Gestante", "Cor")
+colnames(contagensCor) = c("Branca", "Não branca")
+
+# Frequencia de tipo parto por tipo de gestante:
+(freqGeralCor <- round(prop.table(contagensCor
+                                        ,margin = 1),2)
+)
+
+
+
+####### Grafico de associacao entre tipo de gestante e cor ####### 
+mosaic(contagensCor
+       , shade=T
+       , legend=T)
+
+assoc(contagensCor
+      , shade=T
+      , legend=T)

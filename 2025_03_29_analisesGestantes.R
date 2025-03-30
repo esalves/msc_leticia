@@ -114,6 +114,9 @@ colnames(contagensEstadoCivil) = c("Solteira", "Casada", "União estável")
 )
 
 
+# Teste de qui-quadrado:
+(chi2Resultado <- chisq.test(contagensEstadoCivil))
+
 
 ####### Grafico de associacao entre tipo de gestante e cor ####### 
 mosaic(contagensEstadoCivil

@@ -151,3 +151,29 @@ mosaic(contagensEstadoCivil
 assoc(contagensEstadoCivil
       , shade=T
       , legend=T)
+
+
+####### Grafico de frequencia entre tipo de gestante e estado ciil ####### 
+# Transformar os dados para formato longo (long format)
+(dadosLongEstadoCivil <- as.data.frame(contagensEstadoCivil))
+
+#Criar gráfico de barras agrupado com cores sóbrias
+(graficoEstadoCivil <- ggplot(dadosLongEstadoCivil, aes(x = Gestante, y = Freq, fill = Estado.civil)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +  # Adiciona bordas pretas
+  scale_fill_manual(values = c("black","gray30", "gray70")) +  # Tons de cinza
+  labs(title = "Número de gestantes por estado civil",
+       x = "Gestante",
+       y = "Quantidade",
+       fill = "Estado civil") +
+  theme_minimal() +
+  theme(panel.background = element_rect(fill = "white", color = NA),  # Fundo branco
+        panel.grid.major = element_line(color = "gray80"),  # Grade discreta
+        panel.grid.minor = element_blank(), 
+        legend.position = "top",  # Legenda no topo
+        axis.text = element_text(size = 18),  # Aumenta textos dos eixos
+        axis.title = element_text(size = 20, face = "bold"),  # Aumenta títulos dos eixos
+        legend.text = element_text(size = 18))  # Aumenta texto da legenda
+)
+
+# Salvar gráfico em PNG para inserção no Canvas
+ggsave("graficoGestantesEstadoCivil.png", plot = graficoEstadoCivil, width = 10, height = 6, dpi = 300)

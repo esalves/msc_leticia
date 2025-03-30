@@ -10,11 +10,11 @@ library(vcd)
 
 ####### Ler dados #######
 # Planilha com dados originais:
-dados <- read_excel("/Users/eduardosantos/Downloads/BD_completo_corrigido_12-02-2025.xlsx"
+dados <- read_excel("BD_completo_corrigido_12-02-2025.xlsx"
                     ,sheet = "Sheet1")
 
 # Dicionario com explicacoes do campos:
-dicionario <- read_excel("/Users/eduardosantos/Downloads/BD_completo_corrigido_12-02-2025.xlsx"
+dicionario <- read_excel("BD_completo_corrigido_12-02-2025.xlsx"
                     ,sheet = "Dicionário")
 
 

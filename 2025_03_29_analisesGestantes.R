@@ -80,6 +80,8 @@ colnames(contagensCor) = c("Branca", "Não branca")
                                         ,margin = 1),2)
 )
 
+# Teste de qui-quadrado:
+(chi2Resultado <- chisq.test(contagensCor))
 
 
 ####### Grafico de associacao entre tipo de gestante e cor ####### 

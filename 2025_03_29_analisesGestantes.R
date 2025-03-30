@@ -97,13 +97,14 @@ assoc(contagensCor
 ####### Tipo de gestante por estado civil ####### 
 
 # Juntando estado civil, categoria 3 com categoria 1 (Solteira sem companheiro). No caso das casadas, continua sendo "Solteira sem companheiro". No caso das adolescentes, sáo os dois tipos de solteiras (com e sem companheiros):
-dadosFilt <- dadosFilt %>%
-  mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat))
+dadosFiltEstadoCivil <- dadosFilt %>%
+  mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat)) %>%
+  filter(novo_estado_civil != 5 & novo_estado_civil != 6) # Removendo registros onde estado civil é "Ignorado")
 
 # Cor por tipo de gestante::
-(contagensEstadoCivil <- table(dadosFilt$origem, dadosFilt$novo_estado_civil))
+(contagensEstadoCivil <- table(dadosFiltEstadoCivil$origem, dadosFiltEstadoCivil$novo_estado_civil))
 names(dimnames(contagensEstadoCivil)) = c("Gestante", "Estado civil")
-colnames(contagensEstadoCivil) = c("Solteira", "Casada", "União estável", "Separada", "Viúva")
+colnames(contagensEstadoCivil) = c("Solteira", "Casada", "União estável")
 
 # Frequencia de tipo parto por tipo de gestante:
 (freqGeralEstadoCivil <- round(prop.table(contagensEstadoCivil

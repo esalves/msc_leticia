@@ -100,7 +100,7 @@ assoc(contagensCor
 dadosLongCor <- as.data.frame(contagensCor)
 
 #Criar gráfico de barras agrupado com cores sóbrias
-ggplot(dadosLongCor, aes(x = Gestante, y = Freq, fill = Cor)) +
+graficoCor <- ggplot(dadosLongCor, aes(x = Gestante, y = Freq, fill = Cor)) +
   geom_bar(stat = "identity", position = "dodge", color = "black") +  # Adiciona bordas pretas
   scale_fill_manual(values = c("gray30", "gray70")) +  # Tons de cinza
   labs(title = "Número de gestantes por cor",
@@ -111,9 +111,13 @@ ggplot(dadosLongCor, aes(x = Gestante, y = Freq, fill = Cor)) +
   theme(panel.background = element_rect(fill = "white", color = NA),  # Fundo branco
         panel.grid.major = element_line(color = "gray80"),  # Grade discreta
         panel.grid.minor = element_blank(), 
-        legend.position = "top")  # Legenda no topo
+        legend.position = "top",  # Legenda no topo
+        axis.text = element_text(size = 18),  # Aumenta textos dos eixos
+        axis.title = element_text(size = 20, face = "bold"),  # Aumenta títulos dos eixos
+        legend.text = element_text(size = 18))  # Aumenta texto da legenda
 
-
+# Salvar gráfico em PNG para inserção no Canvas
+ggsave("graficoGestantesCor.png", plot = graficoCor, width = 10, height = 6, dpi = 300)
 
 
 

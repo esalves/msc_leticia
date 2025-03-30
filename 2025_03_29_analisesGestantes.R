@@ -90,3 +90,33 @@ mosaic(contagensCor
 assoc(contagensCor
       , shade=T
       , legend=T)
+
+
+
+
+####### Tipo de gestante por estado civil ####### 
+
+# Juntando estado civil, categoria 3 com categoria 1 (Solteira sem companheiro). No caso das casadas, continua sendo "Solteira sem companheiro". No caso das adolescentes, sáo os dois tipos de solteiras (com e sem companheiros):
+dadosFilt <- dadosFilt %>%
+  mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat))
+
+# Cor por tipo de gestante::
+(contagensEstadoCivil <- table(dadosFilt$origem, dadosFilt$novo_estado_civil))
+names(dimnames(contagensEstadoCivil)) = c("Gestante", "Estado civil")
+colnames(contagensEstadoCivil) = c("Solteira", "Casada", "União estável", "Separada", "Viúva")
+
+# Frequencia de tipo parto por tipo de gestante:
+(freqGeralEstadoCivil <- round(prop.table(contagensEstadoCivil
+                                  ,margin = 1),2)
+)
+
+
+
+####### Grafico de associacao entre tipo de gestante e cor ####### 
+mosaic(contagensEstadoCivil
+       , shade=T
+       , legend=T)
+
+assoc(contagensEstadoCivil
+      , shade=T
+      , legend=T)

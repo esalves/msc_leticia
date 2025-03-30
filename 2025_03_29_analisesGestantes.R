@@ -7,6 +7,7 @@
 library(tidyverse)
 library(readxl)
 library(vcd)
+library(ggplot2)
 
 ####### Ler dados #######
 # Planilha com dados originais:
@@ -94,6 +95,26 @@ assoc(contagensCor
       , legend=T)
 
 
+####### Grafico de frequencia entre tipo de gestante e cor ####### 
+# Transformar os dados para formato longo (long format)
+dadosLongCor <- as.data.frame(contagensCor)
+
+#Criar gráfico de barras agrupado com cores sóbrias
+ggplot(dadosLongCor, aes(x = Gestante, y = Freq, fill = Cor)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +  # Adiciona bordas pretas
+  scale_fill_manual(values = c("gray30", "gray70")) +  # Tons de cinza
+  labs(title = "Número de gestantes por cor",
+       x = "Gestante",
+       y = "Quantidade",
+       fill = "Cor") +
+  theme_minimal() +
+  theme(panel.background = element_rect(fill = "white", color = NA),  # Fundo branco
+        panel.grid.major = element_line(color = "gray80"),  # Grade discreta
+        panel.grid.minor = element_blank(), 
+        legend.position = "top")  # Legenda no topo
+
+
+
 
 
 ####### Tipo de gestante por estado civil ####### 
@@ -103,12 +124,12 @@ dadosFiltEstadoCivil <- dadosFilt %>%
   mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat)) %>%
   filter(novo_estado_civil != 5 & novo_estado_civil != 6) # Removendo registros onde estado civil é "Ignorado")
 
-# Cor por tipo de gestante::
+# Estado civil por tipo de gestante::
 (contagensEstadoCivil <- table(dadosFiltEstadoCivil$origem, dadosFiltEstadoCivil$novo_estado_civil))
 names(dimnames(contagensEstadoCivil)) = c("Gestante", "Estado civil")
 colnames(contagensEstadoCivil) = c("Solteira", "Casada", "União estável")
 
-# Frequencia de tipo parto por tipo de gestante:
+# Frequencia de tipo parto por tipo de gestante e estado civil:
 (freqGeralEstadoCivil <- round(prop.table(contagensEstadoCivil
                                   ,margin = 1),2)
 )
@@ -118,7 +139,7 @@ colnames(contagensEstadoCivil) = c("Solteira", "Casada", "União estável")
 (chi2Resultado <- chisq.test(contagensEstadoCivil))
 
 
-####### Grafico de associacao entre tipo de gestante e cor ####### 
+####### Grafico de associacao entre tipo de gestante e estado civil ####### 
 mosaic(contagensEstadoCivil
        , shade=T
        , legend=T)

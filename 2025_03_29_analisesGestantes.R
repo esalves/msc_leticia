@@ -8,6 +8,7 @@ library(tidyverse)
 library(readxl)
 library(vcd)
 library(ggplot2)
+library(scales)
 
 ####### Ler dados #######
 # Planilha com dados originais:
@@ -120,6 +121,29 @@ graficoCor <- ggplot(dadosLongCor, aes(x = Gestante, y = Freq, fill = Cor)) +
 ggsave("graficoGestantesCor.png", plot = graficoCor, width = 10, height = 6, dpi = 300)
 
 
+#Criar gráfico de barras agrupado de frequencias com cores vivas
+# Transformar os dados para formato longo (long format)
+dadosLongCorFreq <- as.data.frame(freqGeralCor)
+
+graficoCorFreq <- ggplot(dadosLongCorFreq, aes(x = Gestante, y = Freq, fill = Cor)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +  # Adiciona bordas pretas
+  scale_fill_manual(values = c("gray30", "yellow")) +  # Tons de cinza
+  labs(title = "Número de parturientes por cor",
+       x = "",
+       y = "Percentual (%)",
+       fill = "Cor") +
+  scale_y_continuous(labels = label_percent()) +
+  theme_minimal() +
+  theme(panel.background = element_rect(fill = "white", color = NA),  # Fundo branco
+        panel.grid.major = element_line(color = "gray80"),  # Grade discreta
+        panel.grid.minor = element_blank(), 
+        legend.position = "top",  # Legenda no topo
+        axis.text = element_text(size = 18),  # Aumenta textos dos eixos
+        axis.title = element_text(size = 20, face = "bold"),  # Aumenta títulos dos eixos
+        legend.text = element_text(size = 18))  # Aumenta texto da legenda
+
+# Salvar gráfico em PNG para inserção no Canvas
+ggsave("graficoGestantesCorFreq.png", plot = graficoCorFreq, width = 10, height = 6, dpi = 300)
 
 ####### Tipo de gestante por estado civil ####### 
 
@@ -177,3 +201,29 @@ assoc(contagensEstadoCivil
 
 # Salvar gráfico em PNG para inserção no Canvas
 ggsave("graficoGestantesEstadoCivil.png", plot = graficoEstadoCivil, width = 10, height = 6, dpi = 300)
+
+
+
+#Criar gráfico de barras agrupado em percentual com cores vivas:
+(dadosLongEstadoCivilFreq <- as.data.frame(freqGeralEstadoCivil))
+
+(graficoEstadoCivilFreq <- ggplot(dadosLongEstadoCivilFreq, aes(x = Gestante, y = Freq, fill = Estado.civil)) +
+    geom_bar(stat = "identity", position = "dodge", color = "black") +  # Adiciona bordas pretas
+    scale_fill_manual(values = c("purple","gray30", "yellow")) +  # Tons de cinza
+    labs(title = "Número de parturientes por estado civil",
+         x = " ",
+         y = "Percentual (%)",
+         fill = "Estado civil") +
+    scale_y_continuous(labels = label_percent()) +
+    theme_minimal() +
+    theme(panel.background = element_rect(fill = "white", color = NA),  # Fundo branco
+          panel.grid.major = element_line(color = "gray80"),  # Grade discreta
+          panel.grid.minor = element_blank(), 
+          legend.position = "top",  # Legenda no topo
+          axis.text = element_text(size = 18),  # Aumenta textos dos eixos
+          axis.title = element_text(size = 20, face = "bold"),  # Aumenta títulos dos eixos
+          legend.text = element_text(size = 18))  # Aumenta texto da legenda
+)
+
+# Salvar gráfico em PNG para inserção no Canvas
+ggsave("graficoGestantesEstadoCivilFreq.png", plot = graficoEstadoCivilFreq, width = 10, height = 6, dpi = 300)

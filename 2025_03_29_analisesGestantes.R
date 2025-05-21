@@ -9,6 +9,10 @@ library(readxl)
 library(vcd)
 library(ggplot2)
 library(scales)
+library(gemini.R)
+
+####### Configuracao do API do Gemini #######
+setAPI(Sys.getenv("GEMINI_API_KEY"))
 
 ####### Ler dados #######
 # Planilha com dados originais:

@@ -73,3 +73,38 @@ These files are saved in the same directory where the script is executed.
 
 -   The script includes several data filtering steps. Users should review these filters (e.g., age range, exclusion of specific cases) to ensure they are appropriate for their analysis context if reusing or modifying the script.
 -   The data dictionary ("Dicionário" sheet in the Excel file) is crucial for understanding the variables used in the analysis.
+
+## Running Tests
+
+This project uses the `testthat` package for automated testing. The tests verify the core functionality of the analysis script, including data loading, filtering, integrity, aggregations, statistical outputs, and plot file generation.
+
+### Prerequisites for Testing
+- Ensure you have R installed.
+- Install the `testthat` package (if not already installed):
+  ```R
+  install.packages("testthat")
+  ```
+- The tests also assume that other packages used by the main script (like `readxl`, `dplyr` from `tidyverse`) are installed. Refer to the "Required R Libraries" section if needed.
+
+### Executing Tests
+There are several ways to run the tests:
+
+1.  **Using the Test Runner Script (Recommended):**
+    Navigate to the `tests` directory in your R console and source the `testthat.R` script:
+    ```R
+    # Assuming your R console's working directory is the project root:
+    source("tests/testthat.R") 
+    ```
+    This will execute all test files located in the `tests/testthat/` directory.
+
+2.  **Using `testthat::test_dir()`:**
+    From the project root in your R console:
+    ```R
+    library(testthat)
+    test_dir("tests/testthat/")
+    ```
+
+3.  **Using RStudio's Test Integration:**
+    If you are using RStudio, it typically auto-detects `testthat` tests. You can run tests using the "Build" pane (under "More" -> "Test Package") or by opening individual test files and clicking "Run Tests". (Note: For non-package projects, RStudio's direct integration might vary; running via `test_dir` or the runner script is more universal).
+
+The tests will output their results to the console, indicating successes, failures, or skipped tests.

@@ -1,3 +1,5 @@
+# This script uses the 'testthat' package for automated testing.
+# Ensure 'testthat' is installed via install.packages("testthat") to run tests.
 ####### Instalar bibliotecas necessarias ####### 
 # install.packages("readxl") # para importar arquivo de dados com planilha de xlsx
 # install.packages("tidyverse") # para manipulacao de dados

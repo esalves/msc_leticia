@@ -1,7 +1,7 @@
 ---
 title: "Análise Comparativa da Classificação de Robson"
 subtitle: "Adolescentes vs. Adultas — Coorte HC-FMUSP (1995–2017)"
-author: "Letícia Santos"
+author: "Letícia Schimidt Arruda"
 date: today
 date-format: "D [de] MMMM [de] YYYY"
 lang: pt
@@ -37,31 +37,31 @@ library(kableExtra)
 
 # Tema padrão para os gráficos
 tema_pub <- theme_minimal(base_size = 12) +
-  theme(
-    panel.background = element_rect(fill = "white", color = NA),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.text = element_text(face = "bold", size = 11),
-    strip.background = element_rect(fill = "grey92", color = NA),
-    legend.position = "bottom",
-    legend.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
-    axis.title = element_text(face = "bold"),
-    plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
-    plot.subtitle = element_text(hjust = 0.5, color = "grey40")
-  )
+    theme(
+        panel.background = element_rect(fill = "white", color = NA),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.text = element_text(face = "bold", size = 11),
+        strip.background = element_rect(fill = "grey92", color = NA),
+        legend.position = "bottom",
+        legend.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
+        axis.title = element_text(face = "bold"),
+        plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, color = "grey40")
+    )
 
 # Paletas de cores
 cores_parto <- c(
-  "Normal (Vaginal Espontâneo)" = "#2a9d8f",
-  "Cesárea" = "#e76f51",
-  "Fórcipe (Instrumental)" = "#264653"
+    "Normal (Vaginal Espontâneo)" = "#2a9d8f",
+    "Cesárea" = "#e76f51",
+    "Fórcipe (Instrumental)" = "#264653"
 )
 
 cores_faixa <- c(
-  "Adolescentes precoces (11-15)" = "#e63946",
-  "Adolescentes tardias (16-19)" = "#457b9d",
-  "Adultas (20-34)" = "#2a9d8f"
+    "Adolescentes precoces (11-15)" = "#e63946",
+    "Adolescentes tardias (16-19)" = "#457b9d",
+    "Adultas (20-34)" = "#2a9d8f"
 )
 ```
 
@@ -92,8 +92,8 @@ A base de dados contém registros obstétricos do Hospital das Clínicas da FMUS
 #| label: carregamento-dados
 
 dados <- read_excel(
-  here("data", "raw", "BD_completo_corrigido_06-04-2026.xlsx"),
-  sheet = "Sheet1"
+    here("data", "raw", "BD_completo_corrigido_06-04-2026.xlsx"),
+    sheet = "Sheet1"
 )
 
 cat("Dimensões da base bruta:", nrow(dados), "registros ×", ncol(dados), "variáveis\n")
@@ -111,49 +111,50 @@ Os seguintes critérios de inclusão foram aplicados:
 #| label: filtragem-dados
 
 dados_analise <- dados %>%
-  filter(!is.na(tipo_parto), !is.na(idade)) %>%
-  filter(idade >= 11 & idade <= 34) %>%
-  mutate(
-    # Padronizar a coluna Robson (valores como '1.0', '2A', '2B', etc.)
-    Robson_cat = case_when(
-      grepl("^10", Robson) ~ "10",
-      grepl("^1", Robson)  ~ "1",
-      grepl("^2", Robson)  ~ "2",
-      grepl("^3", Robson)  ~ "3",
-      grepl("^4", Robson)  ~ "4",
-      grepl("^5", Robson)  ~ "5",
-      grepl("^6", Robson)  ~ "6",
-      grepl("^7", Robson)  ~ "7",
-      grepl("^9", Robson)  ~ "9",
-      TRUE ~ NA_character_
+    filter(!is.na(tipo_parto), !is.na(idade)) %>%
+    filter(idade >= 11 & idade <= 34) %>%
+    mutate(
+        # Padronizar a coluna Robson (valores como '1.0', '2A', '2B', etc.)
+        Robson_cat = case_when(
+            grepl("^10", Robson) ~ "10",
+            grepl("^1", Robson) ~ "1",
+            grepl("^2", Robson) ~ "2",
+            grepl("^3", Robson) ~ "3",
+            grepl("^4", Robson) ~ "4",
+            grepl("^5", Robson) ~ "5",
+            grepl("^6", Robson) ~ "6",
+            grepl("^7", Robson) ~ "7",
+            grepl("^9", Robson) ~ "9",
+            TRUE ~ NA_character_
+        )
+    ) %>%
+    filter(!is.na(Robson_cat)) %>%
+    mutate(
+        # Classificação por faixa etária
+        faixa_etaria = case_when(
+            idade >= 11 & idade <= 15 ~ "Adolescentes precoces (11-15)",
+            idade >= 16 & idade <= 19 ~ "Adolescentes tardias (16-19)",
+            idade >= 20 & idade <= 34 ~ "Adultas (20-34)"
+        ),
+        faixa_etaria_f = factor(faixa_etaria, levels = c(
+            "Adolescentes precoces (11-15)",
+            "Adolescentes tardias (16-19)",
+            "Adultas (20-34)"
+        )),
+        # Grupo comparativo binário
+        grupo_comparativo = ifelse(idade <= 19, "Adolescentes", "Adultas"),
+        # Descrição da via de parto
+        tipo_parto_desc = case_when(
+            tipo_parto == 1 ~ "Normal (Vaginal Espontâneo)",
+            tipo_parto == 2 ~ "Cesárea",
+            tipo_parto == 3 ~ "Fórcipe (Instrumental)"
+        ),
+        # Robson como fator ordenado
+        Robson_cat_f = factor(as.numeric(Robson_cat),
+            levels = c(1, 2, 3, 4, 5, 6, 7, 9, 10),
+            labels = paste("Grupo", c(1, 2, 3, 4, 5, 6, 7, 9, 10))
+        )
     )
-  ) %>%
-  filter(!is.na(Robson_cat)) %>%
-  mutate(
-    # Classificação por faixa etária
-    faixa_etaria = case_when(
-      idade >= 11 & idade <= 15 ~ "Adolescentes precoces (11-15)",
-      idade >= 16 & idade <= 19 ~ "Adolescentes tardias (16-19)",
-      idade >= 20 & idade <= 34 ~ "Adultas (20-34)"
-    ),
-    faixa_etaria_f = factor(faixa_etaria, levels = c(
-      "Adolescentes precoces (11-15)",
-      "Adolescentes tardias (16-19)",
-      "Adultas (20-34)"
-    )),
-    # Grupo comparativo binário
-    grupo_comparativo = ifelse(idade <= 19, "Adolescentes", "Adultas"),
-    # Descrição da via de parto
-    tipo_parto_desc = case_when(
-      tipo_parto == 1 ~ "Normal (Vaginal Espontâneo)",
-      tipo_parto == 2 ~ "Cesárea",
-      tipo_parto == 3 ~ "Fórcipe (Instrumental)"
-    ),
-    # Robson como fator ordenado
-    Robson_cat_f = factor(as.numeric(Robson_cat),
-                          levels = c(1,2,3,4,5,6,7,9,10),
-                          labels = paste("Grupo", c(1,2,3,4,5,6,7,9,10)))
-  )
 ```
 
 ```{r}
@@ -161,15 +162,15 @@ dados_analise <- dados %>%
 
 # Resumo da amostra final
 resumo <- dados_analise %>%
-  count(faixa_etaria_f, name = "n") %>%
-  mutate(pct = round(n / sum(n) * 100, 1))
+    count(faixa_etaria_f, name = "n") %>%
+    mutate(pct = round(n / sum(n) * 100, 1))
 
 cat("Total de registros para análise:", nrow(dados_analise), "\n\n")
 
 resumo %>%
-  rename(`Faixa Etária` = faixa_etaria_f, `N` = n, `%` = pct) %>%
-  kable(caption = "Distribuição da amostra por faixa etária") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+    rename(`Faixa Etária` = faixa_etaria_f, `N` = n, `%` = pct) %>%
+    kable(caption = "Distribuição da amostra por faixa etária") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 ::: {.callout-tip}
@@ -188,21 +189,21 @@ A Classificação de Robson divide as gestantes em 10 grupos mutuamente exclusiv
 #| tbl-cap: "Estatísticas descritivas da idade por faixa etária"
 
 sumario_idade <- dados_analise %>%
-  group_by(faixa_etaria_f) %>%
-  summarise(
-    N = n(),
-    `Média` = round(mean(idade, na.rm = TRUE), 1),
-    `DP` = round(sd(idade, na.rm = TRUE), 1),
-    `Mín` = min(idade, na.rm = TRUE),
-    `Mediana` = median(idade, na.rm = TRUE),
-    `Máx` = max(idade, na.rm = TRUE),
-    .groups = "drop"
-  )
+    group_by(faixa_etaria_f) %>%
+    summarise(
+        N = n(),
+        `Média` = round(mean(idade, na.rm = TRUE), 1),
+        `DP` = round(sd(idade, na.rm = TRUE), 1),
+        `Mín` = min(idade, na.rm = TRUE),
+        `Mediana` = median(idade, na.rm = TRUE),
+        `Máx` = max(idade, na.rm = TRUE),
+        .groups = "drop"
+    )
 
 sumario_idade %>%
-  rename(`Faixa Etária` = faixa_etaria_f) %>%
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+    rename(`Faixa Etária` = faixa_etaria_f) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 ## Escolaridade
@@ -212,18 +213,20 @@ sumario_idade %>%
 #| tbl-cap: "Distribuição da escolaridade por faixa etária — n (%)"
 
 tab_escol <- dados_analise %>%
-  filter(!is.na(escolaridade_cat)) %>%
-  count(faixa_etaria_f, escolaridade_cat) %>%
-  group_by(faixa_etaria_f) %>%
-  mutate(pct = round(n / sum(n) * 100, 1),
-         n_pct = paste0(n, " (", pct, "%)")) %>%
-  select(faixa_etaria_f, escolaridade_cat, n_pct) %>%
-  pivot_wider(names_from = faixa_etaria_f, values_from = n_pct, values_fill = "0 (0%)")
+    filter(!is.na(escolaridade_cat)) %>%
+    count(faixa_etaria_f, escolaridade_cat) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(
+        pct = round(n / sum(n) * 100, 1),
+        n_pct = paste0(n, " (", pct, "%)")
+    ) %>%
+    select(faixa_etaria_f, escolaridade_cat, n_pct) %>%
+    pivot_wider(names_from = faixa_etaria_f, values_from = n_pct, values_fill = "0 (0%)")
 
 tab_escol %>%
-  rename(`Escolaridade` = escolaridade_cat) %>%
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+    rename(`Escolaridade` = escolaridade_cat) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 ## Estado Civil
@@ -233,21 +236,23 @@ tab_escol %>%
 #| tbl-cap: "Distribuição do estado civil por faixa etária — n (%)"
 
 dados_analise <- dados_analise %>%
-  mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat))
+    mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat))
 
 tab_ecivil <- dados_analise %>%
-  filter(!is.na(novo_estado_civil)) %>%
-  count(faixa_etaria_f, novo_estado_civil) %>%
-  group_by(faixa_etaria_f) %>%
-  mutate(pct = round(n / sum(n) * 100, 1),
-         n_pct = paste0(n, " (", pct, "%)")) %>%
-  select(faixa_etaria_f, novo_estado_civil, n_pct) %>%
-  pivot_wider(names_from = faixa_etaria_f, values_from = n_pct, values_fill = "0 (0%)")
+    filter(!is.na(novo_estado_civil)) %>%
+    count(faixa_etaria_f, novo_estado_civil) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(
+        pct = round(n / sum(n) * 100, 1),
+        n_pct = paste0(n, " (", pct, "%)")
+    ) %>%
+    select(faixa_etaria_f, novo_estado_civil, n_pct) %>%
+    pivot_wider(names_from = faixa_etaria_f, values_from = n_pct, values_fill = "0 (0%)")
 
 tab_ecivil %>%
-  rename(`Estado Civil (código)` = novo_estado_civil) %>%
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+    rename(`Estado Civil (código)` = novo_estado_civil) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 ---
@@ -265,21 +270,21 @@ Este é o **objetivo principal** da análise. Comparamos as taxas de parto vagin
 #| tbl-cap: "Vias de parto por faixa etária — n (%)"
 
 tab_geral <- dados_analise %>%
-  count(faixa_etaria_f, tipo_parto_desc) %>%
-  group_by(faixa_etaria_f) %>%
-  mutate(
-    total = sum(n),
-    pct = round(n / total * 100, 1),
-    n_pct = paste0(n, " (", pct, "%)")
-  ) %>%
-  select(faixa_etaria_f, tipo_parto_desc, n_pct) %>%
-  pivot_wider(names_from = faixa_etaria_f, values_from = n_pct)
+    count(faixa_etaria_f, tipo_parto_desc) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(
+        total = sum(n),
+        pct = round(n / total * 100, 1),
+        n_pct = paste0(n, " (", pct, "%)")
+    ) %>%
+    select(faixa_etaria_f, tipo_parto_desc, n_pct) %>%
+    pivot_wider(names_from = faixa_etaria_f, values_from = n_pct)
 
 tab_geral %>%
-  rename(`Via de Parto` = tipo_parto_desc) %>%
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
-  add_header_above(c(" " = 1, "Faixa Etária" = 3))
+    rename(`Via de Parto` = tipo_parto_desc) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    add_header_above(c(" " = 1, "Faixa Etária" = 3))
 ```
 
 ### Teste Qui-Quadrado (Associação Geral)
@@ -301,7 +306,7 @@ cat("  gl =", chi2_geral$parameter, "\n")
 cat("  p  =", format.pval(chi2_geral$p.value, digits = 4), "\n\n")
 
 if (chi2_geral$p.value < 0.001) {
-  cat("→ Resultado: Associação estatisticamente significativa (p < 0,001)\n")
+    cat("→ Resultado: Associação estatisticamente significativa (p < 0,001)\n")
 }
 ```
 
@@ -321,9 +326,9 @@ Os resíduos padronizados ajustados indicam quais células da tabela de conting�
 residuos <- round(chi2_geral$stdres, 2)
 
 as.data.frame.matrix(residuos) %>%
-  rownames_to_column("Via de Parto") %>%
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+    rownames_to_column("Via de Parto") %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
 ### Figura: Distribuição Geral
@@ -335,25 +340,26 @@ as.data.frame.matrix(residuos) %>%
 #| fig-height: 5
 
 fig1_data <- dados_analise %>%
-  count(faixa_etaria_f, tipo_parto_desc) %>%
-  group_by(faixa_etaria_f) %>%
-  mutate(pct = n / sum(n) * 100) %>%
-  ungroup()
+    count(faixa_etaria_f, tipo_parto_desc) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(pct = n / sum(n) * 100) %>%
+    ungroup()
 
 ggplot(fig1_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
-  geom_col(position = "stack", width = 0.7, color = "white", linewidth = 0.3) +
-  geom_text(aes(label = paste0(round(pct, 1), "%")),
-            position = position_stack(vjust = 0.5),
-            size = 3.5, color = "white", fontface = "bold") +
-  scale_fill_manual(values = cores_parto, name = "Via de Parto") +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.02))) +
-  labs(
-    title = "Distribuição das Vias de Parto por Faixa Etária",
-    subtitle = "Coorte HC-FMUSP (1995–2017)",
-    x = NULL, y = "Proporção (%)"
-  ) +
-  tema_pub +
-  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+    geom_col(position = "stack", width = 0.7, color = "white", linewidth = 0.3) +
+    geom_text(aes(label = paste0(round(pct, 1), "%")),
+        position = position_stack(vjust = 0.5),
+        size = 3.5, color = "white", fontface = "bold"
+    ) +
+    scale_fill_manual(values = cores_parto, name = "Via de Parto") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.02))) +
+    labs(
+        title = "Distribuição das Vias de Parto por Faixa Etária",
+        subtitle = "Coorte HC-FMUSP (1995–2017)",
+        x = NULL, y = "Proporção (%)"
+    ) +
+    tema_pub +
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
 ```
 
 ## Estratificação por Classificação de Robson
@@ -365,23 +371,25 @@ ggplot(fig1_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
 #| tbl-cap: "Vias de parto por Grupo de Robson e faixa etária — n (%)"
 
 tab_robson <- dados_analise %>%
-  count(Robson_cat_f, faixa_etaria_f, tipo_parto_desc) %>%
-  group_by(Robson_cat_f, faixa_etaria_f) %>%
-  mutate(
-    total = sum(n),
-    pct = round(n / total * 100, 1),
-    n_pct = paste0(n, " (", pct, "%)")
-  ) %>%
-  select(Robson_cat_f, faixa_etaria_f, tipo_parto_desc, n_pct) %>%
-  pivot_wider(names_from = tipo_parto_desc, values_from = n_pct, values_fill = "0 (0%)") %>%
-  ungroup()
+    count(Robson_cat_f, faixa_etaria_f, tipo_parto_desc) %>%
+    group_by(Robson_cat_f, faixa_etaria_f) %>%
+    mutate(
+        total = sum(n),
+        pct = round(n / total * 100, 1),
+        n_pct = paste0(n, " (", pct, "%)")
+    ) %>%
+    select(Robson_cat_f, faixa_etaria_f, tipo_parto_desc, n_pct) %>%
+    pivot_wider(names_from = tipo_parto_desc, values_from = n_pct, values_fill = "0 (0%)") %>%
+    ungroup()
 
 tab_robson %>%
-  rename(`Grupo Robson` = Robson_cat_f, `Faixa Etária` = faixa_etaria_f) %>%
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = TRUE, font_size = 12) %>%
-  collapse_rows(columns = 1, valign = "top")
+    rename(`Grupo Robson` = Robson_cat_f, `Faixa Etária` = faixa_etaria_f) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c("striped", "hover", "condensed"),
+        full_width = TRUE, font_size = 12
+    ) %>%
+    collapse_rows(columns = 1, valign = "top")
 ```
 
 ### Figura: Vias de Parto Facetadas por Grupo de Robson
@@ -394,30 +402,30 @@ tab_robson %>%
 
 # Filtrar grupos com dados suficientes
 grupos_suficientes <- dados_analise %>%
-  count(Robson_cat_f, faixa_etaria_f) %>%
-  group_by(Robson_cat_f) %>%
-  summarise(n_faixas = n_distinct(faixa_etaria_f), n_total = sum(n), .groups = "drop") %>%
-  filter(n_faixas >= 2, n_total >= 20) %>%
-  pull(Robson_cat_f)
+    count(Robson_cat_f, faixa_etaria_f) %>%
+    group_by(Robson_cat_f) %>%
+    summarise(n_faixas = n_distinct(faixa_etaria_f), n_total = sum(n), .groups = "drop") %>%
+    filter(n_faixas >= 2, n_total >= 20) %>%
+    pull(Robson_cat_f)
 
 fig2_data <- dados_analise %>%
-  filter(Robson_cat_f %in% grupos_suficientes) %>%
-  count(Robson_cat_f, faixa_etaria_f, tipo_parto_desc) %>%
-  group_by(Robson_cat_f, faixa_etaria_f) %>%
-  mutate(pct = n / sum(n) * 100) %>%
-  ungroup()
+    filter(Robson_cat_f %in% grupos_suficientes) %>%
+    count(Robson_cat_f, faixa_etaria_f, tipo_parto_desc) %>%
+    group_by(Robson_cat_f, faixa_etaria_f) %>%
+    mutate(pct = n / sum(n) * 100) %>%
+    ungroup()
 
 ggplot(fig2_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
-  geom_col(position = "stack", width = 0.75, color = "white", linewidth = 0.3) +
-  facet_wrap(~ Robson_cat_f, scales = "free_x", ncol = 3) +
-  scale_fill_manual(values = cores_parto, name = "Via de Parto") +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.02))) +
-  labs(
-    title = "Vias de Parto por Faixa Etária e Classificação de Robson",
-    x = NULL, y = "Proporção (%)"
-  ) +
-  tema_pub +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
+    geom_col(position = "stack", width = 0.75, color = "white", linewidth = 0.3) +
+    facet_wrap(~Robson_cat_f, scales = "free_x", ncol = 3) +
+    scale_fill_manual(values = cores_parto, name = "Via de Parto") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.02))) +
+    labs(
+        title = "Vias de Parto por Faixa Etária e Classificação de Robson",
+        x = NULL, y = "Proporção (%)"
+    ) +
+    tema_pub +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
 ```
 
 ## Testes Estatísticos por Grupo de Robson
@@ -432,65 +440,67 @@ robson_groups <- sort(unique(as.numeric(dados_analise$Robson_cat)))
 resultados_testes <- list()
 
 for (grp in robson_groups) {
-  sub <- dados_analise %>% filter(as.numeric(Robson_cat) == grp)
-  n_sub <- nrow(sub)
-  faixas_presentes <- length(unique(sub$faixa_etaria_f))
-  partos_presentes <- length(unique(sub$tipo_parto_desc))
+    sub <- dados_analise %>% filter(as.numeric(Robson_cat) == grp)
+    n_sub <- nrow(sub)
+    faixas_presentes <- length(unique(sub$faixa_etaria_f))
+    partos_presentes <- length(unique(sub$tipo_parto_desc))
 
-  if (faixas_presentes < 2 || partos_presentes < 2 || n_sub < 10) {
-    resultados_testes[[as.character(grp)]] <- data.frame(
-      Robson = grp, n = n_sub, Teste = "Não aplicável",
-      Estatística = NA, gl = NA, `p-valor` = NA,
-      Significância = "—", check.names = FALSE
+    if (faixas_presentes < 2 || partos_presentes < 2 || n_sub < 10) {
+        resultados_testes[[as.character(grp)]] <- data.frame(
+            Robson = grp, n = n_sub, Teste = "Não aplicável",
+            Estatística = NA, gl = NA, `p-valor` = NA,
+            Significância = "—", check.names = FALSE
+        )
+        next
+    }
+
+    tab <- table(sub$tipo_parto_desc, sub$faixa_etaria_f)
+    tab <- tab[rowSums(tab) > 0, colSums(tab) > 0, drop = FALSE]
+
+    if (min(dim(tab)) < 2) {
+        resultados_testes[[as.character(grp)]] <- data.frame(
+            Robson = grp, n = n_sub, Teste = "Não aplicável",
+            Estatística = NA, gl = NA, `p-valor` = NA,
+            Significância = "—", check.names = FALSE
+        )
+        next
+    }
+
+    expected <- chisq.test(tab)$expected
+    if (any(expected < 5)) {
+        test_result <- fisher.test(tab, simulate.p.value = TRUE, B = 10000)
+        test_name <- "Fisher (MC)"
+        stat_val <- NA
+        df_val <- NA
+    } else {
+        test_result <- chisq.test(tab)
+        test_name <- "Qui-quadrado"
+        stat_val <- round(test_result$statistic, 3)
+        df_val <- test_result$parameter
+    }
+
+    p_val <- test_result$p.value
+    sig <- ifelse(p_val < 0.001, "***",
+        ifelse(p_val < 0.01, "**",
+            ifelse(p_val < 0.05, "*", "ns")
+        )
     )
-    next
-  }
 
-  tab <- table(sub$tipo_parto_desc, sub$faixa_etaria_f)
-  tab <- tab[rowSums(tab) > 0, colSums(tab) > 0, drop = FALSE]
-
-  if (min(dim(tab)) < 2) {
     resultados_testes[[as.character(grp)]] <- data.frame(
-      Robson = grp, n = n_sub, Teste = "Não aplicável",
-      Estatística = NA, gl = NA, `p-valor` = NA,
-      Significância = "—", check.names = FALSE
+        Robson = grp, n = n_sub, Teste = test_name,
+        Estatística = stat_val, gl = df_val,
+        `p-valor` = round(p_val, 4),
+        Significância = sig, check.names = FALSE
     )
-    next
-  }
-
-  expected <- chisq.test(tab)$expected
-  if (any(expected < 5)) {
-    test_result <- fisher.test(tab, simulate.p.value = TRUE, B = 10000)
-    test_name <- "Fisher (MC)"
-    stat_val <- NA
-    df_val <- NA
-  } else {
-    test_result <- chisq.test(tab)
-    test_name <- "Qui-quadrado"
-    stat_val <- round(test_result$statistic, 3)
-    df_val <- test_result$parameter
-  }
-
-  p_val <- test_result$p.value
-  sig <- ifelse(p_val < 0.001, "***",
-         ifelse(p_val < 0.01, "**",
-         ifelse(p_val < 0.05, "*", "ns")))
-
-  resultados_testes[[as.character(grp)]] <- data.frame(
-    Robson = grp, n = n_sub, Teste = test_name,
-    Estatística = stat_val, gl = df_val,
-    `p-valor` = round(p_val, 4),
-    Significância = sig, check.names = FALSE
-  )
 }
 
 tab_testes <- bind_rows(resultados_testes)
 
 tab_testes %>%
-  mutate(Robson = paste("Grupo", Robson)) %>%
-  kable(align = "lrlrrrl") %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
-  footnote(general = "*** p < 0,001; ** p < 0,01; * p < 0,05; ns = não significativo; MC = Monte Carlo (B=10.000)")
+    mutate(Robson = paste("Grupo", Robson)) %>%
+    kable(align = "lrlrrrl") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    footnote(general = "*** p < 0,001; ** p < 0,01; * p < 0,05; ns = não significativo; MC = Monte Carlo (B=10.000)")
 ```
 
 ::: {.callout-important}
@@ -508,20 +518,20 @@ tab_testes %>%
 #| tbl-cap: "Taxa de cesárea por Grupo de Robson e faixa etária"
 
 tab_cesarea <- dados_analise %>%
-  mutate(cesarea = ifelse(tipo_parto == 2, 1, 0)) %>%
-  group_by(Robson_cat_f, faixa_etaria_f) %>%
-  summarise(
-    N = n(),
-    `Cesáreas` = sum(cesarea),
-    `Taxa (%)` = round(sum(cesarea) / n() * 100, 1),
-    .groups = "drop"
-  )
+    mutate(cesarea = ifelse(tipo_parto == 2, 1, 0)) %>%
+    group_by(Robson_cat_f, faixa_etaria_f) %>%
+    summarise(
+        N = n(),
+        `Cesáreas` = sum(cesarea),
+        `Taxa (%)` = round(sum(cesarea) / n() * 100, 1),
+        .groups = "drop"
+    )
 
 tab_cesarea %>%
-  rename(`Grupo Robson` = Robson_cat_f, `Faixa Etária` = faixa_etaria_f) %>%
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
-  collapse_rows(columns = 1, valign = "top")
+    rename(`Grupo Robson` = Robson_cat_f, `Faixa Etária` = faixa_etaria_f) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    collapse_rows(columns = 1, valign = "top")
 ```
 
 ### Figura: Mapa de Calor da Taxa de Cesárea
@@ -533,27 +543,28 @@ tab_cesarea %>%
 #| fig-height: 7
 
 fig3_data <- tab_cesarea %>%
-  filter(Robson_cat_f %in% grupos_suficientes)
+    filter(Robson_cat_f %in% grupos_suficientes)
 
 ggplot(fig3_data, aes(x = faixa_etaria_f, y = Robson_cat_f, fill = `Taxa (%)`)) +
-  geom_tile(color = "white", linewidth = 1) +
-  geom_text(aes(label = paste0(`Taxa (%)`, "%\n(n=", N, ")")),
-            size = 3.2, fontface = "bold") +
-  scale_fill_gradient2(
-    low = "#2a9d8f", mid = "#f4a261", high = "#e76f51",
-    midpoint = 50, name = "Taxa de\nCesárea (%)",
-    limits = c(0, 100)
-  ) +
-  labs(
-    title = "Taxa de Cesárea por Grupo de Robson e Faixa Etária",
-    subtitle = "Coorte HC-FMUSP (1995–2017)",
-    x = NULL, y = NULL
-  ) +
-  tema_pub +
-  theme(
-    axis.text.x = element_text(angle = 30, hjust = 1, size = 10),
-    panel.grid = element_blank()
-  )
+    geom_tile(color = "white", linewidth = 1) +
+    geom_text(aes(label = paste0(`Taxa (%)`, "%\n(n=", N, ")")),
+        size = 3.2, fontface = "bold"
+    ) +
+    scale_fill_gradient2(
+        low = "#2a9d8f", mid = "#f4a261", high = "#e76f51",
+        midpoint = 50, name = "Taxa de\nCesárea (%)",
+        limits = c(0, 100)
+    ) +
+    labs(
+        title = "Taxa de Cesárea por Grupo de Robson e Faixa Etária",
+        subtitle = "Coorte HC-FMUSP (1995–2017)",
+        x = NULL, y = NULL
+    ) +
+    tema_pub +
+    theme(
+        axis.text.x = element_text(angle = 30, hjust = 1, size = 10),
+        panel.grid = element_blank()
+    )
 ```
 
 ### Figura: Adolescentes vs. Adultas (Comparação Direta)
@@ -565,36 +576,43 @@ ggplot(fig3_data, aes(x = faixa_etaria_f, y = Robson_cat_f, fill = `Taxa (%)`)) 
 #| fig-height: 6
 
 fig4_data <- dados_analise %>%
-  mutate(cesarea = ifelse(tipo_parto == 2, 1, 0)) %>%
-  group_by(Robson_cat_f, grupo_comparativo) %>%
-  summarise(
-    n = n(),
-    taxa = mean(cesarea) * 100,
-    se = sqrt(taxa / 100 * (1 - taxa / 100) / n) * 100,
-    .groups = "drop"
-  ) %>%
-  filter(Robson_cat_f %in% grupos_suficientes)
+    mutate(cesarea = ifelse(tipo_parto == 2, 1, 0)) %>%
+    group_by(Robson_cat_f, grupo_comparativo) %>%
+    summarise(
+        n = n(),
+        taxa = mean(cesarea) * 100,
+        se = sqrt(taxa / 100 * (1 - taxa / 100) / n) * 100,
+        .groups = "drop"
+    ) %>%
+    filter(Robson_cat_f %in% grupos_suficientes)
 
 ggplot(fig4_data, aes(x = Robson_cat_f, y = taxa, fill = grupo_comparativo)) +
-  geom_col(position = position_dodge(width = 0.8), width = 0.7,
-           color = "white", linewidth = 0.3) +
-  geom_errorbar(aes(ymin = pmax(taxa - 1.96 * se, 0),
-                    ymax = pmin(taxa + 1.96 * se, 100)),
-                position = position_dodge(width = 0.8),
-                width = 0.25, linewidth = 0.4) +
-  geom_text(aes(label = paste0(round(taxa, 1), "%")),
-            position = position_dodge(width = 0.8), vjust = -0.8, size = 2.8) +
-  scale_fill_manual(
-    values = c("Adolescentes" = "#e63946", "Adultas" = "#2a9d8f"),
-    name = "Grupo"
-  ) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.12)), limits = c(0, NA)) +
-  labs(
-    title = "Taxa de Cesárea: Adolescentes vs. Adultas por Grupo de Robson",
-    subtitle = "Barras de erro = IC 95%",
-    x = NULL, y = "Taxa de Cesárea (%)"
-  ) +
-  tema_pub
+    geom_col(
+        position = position_dodge(width = 0.8), width = 0.7,
+        color = "white", linewidth = 0.3
+    ) +
+    geom_errorbar(
+        aes(
+            ymin = pmax(taxa - 1.96 * se, 0),
+            ymax = pmin(taxa + 1.96 * se, 100)
+        ),
+        position = position_dodge(width = 0.8),
+        width = 0.25, linewidth = 0.4
+    ) +
+    geom_text(aes(label = paste0(round(taxa, 1), "%")),
+        position = position_dodge(width = 0.8), vjust = -0.8, size = 2.8
+    ) +
+    scale_fill_manual(
+        values = c("Adolescentes" = "#e63946", "Adultas" = "#2a9d8f"),
+        name = "Grupo"
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.12)), limits = c(0, NA)) +
+    labs(
+        title = "Taxa de Cesárea: Adolescentes vs. Adultas por Grupo de Robson",
+        subtitle = "Barras de erro = IC 95%",
+        x = NULL, y = "Taxa de Cesárea (%)"
+    ) +
+    tema_pub
 ```
 
 ## Interpretação dos Resultados — Objetivo 2
@@ -605,11 +623,15 @@ ggplot(fig4_data, aes(x = Robson_cat_f, y = taxa, fill = grupo_comparativo)) +
 
 # Calcular métricas-chave para o texto interpretativo
 taxa_ces_geral <- dados_analise %>%
-  group_by(grupo_comparativo) %>%
-  summarise(taxa = round(mean(tipo_parto == 2) * 100, 1), .groups = "drop")
+    group_by(grupo_comparativo) %>%
+    summarise(taxa = round(mean(tipo_parto == 2) * 100, 1), .groups = "drop")
 
-taxa_adol <- taxa_ces_geral %>% filter(grupo_comparativo == "Adolescentes") %>% pull(taxa)
-taxa_adult <- taxa_ces_geral %>% filter(grupo_comparativo == "Adultas") %>% pull(taxa)
+taxa_adol <- taxa_ces_geral %>%
+    filter(grupo_comparativo == "Adolescentes") %>%
+    pull(taxa)
+taxa_adult <- taxa_ces_geral %>%
+    filter(grupo_comparativo == "Adultas") %>%
+    pull(taxa)
 ```
 
 ::: {.callout-note}
@@ -640,33 +662,37 @@ Análise das **5 principais indicações clínicas** para cesárea e fórcipe, c
 #| tbl-cap: "Top 5 indicações clínicas para partos operatórios (cesárea e fórcipe) por grupo etário"
 
 dados_operatorio <- dados_analise %>%
-  filter(tipo_parto %in% c(2, 3)) %>%
-  mutate(indicacao_desc = ifelse(
-    is.na(indicacao_cat) | indicacao_cat == "",
-    "Não informada", indicacao_cat
-  ))
+    filter(tipo_parto %in% c(2, 3)) %>%
+    mutate(indicacao_desc = ifelse(
+        is.na(indicacao_cat) | indicacao_cat == "",
+        "Não informada", indicacao_cat
+    ))
 
 indicacoes_summary <- dados_operatorio %>%
-  group_by(tipo_parto_desc, grupo_comparativo, indicacao_desc) %>%
-  tally() %>%
-  arrange(tipo_parto_desc, grupo_comparativo, desc(n)) %>%
-  group_by(tipo_parto_desc, grupo_comparativo) %>%
-  slice_max(order_by = n, n = 5) %>%
-  mutate(
-    `%` = round((n / sum(n)) * 100, 1),
-    n_pct = paste0(n, " (", `%`, "%)")
-  ) %>%
-  ungroup()
+    group_by(tipo_parto_desc, grupo_comparativo, indicacao_desc) %>%
+    tally() %>%
+    arrange(tipo_parto_desc, grupo_comparativo, desc(n)) %>%
+    group_by(tipo_parto_desc, grupo_comparativo) %>%
+    slice_max(order_by = n, n = 5) %>%
+    mutate(
+        `%` = round((n / sum(n)) * 100, 1),
+        n_pct = paste0(n, " (", `%`, "%)")
+    ) %>%
+    ungroup()
 
 indicacoes_summary %>%
-  select(`Via de Parto` = tipo_parto_desc,
-         Grupo = grupo_comparativo,
-         Indicação = indicacao_desc,
-         `n (%)` = n_pct) %>%
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-                full_width = FALSE) %>%
-  collapse_rows(columns = 1:2, valign = "top")
+    select(
+        `Via de Parto` = tipo_parto_desc,
+        Grupo = grupo_comparativo,
+        Indicação = indicacao_desc,
+        `n (%)` = n_pct
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c("striped", "hover", "condensed"),
+        full_width = FALSE
+    ) %>%
+    collapse_rows(columns = 1:2, valign = "top")
 ```
 
 ### Figura: Indicações para Cesárea
@@ -678,25 +704,26 @@ indicacoes_summary %>%
 #| fig-height: 6
 
 ind_ces <- indicacoes_summary %>%
-  filter(tipo_parto_desc == "Cesárea")
+    filter(tipo_parto_desc == "Cesárea")
 
 ggplot(ind_ces, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_comparativo)) +
-  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
-  geom_text(aes(label = paste0(`%`, "%")),
-            position = position_dodge(width = 0.8), hjust = -0.1, size = 3) +
-  coord_flip() +
-  scale_fill_manual(
-    values = c("Adolescentes" = "#e63946", "Adultas" = "#2a9d8f"),
-    name = "Grupo"
-  ) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
-  labs(
-    title = "Principais Indicações para Cesárea",
-    subtitle = "Proporção dentro de cada grupo etário",
-    x = NULL, y = "Proporção (%)"
-  ) +
-  tema_pub +
-  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+    geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+    geom_text(aes(label = paste0(`%`, "%")),
+        position = position_dodge(width = 0.8), hjust = -0.1, size = 3
+    ) +
+    coord_flip() +
+    scale_fill_manual(
+        values = c("Adolescentes" = "#e63946", "Adultas" = "#2a9d8f"),
+        name = "Grupo"
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    labs(
+        title = "Principais Indicações para Cesárea",
+        subtitle = "Proporção dentro de cada grupo etário",
+        x = NULL, y = "Proporção (%)"
+    ) +
+    tema_pub +
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
 ```
 
 ### Figura: Indicações para Fórcipe
@@ -708,25 +735,26 @@ ggplot(ind_ces, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_compar
 #| fig-height: 6
 
 ind_forc <- indicacoes_summary %>%
-  filter(tipo_parto_desc == "Fórcipe (Instrumental)")
+    filter(tipo_parto_desc == "Fórcipe (Instrumental)")
 
 ggplot(ind_forc, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_comparativo)) +
-  geom_col(position = position_dodge(width = 0.8), width = 0.7) +
-  geom_text(aes(label = paste0(`%`, "%")),
-            position = position_dodge(width = 0.8), hjust = -0.1, size = 3) +
-  coord_flip() +
-  scale_fill_manual(
-    values = c("Adolescentes" = "#e63946", "Adultas" = "#2a9d8f"),
-    name = "Grupo"
-  ) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
-  labs(
-    title = "Principais Indicações para Fórcipe",
-    subtitle = "Proporção dentro de cada grupo etário",
-    x = NULL, y = "Proporção (%)"
-  ) +
-  tema_pub +
-  theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+    geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+    geom_text(aes(label = paste0(`%`, "%")),
+        position = position_dodge(width = 0.8), hjust = -0.1, size = 3
+    ) +
+    coord_flip() +
+    scale_fill_manual(
+        values = c("Adolescentes" = "#e63946", "Adultas" = "#2a9d8f"),
+        name = "Grupo"
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    labs(
+        title = "Principais Indicações para Fórcipe",
+        subtitle = "Proporção dentro de cada grupo etário",
+        x = NULL, y = "Proporção (%)"
+    ) +
+    tema_pub +
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
 ```
 
 ---
@@ -738,23 +766,23 @@ ggplot(ind_forc, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_compa
 #| tbl-cap: "Complicações no parto por grupo etário — n (%)"
 
 if ("compli_parto" %in% colnames(dados_analise)) {
-  tab_compli <- dados_analise %>%
-    filter(!is.na(compli_parto)) %>%
-    count(grupo_comparativo, compli_parto) %>%
-    group_by(grupo_comparativo) %>%
-    mutate(
-      pct = round(n / sum(n) * 100, 1),
-      n_pct = paste0(n, " (", pct, "%)")
-    ) %>%
-    select(grupo_comparativo, compli_parto, n_pct) %>%
-    pivot_wider(names_from = grupo_comparativo, values_from = n_pct, values_fill = "0 (0%)")
+    tab_compli <- dados_analise %>%
+        filter(!is.na(compli_parto)) %>%
+        count(grupo_comparativo, compli_parto) %>%
+        group_by(grupo_comparativo) %>%
+        mutate(
+            pct = round(n / sum(n) * 100, 1),
+            n_pct = paste0(n, " (", pct, "%)")
+        ) %>%
+        select(grupo_comparativo, compli_parto, n_pct) %>%
+        pivot_wider(names_from = grupo_comparativo, values_from = n_pct, values_fill = "0 (0%)")
 
-  tab_compli %>%
-    rename(Complicação = compli_parto) %>%
-    kable() %>%
-    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+    tab_compli %>%
+        rename(Complicação = compli_parto) %>%
+        kable() %>%
+        kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 } else {
-  cat("Variável 'compli_parto' não encontrada na base de dados.\n")
+    cat("Variável 'compli_parto' não encontrada na base de dados.\n")
 }
 ```
 

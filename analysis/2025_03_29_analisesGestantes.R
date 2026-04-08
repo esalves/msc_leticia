@@ -29,10 +29,13 @@ dicionario <- read_excel("../data/raw/BD_completo_corrigido_06-04-2026.xlsx"
 ####### Filtrar apenas registros que tenham tipo de parto diferente de nulo ####### 
 # Remover registros cujo tipo de parto é nulo:
 dadosFilt <- dados %>%
-  filter(!is.na(tipo_parto)) %>% # mantendo apenas registros que possuem tipo de parto
-  filter(!is.na(idade)) %>% # mantendo apenas registros que possuem registro de idade
-  filter(idade > 10 & idade < 35) %>% # mantendo apenas registros com idades entre 11 e 34 anos
-  filter(!(origem == "Adolescentes" & idade == 20)) # Removendo registros onde origem é "Adolescentes" e idade é 20
+  filter(
+    !is.na(tipo_parto), # mantendo apenas registros que possuem tipo de parto
+    !is.na(idade), # mantendo apenas registros que possuem registro de idade
+    idade > 10, # mantendo apenas registros com idades maiores que 10 anos
+    idade < 35, # mantendo apenas registros com idades menores que 35 anos
+    !(origem == "Adolescentes" & idade == 20) # Removendo registros onde origem é "Adolescentes" e idade é 20
+  )
 
 # Total de tipo de gestante:
 summary(as.factor(dadosFilt$origem))

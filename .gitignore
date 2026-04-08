@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# R/RStudio
+.RData
+.Rhistory
+.Rapp.history
+.Ruserdata
+.Rproj.user/
+*.Rproj
+*.RData
+
+# Temporary/Editor files
+*~
+.vscode/
+.idea/

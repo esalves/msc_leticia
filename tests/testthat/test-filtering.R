@@ -12,10 +12,13 @@ dados <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "
 # Apply filtering steps from the main script
 # Replicate the filtering logic here:
 dadosFilt <- dados %>%
-  filter(!is.na(tipo_parto)) %>%
-  filter(!is.na(idade)) %>%
-  filter(idade > 10 & idade < 35) %>%
-  filter(!(origem == "Adolescentes" & idade == 20))
+  filter(
+    !is.na(tipo_parto),
+    !is.na(idade),
+    idade > 10,
+    idade < 35,
+    !(origem == "Adolescentes" & idade == 20)
+  )
 
 context("Data Filtering")
 

@@ -1,0 +1,799 @@
+---
+title: "Análise Comparativa da Classificação de Robson"
+subtitle: "Adolescentes vs. Adultas — Coorte HC-FMUSP (1995–2017)"
+author: "Letícia Schimidt Arruda"
+date: today
+date-format: "D [de] MMMM [de] YYYY"
+lang: pt
+format:
+  html:
+    embed-resources: true
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-title: "Sumário"
+    number-sections: true
+    code-fold: true
+    code-summary: "Mostrar código"
+    code-tools: true
+    fig-align: center
+    df-print: kable
+    smooth-scroll: true
+execute:
+  warning: false
+  message: false
+  echo: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(readxl)
+library(here)
+library(knitr)
+library(kableExtra)
+
+# Tema padrão para os gráficos
+tema_pub <- theme_minimal(base_size = 12) +
+    theme(
+        panel.background = element_rect(fill = "white", color = NA),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.text = element_text(face = "bold", size = 11),
+        strip.background = element_rect(fill = "grey92", color = NA),
+        legend.position = "bottom",
+        legend.title = element_text(face = "bold"),
+        axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
+        axis.title = element_text(face = "bold"),
+        plot.title = element_text(face = "bold", size = 14, hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5, color = "grey40")
+    )
+
+# Paletas de cores
+cores_parto <- c(
+    "Normal (Vaginal Espontâneo)" = "#2a9d8f",
+    "Cesárea" = "#e76f51",
+    "Fórcipe (Instrumental)" = "#264653"
+)
+
+cores_faixa <- c(
+    "Adolescentes precoces (11-15)" = "#e63946",
+    "Adolescentes tardias (16-19)" = "#457b9d",
+    "Adultas (20-34)" = "#2a9d8f"
+)
+```
+
+# Introdução {.unnumbered}
+
+Este documento apresenta o **pipeline completo de análise** da dissertação de mestrado que investiga as diferenças nas vias de parto entre adolescentes e adultas, utilizando a **Classificação de Robson** como ferramenta de estratificação.
+
+**Objetivo Geral:** Realizar uma análise comparativa das vias de parto (vaginal espontâneo, fórcipe e cesárea), indicações primárias de partos operatórios e complicações maternas entre gestantes adolescentes (precoces e tardias) e adultas, estratificada pela Classificação de Robson, utilizando uma coorte histórica de 25 anos (1995–2017) do HC-FMUSP.
+
+::: {.callout-note}
+## Objetivos Específicos
+
+1. **Perfil Sociodemográfico:** Descrever e comparar as características sociodemográficas (idade, escolaridade, estado civil, raça/cor) das adolescentes precoces (10-14 anos), tardias (15-19 anos) e adultas (20-34 anos).
+2. **Comparação das Vias de Parto:** Avaliar as taxas das diferentes vias de parto nos grupos etários e distribuí-las nos 10 Grupos da Classificação de Robson.
+3. **Mapeamento das Indicações Operatórias:** Identificar e comparar as principais indicações clínicas para partos operatórios entre adolescentes e adultas.
+4. **Complicações Maternas:** Analisar a frequência de complicações maternas por grupo etário.
+:::
+
+---
+
+# Carregamento e Preparação dos Dados
+
+## Importação da Base de Dados
+
+A base de dados contém registros obstétricos do Hospital das Clínicas da FMUSP referentes ao período de 1995 a 2017.
+
+```{r}
+#| label: carregamento-dados
+
+dados <- read_excel(
+    here("data", "raw", "BD_completo_corrigido_06-04-2026.xlsx"),
+    sheet = "Sheet1"
+)
+
+cat("Dimensões da base bruta:", nrow(dados), "registros ×", ncol(dados), "variáveis\n")
+```
+
+## Critérios de Elegibilidade e Filtros
+
+Os seguintes critérios de inclusão foram aplicados:
+
+- **Idade:** entre 11 e 34 anos
+- **Tipo de parto:** registrado (não nulo)
+- **Classificação de Robson:** registrada e válida (Grupos 1–10, excluindo Grupo 8)
+
+```{r}
+#| label: filtragem-dados
+
+dados_analise <- dados %>%
+    filter(!is.na(tipo_parto), !is.na(idade)) %>%
+    filter(idade >= 11 & idade <= 34) %>%
+    mutate(
+        # Padronizar a coluna Robson (valores como '1.0', '2A', '2B', etc.)
+        Robson_cat = case_when(
+            grepl("^10", Robson) ~ "10",
+            grepl("^1", Robson) ~ "1",
+            grepl("^2", Robson) ~ "2",
+            grepl("^3", Robson) ~ "3",
+            grepl("^4", Robson) ~ "4",
+            grepl("^5", Robson) ~ "5",
+            grepl("^6", Robson) ~ "6",
+            grepl("^7", Robson) ~ "7",
+            grepl("^9", Robson) ~ "9",
+            TRUE ~ NA_character_
+        )
+    ) %>%
+    filter(!is.na(Robson_cat)) %>%
+    mutate(
+        # Classificação por faixa etária
+        faixa_etaria = case_when(
+            idade >= 11 & idade <= 15 ~ "Adolescentes precoces (11-15)",
+            idade >= 16 & idade <= 19 ~ "Adolescentes tardias (16-19)",
+            idade >= 20 & idade <= 34 ~ "Adultas (20-34)"
+        ),
+        faixa_etaria_f = factor(faixa_etaria, levels = c(
+            "Adolescentes precoces (11-15)",
+            "Adolescentes tardias (16-19)",
+            "Adultas (20-34)"
+        )),
+        # Grupo comparativo binário
+        grupo_comparativo = ifelse(idade <= 19, "Adolescentes", "Adultas"),
+        # Descrição da via de parto
+        tipo_parto_desc = case_when(
+            tipo_parto == 1 ~ "Normal (Vaginal Espontâneo)",
+            tipo_parto == 2 ~ "Cesárea",
+            tipo_parto == 3 ~ "Fórcipe (Instrumental)"
+        ),
+        # Robson como fator ordenado
+        Robson_cat_f = factor(as.numeric(Robson_cat),
+            levels = c(1, 2, 3, 4, 5, 6, 7, 9, 10),
+            labels = paste("Grupo", c(1, 2, 3, 4, 5, 6, 7, 9, 10))
+        )
+    )
+```
+
+```{r}
+#| label: resumo-amostra
+
+# Resumo da amostra final
+resumo <- dados_analise %>%
+    count(faixa_etaria_f, name = "n") %>%
+    mutate(pct = round(n / sum(n) * 100, 1))
+
+cat("Total de registros para análise:", nrow(dados_analise), "\n\n")
+
+resumo %>%
+    rename(`Faixa Etária` = faixa_etaria_f, `N` = n, `%` = pct) %>%
+    kable(caption = "Distribuição da amostra por faixa etária") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+::: {.callout-tip}
+## Nota sobre a Classificação de Robson
+A Classificação de Robson divide as gestantes em 10 grupos mutuamente exclusivos com base em características obstétricas (paridade, apresentação fetal, idade gestacional, cicatriz uterina prévia e início do trabalho de parto). Os **Grupos 4 e 5** (multíparas) naturalmente não contêm adolescentes precoces, e os **Grupos 6, 7 e 9** apresentam números muito reduzidos de adolescentes.
+:::
+
+---
+
+# Objetivo 1: Perfil Sociodemográfico
+
+## Distribuição Etária
+
+```{r}
+#| label: tbl-idade
+#| tbl-cap: "Estatísticas descritivas da idade por faixa etária"
+
+sumario_idade <- dados_analise %>%
+    group_by(faixa_etaria_f) %>%
+    summarise(
+        N = n(),
+        `Média` = round(mean(idade, na.rm = TRUE), 1),
+        `DP` = round(sd(idade, na.rm = TRUE), 1),
+        `Mín` = min(idade, na.rm = TRUE),
+        `Mediana` = median(idade, na.rm = TRUE),
+        `Máx` = max(idade, na.rm = TRUE),
+        .groups = "drop"
+    )
+
+sumario_idade %>%
+    rename(`Faixa Etária` = faixa_etaria_f) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+## Escolaridade
+
+```{r}
+#| label: tbl-escolaridade
+#| tbl-cap: "Distribuição da escolaridade por faixa etária — n (%)"
+
+tab_escol <- dados_analise %>%
+    filter(!is.na(escolaridade_cat)) %>%
+    count(faixa_etaria_f, escolaridade_cat) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(
+        pct = round(n / sum(n) * 100, 1),
+        n_pct = paste0(n, " (", pct, "%)")
+    ) %>%
+    select(faixa_etaria_f, escolaridade_cat, n_pct) %>%
+    pivot_wider(names_from = faixa_etaria_f, values_from = n_pct, values_fill = "0 (0%)")
+
+tab_escol %>%
+    rename(`Escolaridade` = escolaridade_cat) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+## Estado Civil
+
+```{r}
+#| label: tbl-estado-civil
+#| tbl-cap: "Distribuição do estado civil por faixa etária — n (%)"
+
+dados_analise <- dados_analise %>%
+    mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat))
+
+tab_ecivil <- dados_analise %>%
+    filter(!is.na(novo_estado_civil)) %>%
+    count(faixa_etaria_f, novo_estado_civil) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(
+        pct = round(n / sum(n) * 100, 1),
+        n_pct = paste0(n, " (", pct, "%)")
+    ) %>%
+    select(faixa_etaria_f, novo_estado_civil, n_pct) %>%
+    pivot_wider(names_from = faixa_etaria_f, values_from = n_pct, values_fill = "0 (0%)")
+
+tab_ecivil %>%
+    rename(`Estado Civil (código)` = novo_estado_civil) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+---
+
+# Objetivo 2: Comparação das Vias de Parto e Classificação de Robson
+
+Este é o **objetivo principal** da análise. Comparamos as taxas de parto vaginal espontâneo, cesárea e fórcipe entre as três faixas etárias, tanto de forma geral como estratificada pela Classificação de Robson.
+
+## Distribuição Geral das Vias de Parto
+
+### Tabela de frequências
+
+```{r}
+#| label: tbl-parto-geral
+#| tbl-cap: "Vias de parto por faixa etária — n (%)"
+
+tab_geral <- dados_analise %>%
+    count(faixa_etaria_f, tipo_parto_desc) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(
+        total = sum(n),
+        pct = round(n / total * 100, 1),
+        n_pct = paste0(n, " (", pct, "%)")
+    ) %>%
+    select(faixa_etaria_f, tipo_parto_desc, n_pct) %>%
+    pivot_wider(names_from = faixa_etaria_f, values_from = n_pct)
+
+tab_geral %>%
+    rename(`Via de Parto` = tipo_parto_desc) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    add_header_above(c(" " = 1, "Faixa Etária" = 3))
+```
+
+### Teste Qui-Quadrado (Associação Geral)
+
+Testamos a hipótese nula de que a distribuição das vias de parto é independente da faixa etária:
+
+$$H_0: \text{Via de parto} \perp \text{Faixa etária}$$
+$$H_1: \text{Existe associação entre via de parto e faixa etária}$$
+
+```{r}
+#| label: chi2-geral
+
+tabela_parto <- table(dados_analise$tipo_parto_desc, dados_analise$faixa_etaria_f)
+chi2_geral <- chisq.test(tabela_parto)
+
+cat("Teste Qui-Quadrado de Pearson\n")
+cat("  X² =", round(chi2_geral$statistic, 2), "\n")
+cat("  gl =", chi2_geral$parameter, "\n")
+cat("  p  =", format.pval(chi2_geral$p.value, digits = 4), "\n\n")
+
+if (chi2_geral$p.value < 0.001) {
+    cat("→ Resultado: Associação estatisticamente significativa (p < 0,001)\n")
+}
+```
+
+::: {.callout-important}
+## Resultado
+O teste qui-quadrado revela uma **associação altamente significativa** entre a faixa etária e a via de parto (p < 0,001), indicando que a distribuição das vias de parto difere substancialmente entre adolescentes precoces, tardias e adultas.
+:::
+
+### Resíduos Padronizados Ajustados
+
+Os resíduos padronizados ajustados indicam quais células da tabela de contingência mais contribuem para a associação (|resíduo| > 2 é considerado significativo):
+
+```{r}
+#| label: tbl-residuos
+#| tbl-cap: "Resíduos padronizados ajustados — valores > |2| indicam desvio significativo do esperado"
+
+residuos <- round(chi2_geral$stdres, 2)
+
+as.data.frame.matrix(residuos) %>%
+    rownames_to_column("Via de Parto") %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+### Figura: Distribuição Geral
+
+```{r}
+#| label: fig-parto-geral
+#| fig-cap: "Distribuição proporcional das vias de parto por faixa etária"
+#| fig-width: 8
+#| fig-height: 5
+
+fig1_data <- dados_analise %>%
+    count(faixa_etaria_f, tipo_parto_desc) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(pct = n / sum(n) * 100) %>%
+    ungroup()
+
+ggplot(fig1_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
+    geom_col(position = "stack", width = 0.7, color = "white", linewidth = 0.3) +
+    geom_text(aes(label = paste0(round(pct, 1), "%")),
+        position = position_stack(vjust = 0.5),
+        size = 3.5, color = "white", fontface = "bold"
+    ) +
+    scale_fill_manual(values = cores_parto, name = "Via de Parto") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.02))) +
+    labs(
+        title = "Distribuição das Vias de Parto por Faixa Etária",
+        subtitle = "Coorte HC-FMUSP (1995–2017)",
+        x = NULL, y = "Proporção (%)"
+    ) +
+    tema_pub +
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+```
+
+## Estratificação por Classificação de Robson
+
+### Tabela Cruzada: Robson × Faixa Etária × Via de Parto
+
+```{r}
+#| label: tbl-robson-parto
+#| tbl-cap: "Vias de parto por Grupo de Robson e faixa etária — n (%)"
+
+tab_robson <- dados_analise %>%
+    count(Robson_cat_f, faixa_etaria_f, tipo_parto_desc) %>%
+    group_by(Robson_cat_f, faixa_etaria_f) %>%
+    mutate(
+        total = sum(n),
+        pct = round(n / total * 100, 1),
+        n_pct = paste0(n, " (", pct, "%)")
+    ) %>%
+    select(Robson_cat_f, faixa_etaria_f, tipo_parto_desc, n_pct) %>%
+    pivot_wider(names_from = tipo_parto_desc, values_from = n_pct, values_fill = "0 (0%)") %>%
+    ungroup()
+
+tab_robson %>%
+    rename(`Grupo Robson` = Robson_cat_f, `Faixa Etária` = faixa_etaria_f) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c("striped", "hover", "condensed"),
+        full_width = TRUE, font_size = 12
+    ) %>%
+    collapse_rows(columns = 1, valign = "top")
+```
+
+### Figura: Vias de Parto Facetadas por Grupo de Robson
+
+```{r}
+#| label: fig-robson-facetado
+#| fig-cap: "Proporção das vias de parto por faixa etária em cada Grupo de Robson (apenas grupos com ≥ 2 faixas etárias e n ≥ 20)"
+#| fig-width: 12
+#| fig-height: 10
+
+# Filtrar grupos com dados suficientes
+grupos_suficientes <- dados_analise %>%
+    count(Robson_cat_f, faixa_etaria_f) %>%
+    group_by(Robson_cat_f) %>%
+    summarise(n_faixas = n_distinct(faixa_etaria_f), n_total = sum(n), .groups = "drop") %>%
+    filter(n_faixas >= 2, n_total >= 20) %>%
+    pull(Robson_cat_f)
+
+fig2_data <- dados_analise %>%
+    filter(Robson_cat_f %in% grupos_suficientes) %>%
+    count(Robson_cat_f, faixa_etaria_f, tipo_parto_desc) %>%
+    group_by(Robson_cat_f, faixa_etaria_f) %>%
+    mutate(pct = n / sum(n) * 100) %>%
+    ungroup()
+
+ggplot(fig2_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
+    geom_col(position = "stack", width = 0.75, color = "white", linewidth = 0.3) +
+    facet_wrap(~Robson_cat_f, scales = "free_x", ncol = 3) +
+    scale_fill_manual(values = cores_parto, name = "Via de Parto") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.02))) +
+    labs(
+        title = "Vias de Parto por Faixa Etária e Classificação de Robson",
+        x = NULL, y = "Proporção (%)"
+    ) +
+    tema_pub +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
+```
+
+## Testes Estatísticos por Grupo de Robson
+
+Para cada grupo de Robson, testamos a associação entre faixa etária e via de parto. Utilizamos o **teste qui-quadrado** quando todas as frequências esperadas são ≥ 5, e o **teste exato de Fisher** (com simulação de Monte Carlo, B = 10.000) quando alguma célula apresenta frequência esperada < 5.
+
+```{r}
+#| label: tbl-testes-robson
+#| tbl-cap: "Testes de associação entre via de parto e faixa etária — por Grupo de Robson"
+
+robson_groups <- sort(unique(as.numeric(dados_analise$Robson_cat)))
+resultados_testes <- list()
+
+for (grp in robson_groups) {
+    sub <- dados_analise %>% filter(as.numeric(Robson_cat) == grp)
+    n_sub <- nrow(sub)
+    faixas_presentes <- length(unique(sub$faixa_etaria_f))
+    partos_presentes <- length(unique(sub$tipo_parto_desc))
+
+    if (faixas_presentes < 2 || partos_presentes < 2 || n_sub < 10) {
+        resultados_testes[[as.character(grp)]] <- data.frame(
+            Robson = grp, n = n_sub, Teste = "Não aplicável",
+            Estatística = NA, gl = NA, `p-valor` = NA,
+            Significância = "—", check.names = FALSE
+        )
+        next
+    }
+
+    tab <- table(sub$tipo_parto_desc, sub$faixa_etaria_f)
+    tab <- tab[rowSums(tab) > 0, colSums(tab) > 0, drop = FALSE]
+
+    if (min(dim(tab)) < 2) {
+        resultados_testes[[as.character(grp)]] <- data.frame(
+            Robson = grp, n = n_sub, Teste = "Não aplicável",
+            Estatística = NA, gl = NA, `p-valor` = NA,
+            Significância = "—", check.names = FALSE
+        )
+        next
+    }
+
+    expected <- chisq.test(tab)$expected
+    if (any(expected < 5)) {
+        test_result <- fisher.test(tab, simulate.p.value = TRUE, B = 10000)
+        test_name <- "Fisher (MC)"
+        stat_val <- NA
+        df_val <- NA
+    } else {
+        test_result <- chisq.test(tab)
+        test_name <- "Qui-quadrado"
+        stat_val <- round(test_result$statistic, 3)
+        df_val <- test_result$parameter
+    }
+
+    p_val <- test_result$p.value
+    sig <- ifelse(p_val < 0.001, "***",
+        ifelse(p_val < 0.01, "**",
+            ifelse(p_val < 0.05, "*", "ns")
+        )
+    )
+
+    resultados_testes[[as.character(grp)]] <- data.frame(
+        Robson = grp, n = n_sub, Teste = test_name,
+        Estatística = stat_val, gl = df_val,
+        `p-valor` = round(p_val, 4),
+        Significância = sig, check.names = FALSE
+    )
+}
+
+tab_testes <- bind_rows(resultados_testes)
+
+tab_testes %>%
+    mutate(Robson = paste("Grupo", Robson)) %>%
+    kable(align = "lrlrrrl") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    footnote(general = "*** p < 0,001; ** p < 0,01; * p < 0,05; ns = não significativo; MC = Monte Carlo (B=10.000)")
+```
+
+::: {.callout-important}
+## Resultados dos Testes por Grupo
+- **Grupos 1, 2 e 3:** Associação **altamente significativa** (p < 0,001) entre faixa etária e via de parto.
+- **Grupo 10:** Associação **altamente significativa** (p < 0,001).
+- **Grupos 6, 7 e 9:** Sem associação significativa, porém com **amostras muito pequenas** de adolescentes (n < 20), limitando o poder estatístico.
+- **Grupos 4 e 5:** Teste não aplicável — contêm exclusivamente adultas (multíparas).
+:::
+
+## Taxa de Cesárea por Grupo de Robson e Faixa Etária
+
+```{r}
+#| label: tbl-cesarea
+#| tbl-cap: "Taxa de cesárea por Grupo de Robson e faixa etária"
+
+tab_cesarea <- dados_analise %>%
+    mutate(cesarea = ifelse(tipo_parto == 2, 1, 0)) %>%
+    group_by(Robson_cat_f, faixa_etaria_f) %>%
+    summarise(
+        N = n(),
+        `Cesáreas` = sum(cesarea),
+        `Taxa (%)` = round(sum(cesarea) / n() * 100, 1),
+        .groups = "drop"
+    )
+
+tab_cesarea %>%
+    rename(`Grupo Robson` = Robson_cat_f, `Faixa Etária` = faixa_etaria_f) %>%
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    collapse_rows(columns = 1, valign = "top")
+```
+
+### Figura: Mapa de Calor da Taxa de Cesárea
+
+```{r}
+#| label: fig-heatmap-cesarea
+#| fig-cap: "Mapa de calor da taxa de cesárea (%) por Grupo de Robson e faixa etária. Células verdes indicam taxas mais baixas; alaranjadas/vermelhas indicam taxas mais altas."
+#| fig-width: 9
+#| fig-height: 7
+
+fig3_data <- tab_cesarea %>%
+    filter(Robson_cat_f %in% grupos_suficientes)
+
+ggplot(fig3_data, aes(x = faixa_etaria_f, y = Robson_cat_f, fill = `Taxa (%)`)) +
+    geom_tile(color = "white", linewidth = 1) +
+    geom_text(aes(label = paste0(`Taxa (%)`, "%\n(n=", N, ")")),
+        size = 3.2, fontface = "bold"
+    ) +
+    scale_fill_gradient2(
+        low = "#2a9d8f", mid = "#f4a261", high = "#e76f51",
+        midpoint = 50, name = "Taxa de\nCesárea (%)",
+        limits = c(0, 100)
+    ) +
+    labs(
+        title = "Taxa de Cesárea por Grupo de Robson e Faixa Etária",
+        subtitle = "Coorte HC-FMUSP (1995–2017)",
+        x = NULL, y = NULL
+    ) +
+    tema_pub +
+    theme(
+        axis.text.x = element_text(angle = 30, hjust = 1, size = 10),
+        panel.grid = element_blank()
+    )
+```
+
+### Figura: Adolescentes vs. Adultas (Comparação Direta)
+
+```{r}
+#| label: fig-cesarea-comparacao
+#| fig-cap: "Comparação da taxa de cesárea entre adolescentes e adultas por Grupo de Robson (com intervalos de confiança de 95%)"
+#| fig-width: 10
+#| fig-height: 6
+
+fig4_data <- dados_analise %>%
+    mutate(cesarea = ifelse(tipo_parto == 2, 1, 0)) %>%
+    group_by(Robson_cat_f, grupo_comparativo) %>%
+    summarise(
+        n = n(),
+        taxa = mean(cesarea) * 100,
+        se = sqrt(taxa / 100 * (1 - taxa / 100) / n) * 100,
+        .groups = "drop"
+    ) %>%
+    filter(Robson_cat_f %in% grupos_suficientes)
+
+ggplot(fig4_data, aes(x = Robson_cat_f, y = taxa, fill = grupo_comparativo)) +
+    geom_col(
+        position = position_dodge(width = 0.8), width = 0.7,
+        color = "white", linewidth = 0.3
+    ) +
+    geom_errorbar(
+        aes(
+            ymin = pmax(taxa - 1.96 * se, 0),
+            ymax = pmin(taxa + 1.96 * se, 100)
+        ),
+        position = position_dodge(width = 0.8),
+        width = 0.25, linewidth = 0.4
+    ) +
+    geom_text(aes(label = paste0(round(taxa, 1), "%")),
+        position = position_dodge(width = 0.8), vjust = -0.8, size = 2.8
+    ) +
+    scale_fill_manual(
+        values = c("Adolescentes" = "#e63946", "Adultas" = "#2a9d8f"),
+        name = "Grupo"
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.12)), limits = c(0, NA)) +
+    labs(
+        title = "Taxa de Cesárea: Adolescentes vs. Adultas por Grupo de Robson",
+        subtitle = "Barras de erro = IC 95%",
+        x = NULL, y = "Taxa de Cesárea (%)"
+    ) +
+    tema_pub
+```
+
+## Interpretação dos Resultados — Objetivo 2
+
+```{r}
+#| label: interpretacao-obj2
+#| echo: false
+
+# Calcular métricas-chave para o texto interpretativo
+taxa_ces_geral <- dados_analise %>%
+    group_by(grupo_comparativo) %>%
+    summarise(taxa = round(mean(tipo_parto == 2) * 100, 1), .groups = "drop")
+
+taxa_adol <- taxa_ces_geral %>%
+    filter(grupo_comparativo == "Adolescentes") %>%
+    pull(taxa)
+taxa_adult <- taxa_ces_geral %>%
+    filter(grupo_comparativo == "Adultas") %>%
+    pull(taxa)
+```
+
+::: {.callout-note}
+## Síntese dos Achados — Objetivo 2
+
+**Achados gerais:**
+
+- A taxa global de cesárea é menor entre adolescentes (`r taxa_adol`%) do que entre adultas (`r taxa_adult`%).
+- Em contrapartida, as adolescentes apresentam taxas mais elevadas de **parto por fórcipe**.
+- A associação entre faixa etária e via de parto é **estatisticamente significativa** (χ² de Pearson, p < 0,001).
+
+**Por Grupo de Robson:**
+
+- **Grupo 1** (Nulíparas, feto único cefálico, IG ≥ 37 sem, trabalho espontâneo): Adolescentes precoces e tardias têm taxas de cesárea similares (~27%), enquanto adultas têm taxa significativamente maior (37,6%).
+- **Grupo 2** (Nulíparas, feto único cefálico, IG ≥ 37 sem, induzidas ou cesárea eletiva): Gradiente crescente com a idade — precoces 47,2%, tardias 58,0%, adultas 71,8%.
+- **Grupo 3** (Multíparas sem cicatriz, feto cefálico, IG ≥ 37 sem, espontâneo): Padrão **invertido** — adolescentes precoces com a maior taxa (42,3%), seguidas de tardias (25,2%) e adultas (19,3%).
+- **Grupo 10** (Gestação única cefálica ≤ 36 semanas): Adolescentes com taxas muito menores (19,6-31,0%) vs. adultas (62,0%) — diferença altamente significativa.
+:::
+
+---
+
+# Objetivo 3: Mapeamento de Indicações Operatórias
+
+Análise das **5 principais indicações clínicas** para cesárea e fórcipe, comparando adolescentes e adultas.
+
+```{r}
+#| label: tbl-indicacoes
+#| tbl-cap: "Top 5 indicações clínicas para partos operatórios (cesárea e fórcipe) por grupo etário"
+
+dados_operatorio <- dados_analise %>%
+    filter(tipo_parto %in% c(2, 3)) %>%
+    mutate(indicacao_desc = ifelse(
+        is.na(indicacao_cat) | indicacao_cat == "",
+        "Não informada", indicacao_cat
+    ))
+
+indicacoes_summary <- dados_operatorio %>%
+    group_by(tipo_parto_desc, grupo_comparativo, indicacao_desc) %>%
+    tally() %>%
+    arrange(tipo_parto_desc, grupo_comparativo, desc(n)) %>%
+    group_by(tipo_parto_desc, grupo_comparativo) %>%
+    slice_max(order_by = n, n = 5) %>%
+    mutate(
+        `%` = round((n / sum(n)) * 100, 1),
+        n_pct = paste0(n, " (", `%`, "%)")
+    ) %>%
+    ungroup()
+
+indicacoes_summary %>%
+    select(
+        `Via de Parto` = tipo_parto_desc,
+        Grupo = grupo_comparativo,
+        Indicação = indicacao_desc,
+        `n (%)` = n_pct
+    ) %>%
+    kable() %>%
+    kable_styling(
+        bootstrap_options = c("striped", "hover", "condensed"),
+        full_width = FALSE
+    ) %>%
+    collapse_rows(columns = 1:2, valign = "top")
+```
+
+### Figura: Indicações para Cesárea
+
+```{r}
+#| label: fig-indicacoes-cesarea
+#| fig-cap: "Top 5 indicações clínicas para cesárea — Adolescentes vs. Adultas"
+#| fig-width: 10
+#| fig-height: 6
+
+ind_ces <- indicacoes_summary %>%
+    filter(tipo_parto_desc == "Cesárea")
+
+ggplot(ind_ces, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_comparativo)) +
+    geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+    geom_text(aes(label = paste0(`%`, "%")),
+        position = position_dodge(width = 0.8), hjust = -0.1, size = 3
+    ) +
+    coord_flip() +
+    scale_fill_manual(
+        values = c("Adolescentes" = "#e63946", "Adultas" = "#2a9d8f"),
+        name = "Grupo"
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    labs(
+        title = "Principais Indicações para Cesárea",
+        subtitle = "Proporção dentro de cada grupo etário",
+        x = NULL, y = "Proporção (%)"
+    ) +
+    tema_pub +
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+```
+
+### Figura: Indicações para Fórcipe
+
+```{r}
+#| label: fig-indicacoes-forcipe
+#| fig-cap: "Top 5 indicações clínicas para fórcipe — Adolescentes vs. Adultas"
+#| fig-width: 10
+#| fig-height: 6
+
+ind_forc <- indicacoes_summary %>%
+    filter(tipo_parto_desc == "Fórcipe (Instrumental)")
+
+ggplot(ind_forc, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_comparativo)) +
+    geom_col(position = position_dodge(width = 0.8), width = 0.7) +
+    geom_text(aes(label = paste0(`%`, "%")),
+        position = position_dodge(width = 0.8), hjust = -0.1, size = 3
+    ) +
+    coord_flip() +
+    scale_fill_manual(
+        values = c("Adolescentes" = "#e63946", "Adultas" = "#2a9d8f"),
+        name = "Grupo"
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    labs(
+        title = "Principais Indicações para Fórcipe",
+        subtitle = "Proporção dentro de cada grupo etário",
+        x = NULL, y = "Proporção (%)"
+    ) +
+    tema_pub +
+    theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+```
+
+---
+
+# Objetivo 4: Complicações Maternas
+
+```{r}
+#| label: tbl-complicacoes
+#| tbl-cap: "Complicações no parto por grupo etário — n (%)"
+
+if ("compli_parto" %in% colnames(dados_analise)) {
+    tab_compli <- dados_analise %>%
+        filter(!is.na(compli_parto)) %>%
+        count(grupo_comparativo, compli_parto) %>%
+        group_by(grupo_comparativo) %>%
+        mutate(
+            pct = round(n / sum(n) * 100, 1),
+            n_pct = paste0(n, " (", pct, "%)")
+        ) %>%
+        select(grupo_comparativo, compli_parto, n_pct) %>%
+        pivot_wider(names_from = grupo_comparativo, values_from = n_pct, values_fill = "0 (0%)")
+
+    tab_compli %>%
+        rename(Complicação = compli_parto) %>%
+        kable() %>%
+        kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+} else {
+    cat("Variável 'compli_parto' não encontrada na base de dados.\n")
+}
+```
+
+---
+
+# Informações da Sessão
+
+```{r}
+#| label: sessao
+#| echo: false
+
+cat("Documento renderizado em:", format(Sys.time(), "%d/%m/%Y às %H:%M:%S"), "\n\n")
+sessionInfo()
+```

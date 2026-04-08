@@ -9,7 +9,6 @@
 .Rapp.history
 .Ruserdata
 .Rproj.user/
-*.Rproj
 *.RData
 
 # Temporary/Editor files

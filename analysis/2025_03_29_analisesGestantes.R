@@ -18,11 +18,11 @@ setAPI(Sys.getenv("GEMINI_API_KEY"))
 
 ####### Ler dados #######
 # Planilha com dados originais:
-dados <- read_excel("BD_completo_corrigido_12-02-2025.xlsx"
+dados <- read_excel("../data/raw/BD_completo_corrigido_12-02-2025.xlsx"
                     ,sheet = "Sheet1")
 
 # Dicionario com explicacoes do campos:
-dicionario <- read_excel("BD_completo_corrigido_12-02-2025.xlsx"
+dicionario <- read_excel("../data/raw/BD_completo_corrigido_12-02-2025.xlsx"
                     ,sheet = "Dicionário")
 
 
@@ -124,7 +124,7 @@ graficoCor <- ggplot(dadosLongCor, aes(x = Gestante, y = Freq, fill = Cor)) +
         legend.text = element_text(size = 18))  # Aumenta texto da legenda
 
 # Salvar gráfico em PNG para inserção no Canvas
-ggsave("graficoGestantesCor.png", plot = graficoCor, width = 10, height = 6, dpi = 300)
+ggsave("../results/figures/graficoGestantesCor.png", plot = graficoCor, width = 10, height = 6, dpi = 300)
 
 
 #Criar gráfico de barras agrupado de frequencias com cores vivas
@@ -149,7 +149,7 @@ graficoCorFreq <- ggplot(dadosLongCorFreq, aes(x = Gestante, y = Freq, fill = Co
         legend.text = element_text(size = 18))  # Aumenta texto da legenda
 
 # Salvar gráfico em PNG para inserção no Canvas
-ggsave("graficoGestantesCorFreq.png", plot = graficoCorFreq, width = 10, height = 6, dpi = 300)
+ggsave("../results/figures/graficoGestantesCorFreq.png", plot = graficoCorFreq, width = 10, height = 6, dpi = 300)
 
 ####### Tipo de gestante por estado civil ####### 
 
@@ -206,7 +206,7 @@ assoc(contagensEstadoCivil
 )
 
 # Salvar gráfico em PNG para inserção no Canvas
-ggsave("graficoGestantesEstadoCivil.png", plot = graficoEstadoCivil, width = 10, height = 6, dpi = 300)
+ggsave("../results/figures/graficoGestantesEstadoCivil.png", plot = graficoEstadoCivil, width = 10, height = 6, dpi = 300)
 
 
 
@@ -232,4 +232,4 @@ ggsave("graficoGestantesEstadoCivil.png", plot = graficoEstadoCivil, width = 10,
 )
 
 # Salvar gráfico em PNG para inserção no Canvas
-ggsave("graficoGestantesEstadoCivilFreq.png", plot = graficoEstadoCivilFreq, width = 10, height = 6, dpi = 300)
+ggsave("../results/figures/graficoGestantesEstadoCivilFreq.png", plot = graficoEstadoCivilFreq, width = 10, height = 6, dpi = 300)

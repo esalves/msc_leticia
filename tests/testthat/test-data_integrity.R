@@ -76,5 +76,3 @@ test_that("Unique values in 'novo_estado_civil' are as expected", {
   }
 })
 
-# Clean up
-# rm(list = c("dados", "dadosFilt", "dadosFiltEstadoCivil", "excel_file_path"))

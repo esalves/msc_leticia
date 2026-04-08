@@ -44,5 +44,3 @@ test_that("Data dictionary (dicionario) is loaded correctly", {
   expect_gt(nrow(dicionario), 0, "Dicionario should have rows")
 })
 
-# Clean up environment if necessary, though testthat usually handles this for each test file.
-# rm(list = c("dados", "dicionario", "excel_file_path"))

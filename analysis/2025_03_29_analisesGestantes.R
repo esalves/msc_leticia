@@ -18,11 +18,11 @@ setAPI(Sys.getenv("GEMINI_API_KEY"))
 
 ####### Ler dados #######
 # Planilha com dados originais:
-dados <- read_excel("../data/raw/BD_completo_corrigido_12-02-2025.xlsx"
+dados <- read_excel("../data/raw/BD_completo_corrigido_06-04-2026.xlsx"
                     ,sheet = "Sheet1")
 
 # Dicionario com explicacoes do campos:
-dicionario <- read_excel("../data/raw/BD_completo_corrigido_12-02-2025.xlsx"
+dicionario <- read_excel("../data/raw/BD_completo_corrigido_06-04-2026.xlsx"
                     ,sheet = "Dicionário")
 
 

@@ -55,5 +55,3 @@ test_that("dadosFilt has appropriate row count", {
   }
 })
 
-# Clean up
-# rm(list = c("dados", "dadosFilt", "excel_file_path"))

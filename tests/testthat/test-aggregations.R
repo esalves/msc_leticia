@@ -119,6 +119,3 @@ test_that("freqGeralEstadoCivil (Marital Status Frequencies) is correct", {
   }
 })
 
-# Clean up
-# rm(list = c("dados", "dadosFilt", "dadosFiltEstadoCivil", "excel_file_path", 
-#             "n_origem_cats", "n_tipo_parto_cats", "n_cor_cat_cats", "n_novo_estado_civil_cats"))

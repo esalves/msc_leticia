@@ -51,5 +51,3 @@ test_that("Chi-squared test for Estado Civil (Marital Status) runs and produces 
   expect_true(!is.null(chi2ResultadoEstadoCivil$p.value), "P-value should exist for Estado Civil Chi-squared test")
 })
 
-# Clean up
-# rm(list = c("dados", "dadosFilt", "dadosFiltEstadoCivil", "excel_file_path"))

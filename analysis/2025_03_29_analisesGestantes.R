@@ -21,11 +21,6 @@ setAPI(Sys.getenv("GEMINI_API_KEY"))
 dados <- read_excel("../data/raw/BD_completo_corrigido_06-04-2026.xlsx"
                     ,sheet = "Sheet1")
 
-# Dicionario com explicacoes do campos:
-dicionario <- read_excel("../data/raw/BD_completo_corrigido_06-04-2026.xlsx"
-                    ,sheet = "Dicionário")
-
-
 ####### Filtrar apenas registros que tenham tipo de parto diferente de nulo ####### 
 # Remover registros cujo tipo de parto é nulo:
 dadosFilt <- dados %>%

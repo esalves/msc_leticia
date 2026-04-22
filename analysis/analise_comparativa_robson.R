@@ -1,7 +1,7 @@
 library(tidyverse)
 library(readxl)
 library(here)
-source(here("analysis", "robson_utils.R"))
+source(here("analysis", "statistical_utils.R"))
 
 # 1. Carregar os Dados
 cat("Carregando base de dados...\n")
@@ -171,20 +171,12 @@ for (grp in robson_groups) {
   }
 
   # Choose test based on expected cell counts
-  expected <- chisq.test(tab)$expected
-  if (any(expected < 5)) {
-    test_result <- fisher.test(tab, simulate.p.value = TRUE, B = 10000)
-    test_name <- "Fisher (Monte Carlo)"
-    stat_val <- NA
-    df_val <- NA
-  } else {
-    test_result <- chisq.test(tab)
-    test_name <- "Chi-quadrado"
-    stat_val <- round(test_result$statistic, 3)
-    df_val <- test_result$parameter
-  }
-
-  p_val <- test_result$p.value
+  res <- perform_appropriate_test(tab)
+  test_result <- res$test_result
+  test_name <- res$test_name
+  stat_val <- res$stat_val
+  df_val <- res$df_val
+  p_val <- res$p_value
   sig <- ifelse(p_val < 0.001, "***",
          ifelse(p_val < 0.01, "**",
          ifelse(p_val < 0.05, "*", "ns")))

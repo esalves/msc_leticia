@@ -1,6 +1,7 @@
 library(tidyverse)
 library(readxl)
 library(here)
+source(here("analysis", "robson_utils.R"))
 
 # 1. Carregar os Dados
 cat("Carregando base de dados...\n")
@@ -16,18 +17,7 @@ dados_analise <- dados %>%
   filter(idade >= 11 & idade <= 34) %>%
   mutate(
     # Tratar a coluna Robson que possui valores como '1.0', '2A', '2B', etc.
-    Robson_cat = case_when(
-      grepl("^10", Robson) ~ "10",
-      grepl("^1", Robson) ~ "1",
-      grepl("^2", Robson) ~ "2",
-      grepl("^3", Robson) ~ "3",
-      grepl("^4", Robson) ~ "4",
-      grepl("^5", Robson) ~ "5",
-      grepl("^6", Robson) ~ "6",
-      grepl("^7", Robson) ~ "7",
-      grepl("^9", Robson) ~ "9",
-      TRUE ~ NA_character_
-    )
+    Robson_cat = categorize_robson(Robson)
   ) %>%
   filter(!is.na(Robson_cat)) %>%
   mutate(

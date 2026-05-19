@@ -9,16 +9,16 @@ Este relatório apresenta um resumo detalhado e interpretado das análises estat
 
 ## 📊 Resumo Executivo dos Achados
 
-Os dados analisados refletem uma série histórica de 25 anos (1995-2017) do Hospital das Clínicas da FMUSP, comparando gestantes adolescentes (estratificadas em precoces de 11-15 anos e tardias de 16-19 anos) e gestantes adultas (estratificadas em 20-34 anos e 35 anos ou mais).
+Os dados analisados refletem uma série histórica de 25 anos (1995-2017) do Hospital das Clínicas da FMUSP, comparando gestantes adolescentes (estratificadas em precoces de 11-15 anos e tardias de 16-19 anos) e gestantes adultas (20-34 anos). Gestantes com 35 anos ou mais foram desconsideradas para total alinhamento com os critérios de elegibilidade do manuscrito.
 
-*   **Via de Parto e Idade:** Há uma associação altamente significativa ($p < 0,001$) entre a faixa etária e a via de parto. As adolescentes têm taxas de **cesárea drasticamente menores** (cerca de $30\%$) em comparação com as adultas ($62,3\%$ de 20-34 anos e $72,7\%$ de 35+ anos). No entanto, as adolescentes apresentam taxas de **parto instrumentalizado por fórcipe quase três vezes maiores** (cerca de $25-27\%$ contra $10,2\%$ nas adultas).
+*   **Via de Parto e Idade:** Há uma associação altamente significativa ($p < 0,001$) entre a faixa etária e a via de parto. As adolescentes têm taxas de **cesárea drasticamente menores** (cerca de $30\%$) em comparação com as adultas ($62,3\%$). No entanto, as adolescentes apresentam taxas de **parto instrumentalizado por fórcipe quase três vezes maiores** (cerca de $25-27\%$ contra $10,2\%$ nas adultas).
 *   **Modelos de Regressão Logística para Cesárea:** A estatística propôs **4 modelos de regressão logística** para prever a probabilidade de parto cesárea. O modelo mais robusto e clinicamente relevante é a **Sugestão 4**, que controla pelos Grupos de Robson Reduzidos. Neste modelo, a **idade adulta é um fator de risco independente significativo** para a cesárea (OR = 1,79, $p = 0,015$).
 
 ---
 
 ## 🔎 Parte 1: Análise da Aba 'descrição geral da base de dados'
 
-Esta aba contém tabelas de contingência (cruzamentos de variáveis qualitativas) com a faixa etária materna em 4 grupos: **11 a 15 anos**, **16 a 19 anos**, **20 a 34 anos** (referência adulta) e **35 anos e mais**. Para cada cruzamento, foi aplicado o teste **Qui-quadrado de Pearson** para avaliar a significância estatística da associação.
+Esta aba contém tabelas de contingência (cruzamentos de variáveis qualitativas) com a faixa etária materna em 3 categorias elegíveis: **11 a 15 anos**, **16 a 19 anos** e **20 a 34 anos** (referência adulta). Gestantes com 35 anos ou mais foram desconsideradas para total alinhamento com os critérios de elegibilidade do manuscrito. Para cada cruzamento, foi aplicado o teste **Qui-quadrado de Pearson** para avaliar a significância estatística da associação.
 
 Abaixo, as variáveis foram categorizadas com base nos resultados e nos respectivos valores de p ($p$-value):
 
@@ -29,19 +29,19 @@ Abaixo, as variáveis foram categorizadas com base nos resultados e nos respecti
 *   **Hábitos de Risco (`alcool`, `fumo`, `drogas`):** **Altamente significativas ($p < 0,001$)**. Curiosamente, o uso declarado de álcool ($5,3-5,4\%$), fumo ($7,6-13,2\%$) e drogas ($7,6-11,8\%$) é significativamente **maior entre as adolescentes** (especialmente na faixa de 16 a 19 anos) do que na população adulta geral do estudo.
 
 ### 2. Comorbidades Pré-Gestacionais e Patologias Maternas
-*   **Patologias Gerais e Específicas:** A presença de comorbidades pré-existentes é significativamente **mais frequente no grupo de adultas e gestantes mais velhas (35+)** comparado às adolescentes:
-    *   `patologia_materna` (geral): $3,4\%$ (11-15 anos) vs. $28,7\%$ (20-34 anos) vs. $40,0\%$ (35+ anos) ($p < 0,001$).
-    *   Hipertensão Arterial Crônica Precoce (`hac_pre`): $0,4\%$ nas adolescentes vs. $7,4\%$ nas adultas e $15,6\%$ nas de 35+ ($p < 0,001$).
-    *   Diabetes Pré-gestacional (`diabetes_pre`): $0,0\%$ nas adolescentes vs. $3,3\%$ nas adultas e $5,3\%$ nas de 35+ ($p < 0,001$).
+*   **Patologias Gerais e Específicas:** A presença de comorbidades pré-existentes é significativamente **mais frequente no grupo de adultas (20-34 anos)** comparado às adolescentes:
+    *   `patologia_materna` (geral): $3,4\%$ (11-15 anos) vs. $28,7\%$ (20-34 anos) ($p < 0,001$).
+    *   Hipertensão Arterial Crônica Precoce (`hac_pre`): $0,4\%$ nas adolescentes vs. $7,4\%$ nas adultas ($p < 0,001$).
+    *   Diabetes Pré-gestacional (`diabetes_pre`): $0,0\%$ nas adolescentes vs. $3,3\%$ nas adultas ($p < 0,001$).
     *   Também se mostraram altamente significativas ($p < 0,05$) com maior prevalência nas adultas: `dheg`, `asma_pre`, `cardiopatia_materna`, `epilepsia_pre` ($p = 0,004$), `trombofilias_pre` ($p = 0,009$) e `outras_patologias_pre`.
     *   **Não significativa:** Apenas a variável `iminencia_eclamp` (iminência de eclâmpsia pré-gestacional/admissão) não teve diferença estatística ($p = 0,231$).
 
 ### 3. Patologias e Intercorrências da Gestação Atual
-*   **Diabetes Melito Gestacional (`dmg` e `dmg_obst`):** **Altamente significativa ($p < 0,001$)**. Muito mais frequente em adultas de 20-34 anos ($10,6\%$) e 35+ ($22,7\%$) do que em adolescentes ($0,5\%$).
+*   **Diabetes Melito Gestacional (`dmg` e `dmg_obst`):** **Altamente significativa ($p < 0,001$)**. Muito mais frequente em adultas de 20-34 anos ($10,6\%$) do que em adolescentes ($0,5\%$).
 *   **Distúrbios Hipertensivos da Gestação (`dheg_hipertensao_obst`):** **Altamente significativa ($p < 0,001$)**. Apresenta comportamento bimodal: $100\%$ das adolescentes de 11-15 anos e $96,7\%$ das de 16-19 anos analisadas nesta variável obstétrica registraram diagnóstico positivo, refletindo a alta vulnerabilidade das adolescentes a síndromes hipertensivas induzidas pela gravidez.
 *   **Pré-eclâmpsia Obstétrica (`pe_obst`):** **Altamente significativa ($p < 0,001$)**. Apresenta altíssima concentração em adolescentes: $100\%$ no grupo 11-15 anos e $94,6\%$ no grupo 16-19 anos das que tiveram o registro.
-*   **Eclâmpsia Obstétrica (`eclampsia_obst`):** **Altamente significativa ($p < 0,001$)**. Incidência de $33,3\%$ nas adolescentes de 16-19 anos contra apenas $1,8\%$ nas adultas e $1,1\%$ no grupo de 35+.
-*   **Ruptura Prematura de Membranas Ovulares (`rpmo`):** **Altamente significativa ($p < 0,001$)**. Mais comum em adultas de 20-34 anos ($8,6\%$) e 35+ ($7,3\%$) do que em adolescentes de 11-15 ($0,2\%$) e 16-19 ($0,0\%$).
+*   **Eclâmpsia Obstétrica (`eclampsia_obst`):** **Altamente significativa ($p < 0,001$)**. Incidência de $33,3\%$ nas adolescentes de 16-19 anos contra apenas $1,8\%$ nas adultas.
+*   **Ruptura Prematura de Membranas Ovulares (`rpmo`):** **Altamente significativa ($p < 0,001$)**. Mais comum em adultas de 20-34 anos ($8,6\%$) do que em adolescentes de 11-15 ($0,2\%$) e 16-19 ($0,0\%$).
 *   **Outras:** `itu` (infecção urinária geral - $p = 0,050$), `itu_obst` (não significativa, $p = 0,258$) e `anemia_obst` (não significativa, $p = 0,433$).
 
 ### 4. Características do Parto e Indicações
@@ -52,8 +52,6 @@ Abaixo, as variáveis foram categorizadas com base nos resultados e nos respecti
     | **11 a 15 anos** | 45,4% | 24,5% | 30,1% |
     | **16 a 19 anos** | 41,2% | 27,3% | 31,4% |
     | **20 a 34 anos** | 27,5% | 10,2% | 62,3% |
-    | **35 anos e mais** | 21,3% | 6,0% | 72,7% |
-    | **Total Geral** | **29,0%** | **12,2%** | **58,8%** |
 
 *   **Indicação Final de Parto Operatório (`ind_final`):** **Altamente significativa ($p < 0,001$)**. As indicações diferem drasticamente:
     *   **Nas adolescentes (11-15 anos):** As indicações mais frequentes são **Sofrimento fetal / Alteração de Vitalidade** ($34,8\%$) e **Desproporção Céfalo-Pélvica (DCP) / Fórcipe Falhado** ($27,5\%$).
@@ -62,11 +60,11 @@ Abaixo, as variáveis foram categorizadas com base nos resultados e nos respecti
 
 ### 5. Desfechos Neonatais e Fetais
 *   **Prematuridade (`prematuro37` e `prematuro32`):** **Altamente significativas ($p < 0,001$)**. O nascimento pré-termo é mais prevalente no grupo de adultas:
-    *   Pretermo < 37 semanas: $24,4\%$ (20-34 anos) and $25,3\%$ (35+ anos) vs. $10,4\%$ (11-15 anos) and $14,4\%$ (16-19 anos).
-*   **Baixo Peso ao Nascer (`rnbp_2500g` e `rnbp_1500g`):** **Altamente significativas ($p < 0,001$)**. O peso inferior a 2500g acompanha a prematuridade, sendo maior nas adultas ($21,9\%$) e 35+ ($23,7\%$) do que nas adolescentes ($11,0\%$ a $12,8\%$).
+    *   Pretermo < 37 semanas: $24,4\%$ (20-34 anos) vs. $10,4\%$ (11-15 anos) e $14,4\%$ (16-19 anos).
+*   **Baixo Peso ao Nascer (`rnbp_2500g` e `rnbp_1500g`):** **Altamente significativas ($p < 0,001$)**. O peso inferior a 2500g acompanha a prematuridade, sendo maior nas adultas ($21,9\%$) do que nas adolescentes ($11,0\%$ a $12,8\%$).
 *   **Apgar no 1º e 5º minuto menor que 7 (`apgar1_menor7` e `apgar5_menor7`):** **Significativas ($p < 0,05$)**. As taxas de Apgar baixo no 1º e 5º minutos são discretamente maiores nas adultas do que nas adolescentes. Apgar no 10º minuto não apresentou diferença estatística ($p = 0,068$).
-*   **Óbito Fetal (`obito_fetal`):** **Significativa ($p = 0,011$)**. Taxas ligeiramente maiores de óbito fetal nas adultas ($2,5\%$) e 35+ ($3,1\%$) do que nas adolescentes ($1,3\%$).
-*   **Malformação Fetal (`malform_fetal`):** **Significativa ($p < 0,001$)**. Mais frequente no grupo de adultas ($6,9\%$) e 35+ ($4,8\%$) do que nas adolescentes ($1,8-2,0\%$).
+*   **Óbito Fetal (`obito_fetal`):** **Significativa ($p = 0,011$)**. Taxas ligeiramente maiores de óbito fetal nas adultas ($2,5\%$) do que nas adolescentes ($1,3\%$).
+*   **Malformação Fetal (`malform_fetal`):** **Significativa ($p < 0,001$)**. Mais frequente no grupo de adultas ($6,9\%$) do que nas adolescentes ($1,8-2,0\%$).
 
 ---
 
@@ -122,8 +120,8 @@ Este é o **modelo definitivo e mais completo**, pois ajusta o risco da cesárea
 
 | Variável | Coeficiente (B) | Valor de p | Odds Ratio (Exp(B)) | IC 95% para Exp(B) |
 | :--- | :---: | :---: | :---: | :---: |
-| **Faixa Etária Adulta (vs. Adolescente)** | **0,581** | **0,015** | **1,79** | **[1,12 – 2,86]** |
-| **DHEG / Hipertensão (Sim)** | **-0,914** | **< 0,001** | **0,40** | **[0,32 – 0,50]** |
+| **Faixa Etária Adulta (vs. Gestante Adolescente)** | **0,581** | **0,015** | **1,79** | **[1,12 – 2,86]** |
+| **Hipertensão Obstétrica / DHEG (Sim)** | **-0,914** | **< 0,001** | **0,40** | **[0,32 – 0,50]** |
 | **Grupo de Robson 2** (Nulípara, induzida/cesárea pré-parto) | 1,478 | < 0,001 | **4,38** | [3,30 – 5,82] |
 | **Grupo de Robson 3** (Multípara, espontânea) | -0,727 | < 0,001 | **0,48** | [0,35 – 0,66] |
 | **Grupo de Robson 4** (Multípara, induzida/cesárea pré-parto) | 0,620 | < 0,001 | **1,86** | [1,33 – 2,59] |
@@ -151,5 +149,5 @@ Este é o **modelo definitivo e mais completo**, pois ajusta o risco da cesárea
 Estes resultados estatísticos fornecem elementos extremamente ricos para a discussão do seu manuscrito (`dissertacao.qmd`):
 
 1.  **O Paradoxo do Fórcipe vs. Cesárea nas Adolescentes:** Embora as adolescentes tenham menor probabilidade de cesárea, elas são submetidas a uma taxa de fórcipe de $30\%$, três vezes maior que as adultas ($10,2\%$). Isso dialoga diretamente com a literatura sobre **imaturidade pélvica** e o uso mais frequente de analgesia de parto que pode prolongar o período expulsivo em adolescentes precoces, exigindo a extração instrumentalizada.
-2.  **O Papel da Idade como Risco Independente:** O fato de a faixa etária adulta manter-se associada de forma independente a um risco $79\%$ maior de cesárea (OR = 1,79 no Modelo 4), mesmo após controlar pela classificação de Robson e pela presença de hipertensão, sugere que pode haver uma **diferença no padrão de intervenção médica** (maior tolerância ao tempo de trabalho de parto em adolescentes ou maior "pressão" assistencial por cesárea em adultas).
+2.  **O Papel da Idade como Risco Independente:** O fato de a faixa etária adulta mantém-se associada de forma independente a um risco $79\%$ maior de cesárea (OR = 1,79 no Modelo 4), mesmo após controlar pela classificação de Robson e pela presença de hipertensão, sugere que pode haver uma **diferença no padrão de intervenção médica** (maior tolerância ao tempo de trabalho de parto em adolescentes ou maior "pressão" assistencial por cesárea em adultas).
 3.  **Comorbidades:** O Modelo 2 demonstra com elegância que o diabetes gestacional (DMG) é o fator que "consome" a significância da idade no modelo puramente clínico, evidenciando que o aumento de cesáreas em adultas sem o ajuste de Robson está intimamente ligado a comorbidades metabólicas adquiridas com a idade.

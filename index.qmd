@@ -811,7 +811,7 @@ graph TD
 
 ## 🔎 Descrição Geral da Base de Dados
 
-Esta seção resume os cruzamentos estatísticos realizados pela estatística entre as características maternas/neonatais e a faixa etária materna em 4 categorias: **11-15 anos** (adolescentes precoces), **16-19 anos** (adolescentes tardias), **20-34 anos** (adultas) e **35 anos ou mais**. Para todos os cruzamentos, utilizou-se o teste do **Qui-quadrado de Pearson** para avaliar a significância da associação.
+Esta seção resume os cruzamentos estatísticos realizados pela estatística entre as características maternas/neonatais e a faixa etária materna em 3 categorias elegíveis: **11-15 anos** (adolescentes precoces), **16-19 anos** (adolescentes tardias) e **20-34 anos** (adultas). Gestantes com 35 anos ou mais foram desconsideradas desta síntese para total alinhamento com os critérios de elegibilidade do manuscrito. Para todos os cruzamentos, utilizou-se o teste do **Qui-quadrado de Pearson** para avaliar a significância da associação.
 
 ### Perfil Sociodemográfico e Hábitos de Vida
 * **Cor/Raça (`cor_cat`):** **Não significativa ($p = 0,337$)**. A proporção de brancas (~60%) e não-brancas (~40%) é homogênea entre os grupos etários.
@@ -820,16 +820,16 @@ Esta seção resume os cruzamentos estatísticos realizados pela estatística en
 * **Hábitos de Risco (`alcool`, `fumo`, `drogas`):** **Significativas ($p < 0,001$)**. O uso declarado de substâncias é maior nas adolescentes (álcool ~5,4%, fumo ~13,2%, drogas ~11,8%) do que nas adultas da amostra.
 
 ### Comorbidades Pré-Existentes e Patologias da Gestação Atual
-* **Comorbidades Crônicas:** Frequência significativamente superior nas adultas e gestantes de 35+ anos:
-  * `patologia_materna` (geral): 3,4% (11-15 anos) vs. 28,7% (20-34 anos) vs. 40,0% (35+ anos) ($p < 0,001$).
-  * Hipertensão Crônica (`hac_pre`): 0,4% nas adolescentes vs. 7,4% nas adultas e 15,6% nas de 35+ ($p < 0,001$).
-  * Diabetes Pré-gestacional (`diabetes_pre`): 0,0% nas adolescentes vs. 3,3% nas adultas e 5,3% nas de 35+ ($p < 0,001$).
+* **Comorbidades Crônicas:** Frequência significativamente superior nas adultas (20-34 anos) comparadas às adolescentes:
+  * `patologia_materna` (geral): 3,4% (11-15 anos) vs. 28,7% (20-34 anos) ($p < 0,001$).
+  * Hipertensão Crônica (`hac_pre`): 0,4% nas adolescentes vs. 7,4% nas adultas ($p < 0,001$).
+  * Diabetes Pré-gestacional (`diabetes_pre`): 0,0% nas adolescentes vs. 3,3% nas adultas ($p < 0,001$).
 * **Patologias Gestacionais:**
-  * Diabetes Gestacional (`dmg` e `dmg_obst`): Muito mais frequente em adultas de 20-34 anos (10,6%) e 35+ (22,7%) do que em adolescentes (0,5%) ($p < 0,001$).
+  * Diabetes Gestacional (`dmg` e `dmg_obst`): Muito mais frequente em adultas de 20-34 anos (10,6%) do que em adolescentes (0,5%) ($p < 0,001$).
   * Distúrbios Hipertensivos (`dheg_hipertensao_obst`): Altamente prevalentes nos registros das adolescentes (100% de 11-15 anos e 96,7% de 16-19 anos testadas registraram o diagnóstico), mostrando grande vulnerabilidade ($p < 0,001$).
   * Pré-eclâmpsia (`pe_obst`): Frequência concentrada nas adolescentes (100% no grupo 11-15 anos e 94,6% de 16-19 anos).
   * Eclâmpsia (`eclampsia_obst`): Incidência de 33,3% nas adolescentes de 16-19 anos contra apenas 1,8% nas adultas ($p < 0,001$).
-  * Ruptura de Membranas (`rpmo`): Mais frequente nas adultas (8,6%) e de 35+ (7,3%) vs. adolescentes (0,0-0,2%) ($p < 0,001$).
+  * Ruptura de Membranas (`rpmo`): Mais frequente nas adultas (8,6%) vs. adolescentes (0,0-0,2%) ($p < 0,001$).
 
 ### Características do Parto e Indicações
 * **Via de Parto (`tipo_parto`):** **Altamente significativa ($p < 0,001$)**.
@@ -839,17 +839,15 @@ Esta seção resume os cruzamentos estatísticos realizados pela estatística en
 | **11 a 15 anos** | 45,4% | 24,5% | 30,1% |
 | **16 a 19 anos** | 41,2% | 27,3% | 31,4% |
 | **20 a 34 anos** | 27,5% | 10,2% | 62,3% |
-| **35 anos e mais** | 21,3% | 6,0% | 72,7% |
-| **Total Geral** | **29,0%** | **12,2%** | **58,8%** |
 
 * **Indicações de Parto Operatório (`ind_final`):**
   * **Nas adolescentes:** Predominam **Sofrimento fetal / Alteração de Vitalidade** (34,8%) e **Desproporção Céfalo-Pélvica (DCP) / Fórcipe Falhado** (27,5%).
   * **Nas adultas:** Predominam **Patologia Materna** (15,4%), **Contraindicação de indução** (10,9%) e **Iteratividade (Cesárea prévia repetida)** (11,6%).
 
 ### Desfechos Neonatais
-* **Prematuridade e Baixo Peso:** Nascimento pré-termo (< 37 semanas) e peso inferior a 2500g são mais frequentes nas adultas (prematuridade: 24,4% vs. 10,4% nas adolescentes precoces) ($p < 0,001$).
+* **Prematuridade e Baixo Peso:** Nascimento pré-termo (< 37 semanas) e peso inferior a 2500g são mais frequentes nas adultas (prematuridade: 24,4% vs. 10,4% nas adolescentes precoces) ($p < 0,001$). Além disso, o peso inferior a 2500g foi de 21,9% nas adultas contra 11,0-12,8% nas adolescentes.
 * **Apgar:** Taxas de Apgar baixo (< 7) no 1º e 5º minutos são ligeiramente maiores nas adultas ($p < 0,05$).
-* **Malformação Fetal:** Mais comum em adultas (6,9%) e 35+ (4,8%) do que nas adolescentes (~1,8%) ($p < 0,001$).
+* **Malformação Fetal:** Mais comum em adultas (6,9%) do que nas adolescentes (~1,8%) ($p < 0,001$).
 
 ---
 

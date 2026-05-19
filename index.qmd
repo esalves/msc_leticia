@@ -786,7 +786,106 @@ if ("compli_parto" %in% colnames(dados_analise)) {
 }
 ```
 
+# 📊 Relatório Estatístico SPSS {.unnumbered}
+
+Este capítulo apresenta uma síntese interpretativa das análises secundárias de regressão logística e cruzamentos descritivos detalhados gravados no arquivo de resultados do SPSS (`Resultados_finais.ods`).
+
+O diagrama abaixo ilustra o mapeamento das abordagens metodológicas adotadas nas modelagens (modelos clínicos diretos e ajustados pela classificação de Robson):
+
+```{mermaid}
+%%| echo: false
+graph TD
+    A[Fatores Associados à Cesárea] --> B[Modelagem Clínica Direta]
+    A --> C[Modelagem com Grupos de Robson]
+    
+    B --> Model1[Sugestão 1: Clássica]
+    B --> Model2[Sugestão 2: Com DMG]
+    
+    C --> Model3[Sugestão 3: Robson + Apres. Feto]
+    C --> Model4[Sugestão 4: Robson Consolidado]
+    
+    style Model4 fill:#d4edda,stroke:#28a745,stroke-width:2px
+```
+
+::: {.panel-tabset}
+
+## 🔎 Descrição Geral da Base de Dados
+
+Esta seção resume os cruzamentos estatísticos realizados pela estatística entre as características maternas/neonatais e a faixa etária materna em 4 categorias: **11-15 anos** (adolescentes precoces), **16-19 anos** (adolescentes tardias), **20-34 anos** (adultas) e **35 anos ou mais**. Para todos os cruzamentos, utilizou-se o teste do **Qui-quadrado de Pearson** para avaliar a significância da associação.
+
+### Perfil Sociodemográfico e Hábitos de Vida
+* **Cor/Raça (`cor_cat`):** **Não significativa ($p = 0,337$)**. A proporção de brancas (~60%) e não-brancas (~40%) é homogênea entre os grupos etários.
+* **Estado Civil (`estado_civil_2`):** **Significativa ($p < 0,001$)**. As adolescentes concentram-se em "solteira com companheiro" (48,8%) ou "união estável" (29,0%), enquanto as adultas apresentam maior taxa de casamento formal (36,3%).
+* **Escolaridade (`escolaridade_cat`):** **Significativa ($p < 0,001$)**. 50,4% das adolescentes precoces têm menos de 9 anos de estudo, enquanto nas adultas predomina o ensino médio completo (9 a 12 anos, 55,3%).
+* **Hábitos de Risco (`alcool`, `fumo`, `drogas`):** **Significativas ($p < 0,001$)**. O uso declarado de substâncias é maior nas adolescentes (álcool ~5,4%, fumo ~13,2%, drogas ~11,8%) do que nas adultas da amostra.
+
+### Comorbidades Pré-Existentes e Patologias da Gestação Atual
+* **Comorbidades Crônicas:** Frequência significativamente superior nas adultas e gestantes de 35+ anos:
+  * `patologia_materna` (geral): 3,4% (11-15 anos) vs. 28,7% (20-34 anos) vs. 40,0% (35+ anos) ($p < 0,001$).
+  * Hipertensão Crônica (`hac_pre`): 0,4% nas adolescentes vs. 7,4% nas adultas e 15,6% nas de 35+ ($p < 0,001$).
+  * Diabetes Pré-gestacional (`diabetes_pre`): 0,0% nas adolescentes vs. 3,3% nas adultas e 5,3% nas de 35+ ($p < 0,001$).
+* **Patologias Gestacionais:**
+  * Diabetes Gestacional (`dmg` e `dmg_obst`): Muito mais frequente em adultas de 20-34 anos (10,6%) e 35+ (22,7%) do que em adolescentes (0,5%) ($p < 0,001$).
+  * Distúrbios Hipertensivos (`dheg_hipertensao_obst`): Altamente prevalentes nos registros das adolescentes (100% de 11-15 anos e 96,7% de 16-19 anos testadas registraram o diagnóstico), mostrando grande vulnerabilidade ($p < 0,001$).
+  * Pré-eclâmpsia (`pe_obst`): Frequência concentrada nas adolescentes (100% no grupo 11-15 anos e 94,6% de 16-19 anos).
+  * Eclâmpsia (`eclampsia_obst`): Incidência de 33,3% nas adolescentes de 16-19 anos contra apenas 1,8% nas adultas ($p < 0,001$).
+  * Ruptura de Membranas (`rpmo`): Mais frequente nas adultas (8,6%) e de 35+ (7,3%) vs. adolescentes (0,0-0,2%) ($p < 0,001$).
+
+### Características do Parto e Indicações
+* **Via de Parto (`tipo_parto`):** **Altamente significativa ($p < 0,001$)**.
+  
+| Faixa Etária | Normal (%) | Fórcipe (%) | Cesárea (%) |
+| :--- | :---: | :---: | :---: |
+| **11 a 15 anos** | 45,4% | 24,5% | 30,1% |
+| **16 a 19 anos** | 41,2% | 27,3% | 31,4% |
+| **20 a 34 anos** | 27,5% | 10,2% | 62,3% |
+| **35 anos e mais** | 21,3% | 6,0% | 72,7% |
+| **Total Geral** | **29,0%** | **12,2%** | **58,8%** |
+
+* **Indicações de Parto Operatório (`ind_final`):**
+  * **Nas adolescentes:** Predominam **Sofrimento fetal / Alteração de Vitalidade** (34,8%) e **Desproporção Céfalo-Pélvica (DCP) / Fórcipe Falhado** (27,5%).
+  * **Nas adultas:** Predominam **Patologia Materna** (15,4%), **Contraindicação de indução** (10,9%) e **Iteratividade (Cesárea prévia repetida)** (11,6%).
+
+### Desfechos Neonatais
+* **Prematuridade e Baixo Peso:** Nascimento pré-termo (< 37 semanas) e peso inferior a 2500g são mais frequentes nas adultas (prematuridade: 24,4% vs. 10,4% nas adolescentes precoces) ($p < 0,001$).
+* **Apgar:** Taxas de Apgar baixo (< 7) no 1º e 5º minutos são ligeiramente maiores nas adultas ($p < 0,05$).
+* **Malformação Fetal:** Mais comum em adultas (6,9%) e 35+ (4,8%) do que nas adolescentes (~1,8%) ($p < 0,001$).
+
 ---
+
+## 📈 Modelos Sugeridos para Cesárea
+
+A estatística propôs a modelagem de **Regressão Logística Múltipla** para estimar os fatores preditores independentes associados ao desfecho de parto cesárea.
+
+### Resumo das 4 Sugestões de Modelos:
+
+1. **Sugestão 1 (Modelo Clínico Clássico):** Inseriu faixa etária, hipertensão e apresentação fetal. Excelente ajuste de Hosmer-Lemeshow ($p = 0,855$). **A idade adulta multiplica por 2,54 a chance de cesárea (OR = 2,54)** de forma independente.
+2. **Sugestão 2 (Modelo com DMG):** Incluiu diabetes gestacional (DMG). A idade perde a significância estatística ($p = 0,904$, OR = 1,19), mostrando que o diabetes (OR = 1,35) "consome" o efeito da idade no modelo exclusivamente clínico.
+3. **Sugestão 3 (Sobrecarga de Robson):** Incluiu Robson e apresentação fetal simultaneamente. Apresenta redundância (multicolinearidade), pois a apresentação fetal já define os grupos 6, 7 e 9 de Robson.
+4. **Sugestão 4 (Modelo Recomendado):** Modelo definitivo e mais elegante. Controla o risco cirúrgico pelos **Grupos de Robson Reduzidos**, eliminando redundâncias. Excelente ajuste ($p = 0,517$).
+
+### Coeficientes e Razões de Chance da Sugestão 4 (Modelo Recomendado):
+
+| Variável | Coeficiente (B) | p-valor | Odds Ratio (Exp(B)) | IC 95% para Exp(B) |
+| :--- | :---: | :---: | :---: | :---: |
+| **Faixa Etária Adulta (vs. Gestante Adolescente)** | **0,581** | **0,015** | **1,79** | **[1,12 – 2,86]** |
+| **Hipertensão Obstétrica / DHEG (Sim)** | **-0,914** | **< 0,001** | **0,40** | **[0,32 – 0,50]** |
+| **Grupo de Robson 2** (Nulípara induzida/CS pré-trabalho) | 1,478 | < 0,001 | **4,38** | [3,30 – 5,82] |
+| **Grupo de Robson 3** (Multípara espontânea) | -0,727 | < 0,001 | **0,48** | [0,35 – 0,66] |
+| **Grupo de Robson 4** (Multípara induzida/CS pré-trabalho) | 0,620 | < 0,001 | **1,86** | [1,33 – 2,59] |
+| **Grupo de Robson 5** (Multípara com cesárea prévia) | 2,613 | < 0,001 | **13,65** | [9,88 – 18,85] |
+| **Grupo de Robson 6** (Nulípara pélvica) | 3,163 | < 0,001 | **23,65** | [5,49 – 101,89] |
+| **Grupo de Robson 7** (Multípara pélvica) | 3,130 | < 0,001 | **22,86** | [13,05 – 40,08] |
+| **Grupo de Robson 9** (Apresentação transversa/anômala) | 3,320 | < 0,001 | **27,66** | [6,49 – 117,89] |
+| **Grupo de Robson 10** (Pré-termo) | 0,988 | < 0,001 | **2,69** | [2,05 – 3,52] |
+
+*Nota: O grupo de referência omitido da variável `Robson_reduzido` é o **Grupo de Robson 1** (Nulípara spontaneous $\ge 37$ semanas).*
+
+### Discussão Obstétrica do Modelo 4:
+* **A Idade como Risco Independente:** Mesmo controlando para o Grupo de Robson e intercorrências clínicas, a idade adulta confere um **aumento de 79% na chance de cesárea** (OR = 1,79). Isso reflete prováveis diferenças nas práticas médicas assistenciais entre adolescentes e adultas.
+* **O Efeito "Protetor" da DHEG (OR = 0,40):** O coeficiente negativo indica que, *uma vez controlado o Grupo de Robson*, gestantes com DHEG têm menor probabilidade de evoluir para cesárea intraparto, pois a indicação obstétrica inicial e alocação nos grupos de indução (Grupos 2 e 4) já absorvem o risco cirúrgico principal.
+
+:::
 
 # Informações da Sessão
 
@@ -797,3 +896,4 @@ if ("compli_parto" %in% colnames(dados_analise)) {
 cat("Documento renderizado em:", format(Sys.time(), "%d/%m/%Y às %H:%M:%S"), "\n\n")
 sessionInfo()
 ```
+

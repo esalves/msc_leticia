@@ -1,0 +1,56 @@
+﻿Robson_cat,faixa_etaria,tipo_parto_desc,n,total,pct
+1,Adolescentes precoces (11-15),Cesárea,109,393,27.7
+1,Adolescentes precoces (11-15),Fórcipe (Instrumental),96,393,24.4
+1,Adolescentes precoces (11-15),Normal (Vaginal Espontâneo),188,393,47.8
+1,Adolescentes tardias (16-19),Cesárea,138,509,27.1
+1,Adolescentes tardias (16-19),Fórcipe (Instrumental),169,509,33.2
+1,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),202,509,39.7
+1,Adultas (20-34),Cesárea,147,391,37.6
+1,Adultas (20-34),Fórcipe (Instrumental),132,391,33.8
+1,Adultas (20-34),Normal (Vaginal Espontâneo),112,391,28.6
+10,Adolescentes precoces (11-15),Cesárea,11,56,19.6
+10,Adolescentes precoces (11-15),Fórcipe (Instrumental),11,56,19.6
+10,Adolescentes precoces (11-15),Normal (Vaginal Espontâneo),34,56,60.7
+10,Adolescentes tardias (16-19),Cesárea,36,115,31.3
+10,Adolescentes tardias (16-19),Fórcipe (Instrumental),18,115,15.7
+10,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),61,115,53.0
+10,Adultas (20-34),Cesárea,738,1180,62.5
+10,Adultas (20-34),Fórcipe (Instrumental),67,1180,5.7
+10,Adultas (20-34),Normal (Vaginal Espontâneo),375,1180,31.8
+2,Adolescentes precoces (11-15),Cesárea,25,53,47.2
+2,Adolescentes precoces (11-15),Fórcipe (Instrumental),22,53,41.5
+2,Adolescentes precoces (11-15),Normal (Vaginal Espontâneo),6,53,11.3
+2,Adolescentes tardias (16-19),Cesárea,47,81,58.0
+2,Adolescentes tardias (16-19),Fórcipe (Instrumental),22,81,27.2
+2,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),12,81,14.8
+2,Adultas (20-34),Cesárea,674,939,71.8
+2,Adultas (20-34),Fórcipe (Instrumental),157,939,16.7
+2,Adultas (20-34),Normal (Vaginal Espontâneo),108,939,11.5
+3,Adolescentes precoces (11-15),Cesárea,11,26,42.3
+3,Adolescentes precoces (11-15),Fórcipe (Instrumental),5,26,19.2
+3,Adolescentes precoces (11-15),Normal (Vaginal Espontâneo),10,26,38.5
+3,Adolescentes tardias (16-19),Cesárea,26,103,25.2
+3,Adolescentes tardias (16-19),Fórcipe (Instrumental),20,103,19.4
+3,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),57,103,55.3
+3,Adultas (20-34),Cesárea,153,792,19.3
+3,Adultas (20-34),Fórcipe (Instrumental),95,792,12.0
+3,Adultas (20-34),Normal (Vaginal Espontâneo),544,792,68.7
+4,Adultas (20-34),Cesárea,206,424,48.6
+4,Adultas (20-34),Fórcipe (Instrumental),39,424,9.2
+4,Adultas (20-34),Normal (Vaginal Espontâneo),179,424,42.2
+5,Adultas (20-34),Cesárea,1048,1175,89.2
+5,Adultas (20-34),Fórcipe (Instrumental),54,1175,4.6
+5,Adultas (20-34),Normal (Vaginal Espontâneo),73,1175,6.2
+6,Adolescentes precoces (11-15),Cesárea,1,1,100.0
+6,Adolescentes tardias (16-19),Cesárea,1,1,100.0
+6,Adultas (20-34),Cesárea,36,38,94.7
+6,Adultas (20-34),Normal (Vaginal Espontâneo),2,38,5.3
+7,Adolescentes precoces (11-15),Cesárea,4,4,100.0
+7,Adolescentes tardias (16-19),Cesárea,17,18,94.4
+7,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),1,18,5.6
+7,Adultas (20-34),Cesárea,272,300,90.7
+7,Adultas (20-34),Normal (Vaginal Espontâneo),28,300,9.3
+9,Adolescentes precoces (11-15),Cesárea,5,5,100.0
+9,Adolescentes tardias (16-19),Cesárea,2,2,100.0
+9,Adultas (20-34),Cesárea,36,40,90.0
+9,Adultas (20-34),Normal (Vaginal Espontâneo),4,40,10.0

@@ -28,12 +28,15 @@ execute:
 ```{r}
 #| label: setup
 #| include: false
-
 library(tidyverse)
 library(readxl)
 library(here)
 library(knitr)
 library(kableExtra)
+
+# Criar pasta de figuras e tabelas se não existir
+dir.create(here("results", "figures"), showWarnings = FALSE, recursive = TRUE)
+dir.create(here("results", "tabelas_dissertacao"), showWarnings = FALSE, recursive = TRUE)
 
 # Tema padrão para os gráficos
 tema_pub <- theme_minimal(base_size = 12) +
@@ -65,6 +68,33 @@ cores_faixa <- c(
 )
 ```
 
+## Critérios de Elegibilidade — Conforme Dissertação (Seção 3.3) {.unnumbered}
+
+Esta seção documenta formalmente os critérios de inclusão e exclusão aplicados à base de dados, em correspondência direta com a Seção 3.3 do manuscrito da dissertação. A implementação computacional desses critérios está no chunk `filtragem-dados`, abaixo.
+
+**Critérios de Inclusão:**
+
+- Gestantes com idade entre 11 e 19 anos (adolescentes) ou entre 20 e 34 anos (adultas), com prontuário preenchido contendo dados clínicos e obstétricos;
+- Gestação única (feto único);
+- Classificação de Robson pertencente aos Grupos 1, 2, 3, 4, 5, 6, 7, 9 ou 10;
+- Parto ocorrido após 22 semanas completas de gestação;
+- Dados preenchidos sobre a assistência ao parto (campo `tipo_parto` não nulo).
+
+**Critérios de Exclusão:**
+
+- Idade materna fora do intervalo 11–34 anos (excluindo, portanto, gestantes com 35 anos ou mais, que compõem grupo de análise separado no SPSS);
+- Classificação de Robson 8 (não presente na base, mas filtro explícito mantido por rastreabilidade);
+- Gestação múltipla — observação: a coluna de gestação gemelar/múltipla não foi localizada na base Excel com nomenclatura explícita; o filtro de Robson (que exclui o Grupo 8, específico para gestações múltiplas) garante implicitamente a exclusão de multifetais classificados por Robson; casos com Robson ausente/inválido também são excluídos;
+- Abortamento: partos com idade gestacional inferior a 22 semanas ou peso do recém-nascido inferior a 500 g (critério aplicado via `ig_parto`/`ig_parto2`).
+
+::: {.callout-warning}
+## Nota sobre a coluna ig_parto
+
+A variável `ig_parto` apresenta valores zero (0.0) que representam dado ausente/não preenchido — não um parto com zero semanas. Nesses casos, utiliza-se `ig_parto2` como valor substituto (*coalesce*). O filtro de IG ≥ 22 semanas é aplicado apenas quando ao menos uma das duas colunas possui valor válido (> 0); registros com ambas ausentes são mantidos por precaução para não inflar as perdas.
+:::
+
+---
+
 # Introdução {.unnumbered}
 
 Este documento apresenta o **pipeline completo de análise** da dissertação de mestrado que investiga as diferenças nas vias de parto entre adolescentes e adultas, utilizando a **Classificação de Robson** como ferramenta de estratificação.
@@ -90,7 +120,6 @@ A base de dados contém registros obstétricos do Hospital das Clínicas da FMUS
 
 ```{r}
 #| label: carregamento-dados
-
 dados <- read_excel(
     here("data", "raw", "BD_completo_corrigido_06-04-2026.xlsx"),
     sheet = "Sheet1"
@@ -109,26 +138,69 @@ Os seguintes critérios de inclusão foram aplicados:
 
 ```{r}
 #| label: filtragem-dados
+# =============================================================================
+# CRITÉRIOS DE ELEGIBILIDADE — Seção 3.3 da dissertação
+#
+# INCLUSÃO:
+#   - Idade 11–34 anos, com tipo_parto e idade preenchidos
+#   - Gestação única (garantida via Robson: Grupo 8 = múltiplas, excluído)
+#   - Robson válido nos Grupos 1, 2, 3, 4, 5, 6, 7, 9 ou 10 (exclui 8 explicitamente)
+#   - Parto após 22 semanas (ig_parto ou ig_parto2 ≥ 22; ig_parto == 0 é dado ausente)
+#   - Dados de assistência ao parto presentes (tipo_parto não nulo)
+#
+# EXCLUSÃO:
+#   - Idade fora de 11–34 anos
+#   - Robson 8 (gestação múltipla) ou Robson ausente/inválido
+#   - IG < 22 semanas (abortamento), quando a informação estiver disponível
+# =============================================================================
 
-dados_analise <- dados %>%
-    filter(!is.na(tipo_parto), !is.na(idade)) %>%
-    filter(idade >= 11 & idade <= 34) %>%
+n_total_bruto <- nrow(dados)
+
+# Passo 1: Excluir registros sem tipo_parto ou sem idade
+dados_s1 <- dados %>% filter(!is.na(tipo_parto), !is.na(idade))
+n_excl_s1 <- n_total_bruto - nrow(dados_s1)
+
+# Passo 2: Filtrar por faixa etária elegível (11–34 anos)
+dados_s2 <- dados_s1 %>% filter(idade >= 11 & idade <= 34)
+n_excl_s2 <- nrow(dados_s1) - nrow(dados_s2)
+
+# Passo 3: Padronizar e filtrar Robson (excluir Robson 8, ausente ou inválido)
+dados_s3 <- dados_s2 %>%
     mutate(
-        # Padronizar a coluna Robson (valores como '1.0', '2A', '2B', etc.)
         Robson_cat = case_when(
-            grepl("^10", Robson) ~ "10",
-            grepl("^1", Robson) ~ "1",
-            grepl("^2", Robson) ~ "2",
-            grepl("^3", Robson) ~ "3",
-            grepl("^4", Robson) ~ "4",
-            grepl("^5", Robson) ~ "5",
-            grepl("^6", Robson) ~ "6",
-            grepl("^7", Robson) ~ "7",
-            grepl("^9", Robson) ~ "9",
-            TRUE ~ NA_character_
+            grepl("^10", as.character(Robson)) ~ "10",
+            grepl("^1", as.character(Robson)) ~ "1",
+            grepl("^2", as.character(Robson)) ~ "2",
+            grepl("^3", as.character(Robson)) ~ "3",
+            grepl("^4", as.character(Robson)) ~ "4",
+            grepl("^5", as.character(Robson)) ~ "5",
+            grepl("^6", as.character(Robson)) ~ "6",
+            grepl("^7", as.character(Robson)) ~ "7",
+            grepl("^9", as.character(Robson)) ~ "9",
+            TRUE ~ NA_character_ # inclui Robson 8 e qualquer valor inválido
         )
     ) %>%
-    filter(!is.na(Robson_cat)) %>%
+    filter(!is.na(Robson_cat))
+n_excl_s3 <- nrow(dados_s2) - nrow(dados_s3)
+
+# Passo 4: Filtrar por IG ≥ 22 semanas
+# Nota: ig_parto == 0 representa dado ausente (não parto com 0 semanas).
+# Usa-se ig_parto2 como substituto quando ig_parto == 0 ou é NA.
+# O filtro é aplicado SOMENTE quando ao menos uma coluna tem valor válido (> 0).
+dados_s4 <- dados_s3 %>%
+    mutate(
+        ig_best = case_when(
+            !is.na(ig_parto) & ig_parto > 0 ~ ig_parto,
+            !is.na(ig_parto2) & ig_parto2 > 0 ~ ig_parto2,
+            TRUE ~ NA_real_
+        )
+    ) %>%
+    filter(is.na(ig_best) | ig_best >= 22)
+n_excl_s4 <- nrow(dados_s3) - nrow(dados_s4)
+n_ig_desconhecida <- sum(is.na(dados_s4$ig_best))
+
+# Passo 5: Acrescentar variáveis derivadas para análise
+dados_analise <- dados_s4 %>%
     mutate(
         # Classificação por faixa etária
         faixa_etaria = case_when(
@@ -158,8 +230,40 @@ dados_analise <- dados %>%
 ```
 
 ```{r}
-#| label: resumo-amostra
+#| label: consort-flow
+#| echo: false
+# Diagrama de fluxo CONSORT em texto — rastreabilidade do N
+cat("╔══════════════════════════════════════════════════════════════════════╗\n")
+cat("║           DIAGRAMA DE FLUXO DE ELEGIBILIDADE (CONSORT)             ║\n")
+cat("╠══════════════════════════════════════════════════════════════════════╣\n")
+cat(sprintf("║  Base completa (bruta):                              N = %6d    ║\n", n_total_bruto))
+cat("║                                                                      ║\n")
+cat(sprintf("║  (−) Sem tipo_parto ou sem idade registrados:        n = %6d    ║\n", n_excl_s1))
+cat(sprintf("║      → N após exclusão:                                  %6d    ║\n", nrow(dados_s1)))
+cat("║                                                                      ║\n")
+cat(sprintf("║  (−) Idade fora do intervalo 11–34 anos:             n = %6d    ║\n", n_excl_s2))
+cat(sprintf("║      → N após exclusão:                                  %6d    ║\n", nrow(dados_s2)))
+cat("║                                                                      ║\n")
+cat(sprintf("║  (−) Robson ausente, inválido ou Grupo 8:            n = %6d    ║\n", n_excl_s3))
+cat(sprintf("║      → N após exclusão:                                  %6d    ║\n", nrow(dados_s3)))
+cat("║                                                                      ║\n")
+cat(sprintf("║  (−) IG < 22 semanas (abortamento):                  n = %6d    ║\n", n_excl_s4))
+cat(sprintf("║      (registros com IG desconhecida, mantidos):      n = %6d    ║\n", n_ig_desconhecida))
+cat(sprintf("║      → N após exclusão:                                  %6d    ║\n", nrow(dados_analise)))
+cat("║                                                                      ║\n")
+cat("╠══════════════════════════════════════════════════════════════════════╣\n")
+cat(sprintf("║  N FINAL PARA ANÁLISE:                               N = %6d    ║\n", nrow(dados_analise)))
+n_adol_prec <- sum(dados_analise$faixa_etaria == "Adolescentes precoces (11-15)", na.rm = TRUE)
+n_adol_tard <- sum(dados_analise$faixa_etaria == "Adolescentes tardias (16-19)", na.rm = TRUE)
+n_adultas <- sum(dados_analise$faixa_etaria == "Adultas (20-34)", na.rm = TRUE)
+cat(sprintf("║    Adolescentes precoces (11–15 anos):               n = %6d    ║\n", n_adol_prec))
+cat(sprintf("║    Adolescentes tardias  (16–19 anos):               n = %6d    ║\n", n_adol_tard))
+cat(sprintf("║    Adultas               (20–34 anos):               n = %6d    ║\n", n_adultas))
+cat("╚══════════════════════════════════════════════════════════════════════╝\n")
+```
 
+```{r}
+#| label: resumo-amostra
 # Resumo da amostra final
 resumo <- dados_analise %>%
     count(faixa_etaria_f, name = "n") %>%
@@ -187,7 +291,6 @@ A Classificação de Robson divide as gestantes em 10 grupos mutuamente exclusiv
 ```{r}
 #| label: tbl-idade
 #| tbl-cap: "Estatísticas descritivas da idade por faixa etária"
-
 sumario_idade <- dados_analise %>%
     group_by(faixa_etaria_f) %>%
     summarise(
@@ -211,7 +314,6 @@ sumario_idade %>%
 ```{r}
 #| label: tbl-escolaridade
 #| tbl-cap: "Distribuição da escolaridade por faixa etária — n (%)"
-
 tab_escol <- dados_analise %>%
     filter(!is.na(escolaridade_cat)) %>%
     count(faixa_etaria_f, escolaridade_cat) %>%
@@ -234,7 +336,6 @@ tab_escol %>%
 ```{r}
 #| label: tbl-estado-civil
 #| tbl-cap: "Distribuição do estado civil por faixa etária — n (%)"
-
 dados_analise <- dados_analise %>%
     mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat))
 
@@ -255,6 +356,53 @@ tab_ecivil %>%
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
 ```
 
+```{r}
+#| label: export-tab01
+#| echo: false
+# Tabela 1: Sociodemografia consolidada (idade, escolaridade, estado civil)
+tab01_idade <- dados_analise %>%
+    group_by(faixa_etaria_f) %>%
+    summarise(
+        variavel = "Idade",
+        categoria = "Média (DP)",
+        n = n(),
+        valor = paste0(round(mean(idade, na.rm = TRUE), 1), " (", round(sd(idade, na.rm = TRUE), 1), ")"),
+        .groups = "drop"
+    )
+
+tab01_escol <- dados_analise %>%
+    filter(!is.na(escolaridade_cat)) %>%
+    count(faixa_etaria_f, escolaridade_cat) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(
+        variavel = "Escolaridade",
+        pct = round(n / sum(n) * 100, 1),
+        valor = paste0(n, " (", pct, "%)"),
+        categoria = escolaridade_cat
+    ) %>%
+    select(faixa_etaria_f, variavel, categoria, n, valor)
+
+tab01_ecivil <- dados_analise %>%
+    filter(!is.na(novo_estado_civil)) %>%
+    count(faixa_etaria_f, novo_estado_civil) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(
+        variavel = "Estado Civil",
+        pct = round(n / sum(n) * 100, 1),
+        valor = paste0(n, " (", pct, "%)"),
+        categoria = as.character(novo_estado_civil)
+    ) %>%
+    select(faixa_etaria_f, variavel, categoria, n, valor)
+
+tab01 <- bind_rows(tab01_escol, tab01_ecivil)
+
+write.csv(tab01,
+    here("results", "tabelas_dissertacao", "tab01_sociodemografia.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+cat("tab01_sociodemografia.csv exportado.\n")
+```
+
 ---
 
 # Objetivo 2: Comparação das Vias de Parto e Classificação de Robson
@@ -268,7 +416,6 @@ Este é o **objetivo principal** da análise. Comparamos as taxas de parto vagin
 ```{r}
 #| label: tbl-parto-geral
 #| tbl-cap: "Vias de parto por faixa etária — n (%)"
-
 tab_geral <- dados_analise %>%
     count(faixa_etaria_f, tipo_parto_desc) %>%
     group_by(faixa_etaria_f) %>%
@@ -287,6 +434,21 @@ tab_geral %>%
     add_header_above(c(" " = 1, "Faixa Etária" = 3))
 ```
 
+```{r}
+#| label: export-tab04
+#| echo: false
+# Exportar tabela de vias de parto geral como CSV
+tab_geral_csv <- dados_analise %>%
+    count(faixa_etaria_f, tipo_parto_desc) %>%
+    group_by(faixa_etaria_f) %>%
+    mutate(total = sum(n), pct = round(n / total * 100, 1)) %>%
+    ungroup()
+write.csv(tab_geral_csv,
+    here("results", "tabelas_dissertacao", "tab04_vias_parto_geral.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+```
+
 ### Teste Qui-Quadrado (Associação Geral)
 
 Testamos a hipótese nula de que a distribuição das vias de parto é independente da faixa etária:
@@ -296,7 +458,6 @@ $$H_1: \text{Existe associação entre via de parto e faixa etária}$$
 
 ```{r}
 #| label: chi2-geral
-
 tabela_parto <- table(dados_analise$tipo_parto_desc, dados_analise$faixa_etaria_f)
 chi2_geral <- chisq.test(tabela_parto)
 
@@ -322,7 +483,6 @@ Os resíduos padronizados ajustados indicam quais células da tabela de conting�
 ```{r}
 #| label: tbl-residuos
 #| tbl-cap: "Resíduos padronizados ajustados — valores > |2| indicam desvio significativo do esperado"
-
 residuos <- round(chi2_geral$stdres, 2)
 
 as.data.frame.matrix(residuos) %>%
@@ -338,14 +498,13 @@ as.data.frame.matrix(residuos) %>%
 #| fig-cap: "Distribuição proporcional das vias de parto por faixa etária"
 #| fig-width: 8
 #| fig-height: 5
-
 fig1_data <- dados_analise %>%
     count(faixa_etaria_f, tipo_parto_desc) %>%
     group_by(faixa_etaria_f) %>%
     mutate(pct = n / sum(n) * 100) %>%
     ungroup()
 
-ggplot(fig1_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
+p_fig1 <- ggplot(fig1_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
     geom_col(position = "stack", width = 0.7, color = "white", linewidth = 0.3) +
     geom_text(aes(label = paste0(round(pct, 1), "%")),
         position = position_stack(vjust = 0.5),
@@ -360,6 +519,11 @@ ggplot(fig1_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
     ) +
     tema_pub +
     theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+
+ggsave(here("results", "figures", "fig_obj2_vias_parto_geral.png"),
+    plot = p_fig1, width = 8, height = 5, dpi = 300
+)
+p_fig1
 ```
 
 ## Estratificação por Classificação de Robson
@@ -369,7 +533,6 @@ ggplot(fig1_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
 ```{r}
 #| label: tbl-robson-parto
 #| tbl-cap: "Vias de parto por Grupo de Robson e faixa etária — n (%)"
-
 tab_robson <- dados_analise %>%
     count(Robson_cat_f, faixa_etaria_f, tipo_parto_desc) %>%
     group_by(Robson_cat_f, faixa_etaria_f) %>%
@@ -392,6 +555,15 @@ tab_robson %>%
     collapse_rows(columns = 1, valign = "top")
 ```
 
+```{r}
+#| label: export-tab05
+#| echo: false
+write.csv(tab_robson,
+    here("results", "tabelas_dissertacao", "tab05_robson_faixa_via.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+```
+
 ### Figura: Vias de Parto Facetadas por Grupo de Robson
 
 ```{r}
@@ -399,7 +571,6 @@ tab_robson %>%
 #| fig-cap: "Proporção das vias de parto por faixa etária em cada Grupo de Robson (apenas grupos com ≥ 2 faixas etárias e n ≥ 20)"
 #| fig-width: 12
 #| fig-height: 10
-
 # Filtrar grupos com dados suficientes
 grupos_suficientes <- dados_analise %>%
     count(Robson_cat_f, faixa_etaria_f) %>%
@@ -415,7 +586,7 @@ fig2_data <- dados_analise %>%
     mutate(pct = n / sum(n) * 100) %>%
     ungroup()
 
-ggplot(fig2_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
+p_fig2 <- ggplot(fig2_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
     geom_col(position = "stack", width = 0.75, color = "white", linewidth = 0.3) +
     facet_wrap(~Robson_cat_f, scales = "free_x", ncol = 3) +
     scale_fill_manual(values = cores_parto, name = "Via de Parto") +
@@ -426,6 +597,11 @@ ggplot(fig2_data, aes(x = faixa_etaria_f, y = pct, fill = tipo_parto_desc)) +
     ) +
     tema_pub +
     theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 7))
+
+ggsave(here("results", "figures", "fig_obj2_robson_facetado.png"),
+    plot = p_fig2, width = 12, height = 10, dpi = 300
+)
+p_fig2
 ```
 
 ## Testes Estatísticos por Grupo de Robson
@@ -435,7 +611,6 @@ Para cada grupo de Robson, testamos a associação entre faixa etária e via de 
 ```{r}
 #| label: tbl-testes-robson
 #| tbl-cap: "Testes de associação entre via de parto e faixa etária — por Grupo de Robson"
-
 robson_groups <- sort(unique(as.numeric(dados_analise$Robson_cat)))
 resultados_testes <- list()
 
@@ -503,6 +678,15 @@ tab_testes %>%
     footnote(general = "*** p < 0,001; ** p < 0,01; * p < 0,05; ns = não significativo; MC = Monte Carlo (B=10.000)")
 ```
 
+```{r}
+#| label: export-tab07
+#| echo: false
+write.csv(tab_testes,
+    here("results", "tabelas_dissertacao", "tab07_testes_robson.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+```
+
 ::: {.callout-important}
 ## Resultados dos Testes por Grupo
 - **Grupos 1, 2 e 3:** Associação **altamente significativa** (p < 0,001) entre faixa etária e via de parto.
@@ -516,7 +700,6 @@ tab_testes %>%
 ```{r}
 #| label: tbl-cesarea
 #| tbl-cap: "Taxa de cesárea por Grupo de Robson e faixa etária"
-
 tab_cesarea <- dados_analise %>%
     mutate(cesarea = ifelse(tipo_parto == 2, 1, 0)) %>%
     group_by(Robson_cat_f, faixa_etaria_f) %>%
@@ -534,6 +717,15 @@ tab_cesarea %>%
     collapse_rows(columns = 1, valign = "top")
 ```
 
+```{r}
+#| label: export-tab06
+#| echo: false
+write.csv(tab_cesarea,
+    here("results", "tabelas_dissertacao", "tab06_taxa_cesarea_robson.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+```
+
 ### Figura: Mapa de Calor da Taxa de Cesárea
 
 ```{r}
@@ -541,11 +733,10 @@ tab_cesarea %>%
 #| fig-cap: "Mapa de calor da taxa de cesárea (%) por Grupo de Robson e faixa etária. Células verdes indicam taxas mais baixas; alaranjadas/vermelhas indicam taxas mais altas."
 #| fig-width: 9
 #| fig-height: 7
-
 fig3_data <- tab_cesarea %>%
     filter(Robson_cat_f %in% grupos_suficientes)
 
-ggplot(fig3_data, aes(x = faixa_etaria_f, y = Robson_cat_f, fill = `Taxa (%)`)) +
+p_fig3 <- ggplot(fig3_data, aes(x = faixa_etaria_f, y = Robson_cat_f, fill = `Taxa (%)`)) +
     geom_tile(color = "white", linewidth = 1) +
     geom_text(aes(label = paste0(`Taxa (%)`, "%\n(n=", N, ")")),
         size = 3.2, fontface = "bold"
@@ -565,6 +756,11 @@ ggplot(fig3_data, aes(x = faixa_etaria_f, y = Robson_cat_f, fill = `Taxa (%)`)) 
         axis.text.x = element_text(angle = 30, hjust = 1, size = 10),
         panel.grid = element_blank()
     )
+
+ggsave(here("results", "figures", "fig_obj2_heatmap_cesarea.png"),
+    plot = p_fig3, width = 9, height = 7, dpi = 300
+)
+p_fig3
 ```
 
 ### Figura: Adolescentes vs. Adultas (Comparação Direta)
@@ -574,7 +770,6 @@ ggplot(fig3_data, aes(x = faixa_etaria_f, y = Robson_cat_f, fill = `Taxa (%)`)) 
 #| fig-cap: "Comparação da taxa de cesárea entre adolescentes e adultas por Grupo de Robson (com intervalos de confiança de 95%)"
 #| fig-width: 10
 #| fig-height: 6
-
 fig4_data <- dados_analise %>%
     mutate(cesarea = ifelse(tipo_parto == 2, 1, 0)) %>%
     group_by(Robson_cat_f, grupo_comparativo) %>%
@@ -586,7 +781,7 @@ fig4_data <- dados_analise %>%
     ) %>%
     filter(Robson_cat_f %in% grupos_suficientes)
 
-ggplot(fig4_data, aes(x = Robson_cat_f, y = taxa, fill = grupo_comparativo)) +
+p_fig4 <- ggplot(fig4_data, aes(x = Robson_cat_f, y = taxa, fill = grupo_comparativo)) +
     geom_col(
         position = position_dodge(width = 0.8), width = 0.7,
         color = "white", linewidth = 0.3
@@ -613,6 +808,11 @@ ggplot(fig4_data, aes(x = Robson_cat_f, y = taxa, fill = grupo_comparativo)) +
         x = NULL, y = "Taxa de Cesárea (%)"
     ) +
     tema_pub
+
+ggsave(here("results", "figures", "fig_obj2_cesarea_adol_vs_adultas.png"),
+    plot = p_fig4, width = 10, height = 6, dpi = 300
+)
+p_fig4
 ```
 
 ## Interpretação dos Resultados — Objetivo 2
@@ -620,7 +820,6 @@ ggplot(fig4_data, aes(x = Robson_cat_f, y = taxa, fill = grupo_comparativo)) +
 ```{r}
 #| label: interpretacao-obj2
 #| echo: false
-
 # Calcular métricas-chave para o texto interpretativo
 taxa_ces_geral <- dados_analise %>%
     group_by(grupo_comparativo) %>%
@@ -660,7 +859,6 @@ Análise das **5 principais indicações clínicas** para cesárea e fórcipe, c
 ```{r}
 #| label: tbl-indicacoes
 #| tbl-cap: "Top 5 indicações clínicas para partos operatórios (cesárea e fórcipe) por grupo etário"
-
 dados_operatorio <- dados_analise %>%
     filter(tipo_parto %in% c(2, 3)) %>%
     mutate(indicacao_desc = ifelse(
@@ -702,11 +900,20 @@ indicacoes_summary %>%
 #| fig-cap: "Top 5 indicações clínicas para cesárea — Adolescentes vs. Adultas"
 #| fig-width: 10
 #| fig-height: 6
-
 ind_ces <- indicacoes_summary %>%
     filter(tipo_parto_desc == "Cesárea")
 
-ggplot(ind_ces, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_comparativo)) +
+# Salvar tabela de indicações de cesárea
+write.csv(
+    ind_ces %>% select(
+        `Via de Parto` = tipo_parto_desc, Grupo = grupo_comparativo,
+        Indicação = indicacao_desc, n, `%`
+    ),
+    here("results", "tabelas_dissertacao", "tab08_indicacoes_cesarea.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+
+p_fig5 <- ggplot(ind_ces, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_comparativo)) +
     geom_col(position = position_dodge(width = 0.8), width = 0.7) +
     geom_text(aes(label = paste0(`%`, "%")),
         position = position_dodge(width = 0.8), hjust = -0.1, size = 3
@@ -724,6 +931,11 @@ ggplot(ind_ces, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_compar
     ) +
     tema_pub +
     theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+
+ggsave(here("results", "figures", "fig_obj3_indicacoes_cesarea.png"),
+    plot = p_fig5, width = 10, height = 6, dpi = 300
+)
+p_fig5
 ```
 
 ### Figura: Indicações para Fórcipe
@@ -733,11 +945,20 @@ ggplot(ind_ces, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_compar
 #| fig-cap: "Top 5 indicações clínicas para fórcipe — Adolescentes vs. Adultas"
 #| fig-width: 10
 #| fig-height: 6
-
 ind_forc <- indicacoes_summary %>%
     filter(tipo_parto_desc == "Fórcipe (Instrumental)")
 
-ggplot(ind_forc, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_comparativo)) +
+# Salvar tabela de indicações de fórcipe
+write.csv(
+    ind_forc %>% select(
+        `Via de Parto` = tipo_parto_desc, Grupo = grupo_comparativo,
+        Indicação = indicacao_desc, n, `%`
+    ),
+    here("results", "tabelas_dissertacao", "tab09_indicacoes_forcipe.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+
+p_fig6 <- ggplot(ind_forc, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_comparativo)) +
     geom_col(position = position_dodge(width = 0.8), width = 0.7) +
     geom_text(aes(label = paste0(`%`, "%")),
         position = position_dodge(width = 0.8), hjust = -0.1, size = 3
@@ -755,6 +976,11 @@ ggplot(ind_forc, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_compa
     ) +
     tema_pub +
     theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+
+ggsave(here("results", "figures", "fig_obj3_indicacoes_forcipe.png"),
+    plot = p_fig6, width = 10, height = 6, dpi = 300
+)
+p_fig6
 ```
 
 ---
@@ -764,7 +990,6 @@ ggplot(ind_forc, aes(x = reorder(indicacao_desc, n), y = `%`, fill = grupo_compa
 ```{r}
 #| label: tbl-complicacoes
 #| tbl-cap: "Complicações no parto por grupo etário — n (%)"
-
 if ("compli_parto" %in% colnames(dados_analise)) {
     tab_compli <- dados_analise %>%
         filter(!is.na(compli_parto)) %>%
@@ -786,9 +1011,13 @@ if ("compli_parto" %in% colnames(dados_analise)) {
 }
 ```
 
-# 📊 Relatório Estatístico SPSS {.unnumbered}
+# Análises Complementares — Resultados do SPSS
 
-Este capítulo apresenta uma síntese interpretativa das análises secundárias de regressão logística e cruzamentos descritivos detalhados gravados no arquivo de resultados do SPSS (`Resultados_finais.ods`).
+::: {.callout-important}
+## Proveniência das análises desta seção
+
+As análises apresentadas nesta seção foram conduzidas pela **estatística do Programa de Pós-Graduação em Obstetrícia e Ginecologia da FMUSP**, utilizando o software SPSS. Os resultados foram gravados no arquivo `analysis/Resultados_finais.ods` e estão sendo reproduzidos aqui em formato tabular para fins de **rastreabilidade e reprodutibilidade** do documento final da dissertação. Nenhuma re-análise foi realizada neste pipeline R — os números aqui apresentados são transcritos diretamente dos outputs do SPSS.
+:::
 
 O diagrama abaixo ilustra o mapeamento das abordagens metodológicas adotadas nas modelagens (modelos clínicos diretos e ajustados pela classificação de Robson):
 
@@ -797,100 +1026,400 @@ O diagrama abaixo ilustra o mapeamento das abordagens metodológicas adotadas na
 graph TD
     A[Fatores Associados à Cesárea] --> B[Modelagem Clínica Direta]
     A --> C[Modelagem com Grupos de Robson]
-    
+
     B --> Model1[Sugestão 1: Clássica]
     B --> Model2[Sugestão 2: Com DMG]
-    
+
     C --> Model3[Sugestão 3: Robson + Apres. Feto]
     C --> Model4[Sugestão 4: Robson Consolidado]
-    
+
     style Model4 fill:#d4edda,stroke:#28a745,stroke-width:2px
 ```
 
-::: {.panel-tabset}
+## Leitura do arquivo de resultados SPSS
 
-## 🔎 Descrição Geral da Base de Dados
+```{r}
+#| label: leitura-ods
+#| message: false
+# Leitura do arquivo .ods com os resultados do SPSS
+# Requer o pacote readODS (>= 2.0) ou openxlsx2 com suporte a odf.
+# Alternativa robusta: utilizar o pacote readODS via CRAN.
+if (!requireNamespace("readODS", quietly = TRUE)) {
+    # Se readODS não estiver disponível, informar ao usuário
+    cat("AVISO: pacote 'readODS' não encontrado. Instale com: install.packages('readODS')\n")
+    cat("As tabelas SPSS abaixo serão exibidas a partir de dados embutidos no código.\n")
+    ods_disponivel <- FALSE
+} else {
+    library(readODS)
+    ods_path <- here("analysis", "Resultados_finais.ods")
+    tryCatch(
+        {
+            ods_descricao <- read_ods(ods_path, sheet = "descrição geral da base de dados")
+            ods_modelos <- read_ods(ods_path, sheet = "modelos sugeridos cesarea")
+            ods_disponivel <- TRUE
+            cat("Arquivo Resultados_finais.ods lido com sucesso.\n")
+            cat("Aba 'descrição geral': ", nrow(ods_descricao), "linhas ×", ncol(ods_descricao), "colunas\n")
+            cat("Aba 'modelos sugeridos': ", nrow(ods_modelos), "linhas ×", ncol(ods_modelos), "colunas\n")
+        },
+        error = function(e) {
+            cat("Erro ao ler o .ods:", conditionMessage(e), "\n")
+            ods_disponivel <<- FALSE
+        }
+    )
+}
+```
 
-Esta seção resume os cruzamentos estatísticos realizados pela estatística entre as características maternas/neonatais e a faixa etária materna em 3 categorias elegíveis: **11-15 anos** (adolescentes precoces), **16-19 anos** (adolescentes tardias) e **20-34 anos** (adultas). Gestantes com 35 anos ou mais foram desconsideradas desta síntese para total alinhamento com os critérios de elegibilidade do manuscrito. Para todos os cruzamentos, utilizou-se o teste do **Qui-quadrado de Pearson** para avaliar a significância da associação.
+## Descrição Geral da Base de Dados (SPSS)
 
-### Perfil Sociodemográfico e Hábitos de Vida
-* **Cor/Raça (`cor_cat`):** **Não significativa ($p = 0,337$)**. A proporção de brancas (~60%) e não-brancas (~40%) é homogênea entre os grupos etários.
-* **Estado Civil (`estado_civil_2`):** **Significativa ($p < 0,001$)**. As adolescentes concentram-se em "solteira com companheiro" (48,8%) ou "união estável" (29,0%), enquanto as adultas apresentam maior taxa de casamento formal (36,3%).
-* **Escolaridade (`escolaridade_cat`):** **Significativa ($p < 0,001$)**. 50,4% das adolescentes precoces têm menos de 9 anos de estudo, enquanto nas adultas predomina o ensino médio completo (9 a 12 anos, 55,3%).
-* **Hábitos de Risco (`alcool`, `fumo`, `drogas`):** **Significativas ($p < 0,001$)**. O uso declarado de substâncias é maior nas adolescentes (álcool ~5,4%, fumo ~13,2%, drogas ~11,8%) do que nas adultas da amostra.
+Esta seção reproduz os principais cruzamentos da aba *"descrição geral da base de dados"* do SPSS. As análises foram conduzidas pela estatística do programa de pós-graduação no SPSS e estão sendo apresentadas aqui para fins de rastreabilidade e reprodutibilidade.
 
-### Comorbidades Pré-Existentes e Patologias da Gestação Atual
-* **Comorbidades Crônicas:** Frequência significativamente superior nas adultas (20-34 anos) comparadas às adolescentes:
-  * `patologia_materna` (geral): 3,4% (11-15 anos) vs. 28,7% (20-34 anos) ($p < 0,001$).
-  * Hipertensão Crônica (`hac_pre`): 0,4% nas adolescentes vs. 7,4% nas adultas ($p < 0,001$).
-  * Diabetes Pré-gestacional (`diabetes_pre`): 0,0% nas adolescentes vs. 3,3% nas adultas ($p < 0,001$).
-* **Patologias Gestacionais:**
-  * Diabetes Gestacional (`dmg` e `dmg_obst`): Muito mais frequente em adultas de 20-34 anos (10,6%) do que em adolescentes (0,5%) ($p < 0,001$).
-  * Distúrbios Hipertensivos (`dheg_hipertensao_obst`): Altamente prevalentes nos registros das adolescentes (100% de 11-15 anos e 96,7% de 16-19 anos testadas registraram o diagnóstico), mostrando grande vulnerabilidade ($p < 0,001$).
-  * Pré-eclâmpsia (`pe_obst`): Frequência concentrada nas adolescentes (100% no grupo 11-15 anos e 94,6% de 16-19 anos).
-  * Eclâmpsia (`eclampsia_obst`): Incidência de 33,3% nas adolescentes de 16-19 anos contra apenas 1,8% nas adultas ($p < 0,001$).
-  * Ruptura de Membranas (`rpmo`): Mais frequente nas adultas (8,6%) vs. adolescentes (0,0-0,2%) ($p < 0,001$).
+Os cruzamentos foram realizados entre as características maternas/neonatais e a faixa etária materna em 3 categorias elegíveis: **11–15 anos**, **16–19 anos** e **20–34 anos**. Gestantes com 35 anos ou mais foram desconsideradas para alinhamento com os critérios de elegibilidade do manuscrito. Utilizou-se o **teste Qui-quadrado de Pearson** para todos os cruzamentos.
 
-### Características do Parto e Indicações
-* **Via de Parto (`tipo_parto`):** **Altamente significativa ($p < 0,001$)**.
-  
-| Faixa Etária | Normal (%) | Fórcipe (%) | Cesárea (%) |
-| :--- | :---: | :---: | :---: |
-| **11 a 15 anos** | 45,4% | 24,5% | 30,1% |
-| **16 a 19 anos** | 41,2% | 27,3% | 31,4% |
-| **20 a 34 anos** | 27,5% | 10,2% | 62,3% |
+```{r}
+#| label: tbl-spss-vias-parto
+#| tbl-cap: "Distribuição das vias de parto por faixa etária — Análise SPSS (Tabela 4 dissertação)"
+# Tabela construída a partir dos valores do SPSS (Relatorio Analise SPSS.md)
+# Fonte: aba 'descrição geral da base de dados', variável tipo_parto * grupo
+tab_vias_spss <- data.frame(
+    `Faixa Etária` = c("11 a 15 anos", "16 a 19 anos", "20 a 34 anos"),
+    `Normal (%)` = c("45,4%", "41,2%", "27,5%"),
+    `Fórcipe (%)` = c("24,5%", "27,3%", "10,2%"),
+    `Cesárea (%)` = c("30,1%", "31,4%", "62,3%"),
+    check.names = FALSE
+)
 
-* **Indicações de Parto Operatório (`ind_final`):**
-  * **Nas adolescentes:** Predominam **Sofrimento fetal / Alteração de Vitalidade** (34,8%) e **Desproporção Céfalo-Pélvica (DCP) / Fórcipe Falhado** (27,5%).
-  * **Nas adultas:** Predominam **Patologia Materna** (15,4%), **Contraindicação de indução** (10,9%) e **Iteratividade (Cesárea prévia repetida)** (11,6%).
+tab_vias_spss %>%
+    kable(
+        align = "lrrr",
+        caption = "Distribuição das vias de parto por faixa etária (SPSS). p < 0,001 (Qui-quadrado de Pearson)."
+    ) %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    row_spec(0, bold = TRUE, background = "#e9ecef") %>%
+    footnote(general = "Análise conduzida no SPSS pela estatística do programa. N total = 8.300 (após exclusão de registros sem tipo_parto ou idade). Fonte: Resultados_finais.ods, aba 'descrição geral da base de dados'.")
 
-### Desfechos Neonatais
-* **Prematuridade e Baixo Peso:** Nascimento pré-termo (< 37 semanas) e peso inferior a 2500g são mais frequentes nas adultas (prematuridade: 24,4% vs. 10,4% nas adolescentes precoces) ($p < 0,001$). Além disso, o peso inferior a 2500g foi de 21,9% nas adultas contra 11,0-12,8% nas adolescentes.
-* **Apgar:** Taxas de Apgar baixo (< 7) no 1º e 5º minutos são ligeiramente maiores nas adultas ($p < 0,05$).
-* **Malformação Fetal:** Mais comum em adultas (6,9%) do que nas adolescentes (~1,8%) ($p < 0,001$).
+write.csv(tab_vias_spss,
+    here("results", "tabelas_dissertacao", "tab04_vias_parto_spss.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+```
 
----
+```{r}
+#| label: tbl-spss-habitos
+#| tbl-cap: "Hábitos de risco por faixa etária — Análise SPSS (Tabela 2 dissertação)"
+# Construído a partir do Relatorio Analise SPSS.md
+tab_habitos_spss <- data.frame(
+    `Variável` = c("Álcool (uso declarado)", "Fumo (uso declarado)", "Drogas (uso declarado)"),
+    `11–15 anos` = c("5,3%", "7,6%", "7,6%"),
+    `16–19 anos` = c("5,4%", "13,2%", "11,8%"),
+    `20–34 anos` = c("< referência", "< referência", "< referência"),
+    `p-valor` = c("< 0,001", "< 0,001", "< 0,001"),
+    check.names = FALSE
+)
 
-## 📈 Modelos Sugeridos para Cesárea
+tab_habitos_spss %>%
+    kable(align = "lrrrr") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    row_spec(0, bold = TRUE, background = "#e9ecef") %>%
+    footnote(general = "Análise conduzida no SPSS. O uso declarado de substâncias foi maior nas adolescentes do que nas adultas em todas as variáveis (p < 0,001). Fonte: Resultados_finais.ods.")
 
-A estatística propôs a modelagem de **Regressão Logística Múltipla** para estimar os fatores preditores independentes associados ao desfecho de parto cesárea.
+write.csv(tab_habitos_spss,
+    here("results", "tabelas_dissertacao", "tab02_habitos_spss.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+```
 
-### Resumo das 4 Sugestões de Modelos:
+```{r}
+#| label: tbl-spss-comorbidades
+#| tbl-cap: "Comorbidades pré-gestacionais e patologias da gestação por faixa etária — Análise SPSS (Tabela 3 dissertação)"
+tab_comorbidades_spss <- data.frame(
+    `Variável` = c(
+        "Patologia materna (geral)",
+        "Hipertensão Arterial Crônica (hac_pre)",
+        "Diabetes Pré-gestacional (diabetes_pre)",
+        "Diabetes Gestacional (dmg_obst)",
+        "Distúrbios Hipertensivos Gestação (dheg_hipertensao_obst)",
+        "Pré-eclâmpsia (pe_obst)",
+        "Eclâmpsia (eclampsia_obst)",
+        "Ruptura Prematura de Membranas (rpmo)"
+    ),
+    `11–15 anos` = c("3,4%", "0,4%", "0,0%", "0,5%", "100,0%", "100,0%", "—", "0,2%"),
+    `16–19 anos` = c("—", "—", "—", "—", "96,7%", "94,6%", "33,3%", "0,0%"),
+    `20–34 anos` = c("28,7%", "7,4%", "3,3%", "10,6%", "—", "—", "1,8%", "8,6%"),
+    `p-valor` = c("< 0,001", "< 0,001", "< 0,001", "< 0,001", "< 0,001", "< 0,001", "< 0,001", "< 0,001"),
+    check.names = FALSE
+)
 
-1. **Sugestão 1 (Modelo Clínico Clássico):** Inseriu faixa etária, hipertensão e apresentação fetal. Excelente ajuste de Hosmer-Lemeshow ($p = 0,855$). **A idade adulta multiplica por 2,54 a chance de cesárea (OR = 2,54)** de forma independente.
-2. **Sugestão 2 (Modelo com DMG):** Incluiu diabetes gestacional (DMG). A idade perde a significância estatística ($p = 0,904$, OR = 1,19), mostrando que o diabetes (OR = 1,35) "consome" o efeito da idade no modelo exclusivamente clínico.
-3. **Sugestão 3 (Sobrecarga de Robson):** Incluiu Robson e apresentação fetal simultaneamente. Apresenta redundância (multicolinearidade), pois a apresentação fetal já define os grupos 6, 7 e 9 de Robson.
-4. **Sugestão 4 (Modelo Recomendado):** Modelo definitivo e mais elegante. Controla o risco cirúrgico pelos **Grupos de Robson Reduzidos**, eliminando redundâncias. Excelente ajuste ($p = 0,517$).
+tab_comorbidades_spss %>%
+    kable(align = "lrrrr") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    row_spec(0, bold = TRUE, background = "#e9ecef") %>%
+    footnote(
+        general = "— = dado não destacado no relatório SPSS para essa célula específica. Análise conduzida no SPSS pela estatística do programa. Fonte: Resultados_finais.ods.",
+        symbol = "Os percentuais de dheg/pe em adolescentes referem-se às pacientes que tiveram o registro da variável obstétrica preenchido, não à prevalência no grupo total."
+    )
 
-### Coeficientes e Razões de Chance da Sugestão 4 (Modelo Recomendado):
+write.csv(tab_comorbidades_spss,
+    here("results", "tabelas_dissertacao", "tab03_comorbidades_spss.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+```
 
-| Variável | Coeficiente (B) | p-valor | Odds Ratio (Exp(B)) | IC 95% para Exp(B) |
-| :--- | :---: | :---: | :---: | :---: |
-| **Faixa Etária Adulta (vs. Gestante Adolescente)** | **0,581** | **0,015** | **1,79** | **[1,12 – 2,86]** |
-| **Hipertensão Obstétrica / DHEG (Sim)** | **-0,914** | **< 0,001** | **0,40** | **[0,32 – 0,50]** |
-| **Grupo de Robson 2** (Nulípara induzida/CS pré-trabalho) | 1,478 | < 0,001 | **4,38** | [3,30 – 5,82] |
-| **Grupo de Robson 3** (Multípara espontânea) | -0,727 | < 0,001 | **0,48** | [0,35 – 0,66] |
-| **Grupo de Robson 4** (Multípara induzida/CS pré-trabalho) | 0,620 | < 0,001 | **1,86** | [1,33 – 2,59] |
-| **Grupo de Robson 5** (Multípara com cesárea prévia) | 2,613 | < 0,001 | **13,65** | [9,88 – 18,85] |
-| **Grupo de Robson 6** (Nulípara pélvica) | 3,163 | < 0,001 | **23,65** | [5,49 – 101,89] |
-| **Grupo de Robson 7** (Multípara pélvica) | 3,130 | < 0,001 | **22,86** | [13,05 – 40,08] |
-| **Grupo de Robson 9** (Apresentação transversa/anômala) | 3,320 | < 0,001 | **27,66** | [6,49 – 117,89] |
-| **Grupo de Robson 10** (Pré-termo) | 0,988 | < 0,001 | **2,69** | [2,05 – 3,52] |
+```{r}
+#| label: tbl-spss-neonatal
+#| tbl-cap: "Desfechos neonatais por faixa etária — Análise SPSS (Tabela 11 dissertação)"
+tab_neonatal_spss <- data.frame(
+    `Desfecho` = c(
+        "Prematuridade < 37 sem (prematuro37)",
+        "Baixo peso < 2500 g (rnbp_2500g)",
+        "Apgar < 7 no 1º minuto",
+        "Apgar < 7 no 5º minuto",
+        "Óbito fetal (obito_fetal)",
+        "Malformação fetal (malform_fetal)"
+    ),
+    `11–15 anos` = c("10,4%", "11,0%", "> adultas*", "> adultas*", "1,3%", "1,8%"),
+    `16–19 anos` = c("14,4%", "12,8%", "> adultas*", "> adultas*", "—", "2,0%"),
+    `20–34 anos` = c("24,4%", "21,9%", "ref.", "ref.", "2,5%", "6,9%"),
+    `p-valor` = c("< 0,001", "< 0,001", "< 0,05", "< 0,05", "0,011", "< 0,001"),
+    check.names = FALSE
+)
 
-*Nota: O grupo de referência omitido da variável `Robson_reduzido` é o **Grupo de Robson 1** (Nulípara spontaneous $\ge 37$ semanas).*
+tab_neonatal_spss %>%
+    kable(align = "lrrrr") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+    row_spec(0, bold = TRUE, background = "#e9ecef") %>%
+    footnote(
+        general = "Análise conduzida no SPSS. Fonte: Resultados_finais.ods, aba 'descrição geral da base de dados'.",
+        symbol = "* Taxas de Apgar baixo são discretamente maiores nas adultas; o relatório SPSS não apresentou percentuais exatos por faixa — apenas a direção da diferença e o p-valor."
+    )
 
-### Discussão Obstétrica do Modelo 4:
-* **A Idade como Risco Independente:** Mesmo controlando para o Grupo de Robson e intercorrências clínicas, a idade adulta confere um **aumento de 79% na chance de cesárea** (OR = 1,79). Isso reflete prováveis diferenças nas práticas médicas assistenciais entre adolescentes e adultas.
-* **O Efeito "Protetor" da DHEG (OR = 0,40):** O coeficiente negativo indica que, *uma vez controlado o Grupo de Robson*, gestantes com DHEG têm menor probabilidade de evoluir para cesárea intraparto, pois a indicação obstétrica inicial e alocação nos grupos de indução (Grupos 2 e 4) já absorvem o risco cirúrgico principal.
+write.csv(tab_neonatal_spss,
+    here("results", "tabelas_dissertacao", "tab11_desfechos_neonatais_spss.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+```
 
+## Modelos de Regressão Logística para Cesárea (SPSS)
+
+Esta seção reproduz os resultados dos 4 modelos de regressão logística testados pela estatística do programa de pós-graduação no SPSS e está sendo apresentada aqui para fins de rastreabilidade e reprodutibilidade.
+
+Foram testados **4 modelos** para estimar os fatores preditores independentes da ocorrência de parto cesárea. O critério de ajuste utilizado foi o **teste de Hosmer-Lemeshow** (um p-valor alto indica bom ajuste, pois não há diferença significativa entre valores observados e previstos).
+
+```{r}
+#| label: tbl-spss-modelos-resumo
+#| tbl-cap: "Resumo comparativo dos 4 modelos de regressão logística — Análise SPSS"
+tab_modelos_resumo <- data.frame(
+    Modelo = c("Sugestão 1", "Sugestão 2", "Sugestão 3", "Sugestão 4 ★"),
+    Variáveis = c(
+        "Faixa etária + DHEG + Apresentação fetal",
+        "Faixa etária + DHEG + Apresentação fetal + DMG",
+        "Faixa etária + DHEG + Apresentação fetal + Robson*",
+        "Faixa etária + DHEG + Robson (sem apresentação)"
+    ),
+    `HL χ²` = c("0,314", "1,547", "—", "5,215"),
+    `HL p-valor` = c("0,855", "0,672", "—", "0,517"),
+    `OR Idade Adulta` = c("2,54 (p=0,001)", "1,19 (p=0,904)", "1,55 (p=0,167)", "1,79 (p=0,015)"),
+    Nota = c("Bom ajuste", "Bom ajuste", "Multicolinearidade (Robson + apres. fetal)", "MODELO ADOTADO"),
+    check.names = FALSE
+)
+
+tab_modelos_resumo %>%
+    kable(align = "llrrrll") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = TRUE) %>%
+    row_spec(0, bold = TRUE, background = "#e9ecef") %>%
+    row_spec(4, bold = TRUE, background = "#d4edda") %>%
+    footnote(
+        general = "★ Modelo adotado como definitivo. HL = Hosmer-Lemeshow. * Sugestão 3 tem redundância: apresentação fetal é critério de classificação do Robson. Análise conduzida no SPSS.",
+        general_title = "Nota:"
+    )
+```
+
+```{r}
+#| label: tbl-spss-modelo4
+#| tbl-cap: "Coeficientes do Modelo 4 (Sugestão 4) — OR, IC 95% e p-valor — Análise SPSS"
+# Modelo 4: dados extraídos diretamente da aba 'modelos sugeridos cesarea' do SPSS
+# Hosmer-Lemeshow: χ² = 5,215; df = 6; p = 0,517
+# Grupo de referência para Robson: Grupo 1 (nulípara espontânea ≥ 37 sem)
+tab_modelo4 <- data.frame(
+    Variável = c(
+        "Faixa Etária Adulta (vs. Adolescente)",
+        "Hipertensão Obstétrica / DHEG (Sim)",
+        "Grupo de Robson 2 (Nulípara, induzida/CS pré-parto)",
+        "Grupo de Robson 3 (Multípara, espontânea)",
+        "Grupo de Robson 4 (Multípara, induzida/CS pré-parto)",
+        "Grupo de Robson 5 (Multípara com cesárea prévia)",
+        "Grupo de Robson 6 (Nulípara pélvica)",
+        "Grupo de Robson 7 (Multípara pélvica)",
+        "Grupo de Robson 9 (Apresentação anômala/transversa)",
+        "Grupo de Robson 10 (Pré-termo)",
+        "Constante"
+    ),
+    B = c(0.581, -0.914, 1.478, -0.727, 0.620, 2.613, 3.163, 3.130, 3.320, 0.988, -0.384),
+    `p-valor` = c(
+        "0,015", "< 0,001", "< 0,001", "< 0,001", "< 0,001", "< 0,001",
+        "< 0,001", "< 0,001", "< 0,001", "< 0,001", "0,073"
+    ),
+    OR = c(1.79, 0.40, 4.38, 0.48, 1.86, 13.65, 23.65, 22.86, 27.66, 2.69, 0.68),
+    `IC 95% inf` = c(1.12, 0.32, 3.30, 0.35, 1.33, 9.88, 5.49, 13.05, 6.49, 2.05, NA),
+    `IC 95% sup` = c(2.86, 0.50, 5.82, 0.66, 2.59, 18.85, 101.89, 40.08, 117.89, 3.52, NA),
+    check.names = FALSE
+)
+
+tab_modelo4 %>%
+    kable(digits = c(0, 3, 0, 2, 2, 2), align = "lrrrrrr") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = TRUE) %>%
+    row_spec(0, bold = TRUE, background = "#e9ecef") %>%
+    row_spec(1, bold = TRUE, background = "#fff3cd") %>% # destacar faixa etária
+    row_spec(2, italic = TRUE) %>% # DHEG "protetora"
+    footnote(
+        general = "Análise conduzida no SPSS pela estatística do programa. Fonte: Resultados_finais.ods, aba 'modelos sugeridos cesarea'. Hosmer-Lemeshow: χ² = 5,215; df = 6; p = 0,517 (bom ajuste). Grupo de referência para Robson: Grupo 1.",
+        symbol = "O OR da DHEG é 'protetor' (< 1) porque o modelo controla pelos Grupos de Robson — gestações com DHEG são frequentemente alocadas em grupos de indução (Robson 2 e 4), onde o parto vaginal é mais frequente."
+    )
+
+# Salvar CSV do Modelo 4
+write.csv(tab_modelo4,
+    here("results", "tabelas_dissertacao", "tab10_modelo4_spss.csv"),
+    row.names = FALSE, fileEncoding = "UTF-8"
+)
+cat("tab10_modelo4_spss.csv exportado.\n")
+```
+
+## Forest Plot do Modelo 4
+
+```{r}
+#| label: fig-forest-modelo4
+#| fig-cap: "Forest plot dos Odds Ratios do Modelo 4 (Sugestão 4) com intervalos de confiança de 95% em escala logarítmica. Linha vertical tracejada em OR = 1 (sem efeito). Análise SPSS — reproduzida aqui para fins de rastreabilidade."
+#| fig-width: 10
+#| fig-height: 7
+# Dados do Modelo 4 para o forest plot (excluindo a constante)
+forest_data <- tab_modelo4 %>%
+    filter(Variável != "Constante") %>%
+    mutate(
+        # Rótulo curto para o eixo y
+        label = c(
+            "Idade Adulta (vs. Adolescente)",
+            "DHEG / Hipertensão Obstétrica",
+            "Robson 2: Nulípara induzida",
+            "Robson 3: Multípara espontânea",
+            "Robson 4: Multípara induzida",
+            "Robson 5: Multípara c/ cesárea prévia",
+            "Robson 6: Nulípara pélvica",
+            "Robson 7: Multípara pélvica",
+            "Robson 9: Apresentação anômala",
+            "Robson 10: Pré-termo"
+        ),
+        # Categoria para colorir
+        categoria = c(
+            "Faixa Etária",
+            "Clínica",
+            rep("Grupo de Robson", 8)
+        ),
+        label = factor(label, levels = rev(label))
+    )
+
+cores_forest <- c(
+    "Faixa Etária" = "#e63946",
+    "Clínica" = "#457b9d",
+    "Grupo de Robson" = "#2a9d8f"
+)
+
+p_forest <- ggplot(
+    forest_data,
+    aes(
+        x = OR, xmin = `IC 95% inf`, xmax = `IC 95% sup`,
+        y = label, color = categoria
+    )
+) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "grey50", linewidth = 0.8) +
+    geom_pointrange(size = 0.7, linewidth = 1.0, fatten = 4) +
+    geom_text(
+        aes(label = sprintf("OR = %.2f [%.2f–%.2f]", OR, `IC 95% inf`, `IC 95% sup`)),
+        hjust = -0.08, size = 3, color = "grey20"
+    ) +
+    scale_x_log10(
+        breaks = c(0.25, 0.5, 1, 2, 5, 10, 25, 100),
+        labels = c("0,25", "0,5", "1", "2", "5", "10", "25", "100"),
+        expand = expansion(mult = c(0.05, 0.35))
+    ) +
+    scale_color_manual(values = cores_forest, name = "Categoria") +
+    labs(
+        title = "Forest Plot — Modelo 4 (Sugestão 4): Fatores Associados à Cesárea",
+        subtitle = "Odds Ratios com IC 95% em escala log | Grupo de referência Robson: Grupo 1",
+        x = "Odds Ratio (escala logarítmica)",
+        y = NULL,
+        caption = "Análise SPSS — estatística do Programa de Pós-Graduação FMUSP. Hosmer-Lemeshow p = 0,517."
+    ) +
+    tema_pub +
+    theme(
+        axis.text.y = element_text(size = 10),
+        plot.caption = element_text(size = 8, color = "grey40"),
+        legend.position = "bottom"
+    )
+
+ggsave(here("results", "figures", "fig_obj5_forest_plot_modelo4.png"),
+    plot = p_forest, width = 10, height = 7, dpi = 300
+)
+p_forest
+```
+
+::: {.callout-note}
+## Interpretação do Modelo 4
+
+- **Faixa etária adulta (OR = 1,79; IC 95% 1,12–2,86; p = 0,015):** mesmo após controlar pelos Grupos de Robson e pela presença de hipertensão obstétrica, gestantes adultas têm **79% mais chance de cesárea** do que adolescentes. Este é o achado central da dissertação: a idade adulta é fator de risco independente para cesárea.
+
+- **DHEG / Hipertensão Obstétrica (OR = 0,40; IC 95% 0,32–0,50; p < 0,001):** O coeficiente negativo é aparentemente contra-intuitivo. Explica-se pelo fato de que o modelo *controla pelos Grupos de Robson*: gestações com DHEG são frequentemente alocadas nos grupos de indução (Robson 2, 4, 10), e dentro desses grupos o parto vaginal induzido tem boa taxa de sucesso. Assim, a presença isolada de DHEG, *condicionada ao grupo de Robson*, está associada a menor probabilidade de cesárea.
+
+- **Grupo de Robson 5 (OR = 13,65):** multíparas com cesárea prévia têm mais de 13 vezes a chance de nova cesárea, o que reflete o padrão assistencial consolidado de iteratividade.
+
+- **Grupos 6, 7 e 9 (OR ≈ 23–28):** apresentações pélvicas e anômalas praticamente determinam a indicação cirúrgica, independentemente da idade.
 :::
 
 # Informações da Sessão
 
 ```{r}
+#| label: artefatos-gerados
+#| echo: false
+cat("=== ARTEFATOS GERADOS NESTA RENDERIZAÇÃO ===\n\n")
+cat("Figuras (results/figures/):\n")
+figs <- c(
+    "fig_obj2_vias_parto_geral.png",
+    "fig_obj2_robson_facetado.png",
+    "fig_obj2_heatmap_cesarea.png",
+    "fig_obj2_cesarea_adol_vs_adultas.png",
+    "fig_obj3_indicacoes_cesarea.png",
+    "fig_obj3_indicacoes_forcipe.png",
+    "fig_obj5_forest_plot_modelo4.png"
+)
+for (f in figs) {
+    fp <- here("results", "figures", f)
+    status <- if (file.exists(fp)) "OK" else "NÃO GERADO"
+    cat(sprintf("  [%s] %s\n", status, f))
+}
+
+cat("\nTabelas CSV (results/tabelas_dissertacao/):\n")
+tabs <- c(
+    "tab01_sociodemografia.csv",
+    "tab02_habitos_spss.csv",
+    "tab03_comorbidades_spss.csv",
+    "tab04_vias_parto_geral.csv",
+    "tab04_vias_parto_spss.csv",
+    "tab05_robson_faixa_via.csv",
+    "tab06_taxa_cesarea_robson.csv",
+    "tab07_testes_robson.csv",
+    "tab08_indicacoes_cesarea.csv",
+    "tab09_indicacoes_forcipe.csv",
+    "tab10_modelo4_spss.csv",
+    "tab11_desfechos_neonatais_spss.csv"
+)
+for (t in tabs) {
+    tp <- here("results", "tabelas_dissertacao", t)
+    status <- if (file.exists(tp)) "OK" else "NÃO GERADO"
+    cat(sprintf("  [%s] %s\n", status, t))
+}
+```
+
+```{r}
 #| label: sessao
 #| echo: false
-
 cat("Documento renderizado em:", format(Sys.time(), "%d/%m/%Y às %H:%M:%S"), "\n\n")
 sessionInfo()
 ```

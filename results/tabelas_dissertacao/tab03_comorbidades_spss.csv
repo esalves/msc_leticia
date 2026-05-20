@@ -1,0 +1,9 @@
+﻿Variável,11-15 anos,16-19 anos,20-34 anos,p-valor,Fonte
+Patologia materna (geral),"3,4%",—,"28,7%","< 0,001",SPSS
+Hipertensão Arterial Crônica (hac_pre),"0,4%",—,"7,4%","< 0,001",SPSS
+Diabetes Pré-gestacional (diabetes_pre),"0,0%",—,"3,3%","< 0,001",SPSS
+Diabetes Gestacional (dmg_obst),"0,5%",—,"10,6%","< 0,001",SPSS
+Distúrbios Hipertensivos Gestação (dheg_hipertensao_obst),"100,0%","96,7%",—,"< 0,001",SPSS
+Pré-eclâmpsia (pe_obst),"100,0%","94,6%",—,"< 0,001",SPSS
+Eclâmpsia (eclampsia_obst),—,"33,3%","1,8%","< 0,001",SPSS
+Ruptura Prematura de Membranas (rpmo),"0,2%","0,0%","8,6%","< 0,001",SPSS

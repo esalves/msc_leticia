@@ -1,0 +1,17 @@
+﻿faixa_etaria,variavel,categoria,n,valor
+Adolescentes precoces (11-15),N total,Total,538,538
+Adolescentes precoces (11-15),Idade,Média (DP),538,14.4 (0.8)
+Adolescentes precoces (11-15),Escolaridade,2.0,379,379 (70.4%)
+Adolescentes precoces (11-15),Escolaridade,3.0,132,132 (24.5%)
+Adolescentes precoces (11-15),Escolaridade,1.0,1,1 (0.2%)
+Adolescentes tardias (16-19),N total,Total,829,829
+Adolescentes tardias (16-19),Idade,Média (DP),829,16.6 (0.6)
+Adolescentes tardias (16-19),Escolaridade,3.0,483,483 (58.3%)
+Adolescentes tardias (16-19),Escolaridade,2.0,286,286 (34.5%)
+Adolescentes tardias (16-19),Escolaridade,1.0,1,1 (0.1%)
+Adultas (20-34),N total,Total,5279,5279
+Adultas (20-34),Idade,Média (DP),5279,27.0 (4.1)
+Adultas (20-34),Escolaridade,3.0,2547,2547 (48.2%)
+Adultas (20-34),Escolaridade,2.0,1737,1737 (32.9%)
+Adultas (20-34),Escolaridade,4.0,267,267 (5.1%)
+Adultas (20-34),Escolaridade,1.0,45,45 (0.9%)

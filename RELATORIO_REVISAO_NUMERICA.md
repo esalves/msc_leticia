@@ -1,3 +1,9 @@
+---
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
 # Relatório de Revisão Numérica Cruzada
 **Dissertação de Mestrado — Letícia Schimidt Arruda (FMUSP)**  
 **Revisor:** Sub-agente Sonnet (revisão automática)  

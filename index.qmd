@@ -85,12 +85,12 @@ Esta seção documenta formalmente os critérios de inclusão e exclusão aplica
 - Idade materna fora do intervalo 11–34 anos (excluindo, portanto, gestantes com 35 anos ou mais, que compõem grupo de análise separado no SPSS);
 - Classificação de Robson 8 (não presente na base, mas filtro explícito mantido por rastreabilidade);
 - Gestação múltipla — observação: a coluna de gestação gemelar/múltipla não foi localizada na base Excel com nomenclatura explícita; o filtro de Robson (que exclui o Grupo 8, específico para gestações múltiplas) garante implicitamente a exclusão de multifetais classificados por Robson; casos com Robson ausente/inválido também são excluídos;
-- Abortamento: partos com idade gestacional inferior a 22 semanas ou peso do recém-nascido inferior a 500 g (critério aplicado via `ig_parto`/`ig_parto2`).
+- Abortamento: partos com idade gestacional inferior a 22 semanas ou peso do recém-nascido inferior a 500 g (critério aplicado via `ig_parto`).
 
 ::: {.callout-warning}
 ## Nota sobre a coluna ig_parto
 
-A variável `ig_parto` apresenta valores zero (0.0) que representam dado ausente/não preenchido — não um parto com zero semanas. Nesses casos, utiliza-se `ig_parto2` como valor substituto (*coalesce*). O filtro de IG ≥ 22 semanas é aplicado apenas quando ao menos uma das duas colunas possui valor válido (> 0); registros com ambas ausentes são mantidos por precaução para não inflar as perdas.
+A variável `ig_parto` apresenta valores zero (0.0) que representam dado ausente/não preenchido — não um parto com zero semanas. O filtro de IG ≥ 22 semanas é aplicado apenas quando a coluna possui valor válido (> 0); registros ausentes ou zerados são mantidos por precaução para não inflar as perdas.
 :::
 
 ---
@@ -121,8 +121,8 @@ A base de dados contém registros obstétricos do Hospital das Clínicas da FMUS
 ```{r}
 #| label: carregamento-dados
 dados <- read_excel(
-    here("data", "raw", "BD_completo_corrigido_06-04-2026.xlsx"),
-    sheet = "Sheet1"
+    here("data", "raw", "BD_completo_corrigido_13-05-2026.xls"),
+    sheet = "BD_leticia_08-05"
 )
 
 cat("Dimensões da base bruta:", nrow(dados), "registros ×", ncol(dados), "variáveis\n")
@@ -145,7 +145,7 @@ Os seguintes critérios de inclusão foram aplicados:
 #   - Idade 11–34 anos, com tipo_parto e idade preenchidos
 #   - Gestação única (garantida via Robson: Grupo 8 = múltiplas, excluído)
 #   - Robson válido nos Grupos 1, 2, 3, 4, 5, 6, 7, 9 ou 10 (exclui 8 explicitamente)
-#   - Parto após 22 semanas (ig_parto ou ig_parto2 ≥ 22; ig_parto == 0 é dado ausente)
+#   - Parto após 22 semanas (ig_parto ≥ 22; ig_parto == 0 é dado ausente)
 #   - Dados de assistência ao parto presentes (tipo_parto não nulo)
 #
 # EXCLUSÃO:
@@ -185,13 +185,11 @@ n_excl_s3 <- nrow(dados_s2) - nrow(dados_s3)
 
 # Passo 4: Filtrar por IG ≥ 22 semanas
 # Nota: ig_parto == 0 representa dado ausente (não parto com 0 semanas).
-# Usa-se ig_parto2 como substituto quando ig_parto == 0 ou é NA.
-# O filtro é aplicado SOMENTE quando ao menos uma coluna tem valor válido (> 0).
+# O filtro é aplicado SOMENTE quando a coluna tem valor válido (> 0).
 dados_s4 <- dados_s3 %>%
     mutate(
         ig_best = case_when(
             !is.na(ig_parto) & ig_parto > 0 ~ ig_parto,
-            !is.na(ig_parto2) & ig_parto2 > 0 ~ ig_parto2,
             TRUE ~ NA_real_
         )
     ) %>%
@@ -378,7 +376,7 @@ tab01_escol <- dados_analise %>%
         variavel = "Escolaridade",
         pct = round(n / sum(n) * 100, 1),
         valor = paste0(n, " (", pct, "%)"),
-        categoria = escolaridade_cat
+        categoria = as.character(escolaridade_cat)
     ) %>%
     select(faixa_etaria_f, variavel, categoria, n, valor)
 

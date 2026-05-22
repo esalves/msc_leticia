@@ -2,10 +2,11 @@ library(tidyverse)
 library(readxl)
 library(here)
 source(here("analysis", "statistical_utils.R"))
+source(here("analysis", "robson_utils.R"))
 
 # 1. Carregar os Dados
 cat("Carregando base de dados...\n")
-dados <- read_excel(here("data", "raw", "BD_completo_corrigido_06-04-2026.xlsx"), sheet = "Sheet1")
+dados <- read_excel(here("data", "raw", "BD_completo_corrigido_13-05-2026.xls"), sheet = "BD_leticia_08-05")
 
 # 2. Tratamento e Filtragem (Critérios de Elegibilidade)
 # Conforme a dissertação:

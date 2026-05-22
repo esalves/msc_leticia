@@ -4,10 +4,10 @@ library(readxl)
 library(dplyr)
 
 # Path to the Excel file
-excel_file_path <- "BD_completo_corrigido_12-02-2025.xlsx"
+excel_file_path <- here::here("data", "raw", "BD_completo_corrigido_13-05-2026.xls")
 
 # Load original data
-dados <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "Sheet1")))
+dados <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "BD_leticia_08-05")))
 
 # Apply filtering steps from the main script to get dadosFilt
 dadosFilt <- dados %>%
@@ -33,7 +33,7 @@ test_that("Chi-squared test for Cor (Color) runs and produces valid output", {
   # Suppress warnings like "Chi-squared approximation may be incorrect" for small samples
   chi2ResultadoCor <- suppressWarnings(chisq.test(contagensCor))
   
-  expect_s3_class(chi2ResultadoCor, "htest", "Chi-squared result for Cor should be an htest object")
+  expect_s3_class(chi2ResultadoCor, "htest")
   expect_true(!is.null(chi2ResultadoCor$p.value), "P-value should exist for Cor Chi-squared test")
 })
 
@@ -47,7 +47,7 @@ test_that("Chi-squared test for Estado Civil (Marital Status) runs and produces 
   # Suppress warnings
   chi2ResultadoEstadoCivil <- suppressWarnings(chisq.test(contagensEstadoCivil))
   
-  expect_s3_class(chi2ResultadoEstadoCivil, "htest", "Chi-squared result for Estado Civil should be an htest object")
+  expect_s3_class(chi2ResultadoEstadoCivil, "htest")
   expect_true(!is.null(chi2ResultadoEstadoCivil$p.value), "P-value should exist for Estado Civil Chi-squared test")
 })
 

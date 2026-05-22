@@ -8,10 +8,10 @@ context("Plot Generation (File Existence)")
 
 # List of expected plot files
 plot_files <- c(
-  "graficoGestantesCor.png",
-  "graficoGestantesCorFreq.png",
-  "graficoGestantesEstadoCivil.png",
-  "graficoGestantesEstadoCivilFreq.png"
+  "results/figures/graficoGestantesCor.png",
+  "results/figures/graficoGestantesCorFreq.png",
+  "results/figures/graficoGestantesEstadoCivil.png",
+  "results/figures/graficoGestantesEstadoCivilFreq.png"
 )
 
 # Test setup: Remove existing plot files before running the script
@@ -34,7 +34,7 @@ setup({
 # The `tryCatch` is to ensure tests can still complete if the main script has an error.
 script_sourced_successfully <- FALSE
 source_output <- NULL
-main_script_path <- "../../2025_03_29_analisesGestantes.R" # Relative to tests/testthat/
+main_script_path <- "../../analysis/2025_03_29_analisesGestantes.R" # Relative to tests/testthat/
 
 if (!file.exists(main_script_path)) {
   warning(paste("Main script not found at:", main_script_path, " - Plot generation tests will be skipped."))
@@ -44,19 +44,19 @@ if (!file.exists(main_script_path)) {
     # Use chdir = TRUE to run the script from its own directory if it uses relative paths internally for data.
     # However, our data loading is explicit from project root.
     # We need to ensure the sourced script can find its data file.
-    # The data file path in main script is "BD_completo_corrigido_12-02-2025.xlsx"
+    # The data file path in main script is "BD_completo_corrigido_13-05-2026.xls"
     # So, the sourced script should be run from the project root.
     # testthat runs tests with the working directory set to tests/testthat.
     # We need to temporarily change to project root for sourcing the script.
     
     # Get current working directory
     original_wd <- getwd()
-    # Change to project root (assuming tests/testthat structure)
-    setwd("../..") 
+    # Change to standard analysis directory so relative paths in script resolve correctly
+    setwd("../../analysis") 
     
     # Source the script
     # Capture output to avoid cluttering test results, show only if error
-    source_output <- capture.output(source(basename(main_script_path), echo = FALSE, print.eval = FALSE), type="message")
+    source_output <- capture.output(source("2025_03_29_analisesGestantes.R", echo = FALSE, print.eval = FALSE), type="message")
     
     # Change back to original working directory
     setwd(original_wd)

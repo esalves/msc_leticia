@@ -9,14 +9,14 @@ library(readxl) # Ensure readxl is available for tests if not loaded by main scr
 
 # Path to the Excel file (adjust if necessary, e.g., using here::here())
 # This assumes tests are run from the project root directory.
-excel_file_path <- "BD_completo_corrigido_12-02-2025.xlsx"
+excel_file_path <- here::here("data", "raw", "BD_completo_corrigido_13-05-2026.xls")
 
 context("Data Loading")
 
 test_that("Main data (dados) is loaded correctly", {
   # Attempt to load data as done in the main script
   # Suppress messages/warnings from read_excel if they are not errors
-  dados <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "Sheet1")))
+  dados <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "BD_leticia_08-05")))
   
   expect_true(is.data.frame(dados), "Dados should be a data frame")
   
@@ -28,6 +28,7 @@ test_that("Main data (dados) is loaded correctly", {
 })
 
 test_that("Data dictionary (dicionario) is loaded correctly", {
+  skip("Dicionário sheet is not present in the new Excel file BD_completo_corrigido_13-05-2026.xls")
   dicionario <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "Dicionário")))
   
   expect_true(is.data.frame(dicionario), "Dicionario should be a data frame")

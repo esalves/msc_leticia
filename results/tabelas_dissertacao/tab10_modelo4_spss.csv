@@ -1,12 +1,12 @@
-﻿Variável,B,p-valor,OR (Exp(B)),IC 95% inf,IC 95% sup,Fonte
-Faixa Etária Adulta (vs. Adolescente),0.581,"0,015",1.79,1.12,2.86,SPSS
-Hipertensão Obstétrica / DHEG (Sim),-0.914,"< 0,001",0.4,0.32,0.5,SPSS
-Grupo de Robson 2 (Nulípara induzida/CS pré-parto),1.478,"< 0,001",4.38,3.3,5.82,SPSS
-Grupo de Robson 3 (Multípara espontânea),-0.727,"< 0,001",0.48,0.35,0.66,SPSS
-Grupo de Robson 4 (Multípara induzida/CS pré-parto),0.62,"< 0,001",1.86,1.33,2.59,SPSS
-Grupo de Robson 5 (Multípara com cesárea prévia),2.613,"< 0,001",13.65,9.88,18.85,SPSS
-Grupo de Robson 6 (Nulípara pélvica),3.163,"< 0,001",23.65,5.49,101.89,SPSS
-Grupo de Robson 7 (Multípara pélvica),3.13,"< 0,001",22.86,13.05,40.08,SPSS
-Grupo de Robson 9 (Apresentação anômala/transversa),3.32,"< 0,001",27.66,6.49,117.89,SPSS
-Grupo de Robson 10 (Pré-termo),0.988,"< 0,001",2.69,2.05,3.52,SPSS
-Constante,-0.384,"0,073",0.68,,,SPSS
+"Variável","B","p-valor","OR","IC 95% inf","IC 95% sup"
+"Faixa Etária Adulta (vs. Adolescente)",0.581,"0,015",1.79,1.12,2.86
+"Hipertensão Obstétrica / DHEG (Sim)",-0.914,"< 0,001",0.4,0.32,0.5
+"Grupo de Robson 2 (Nulípara, induzida/CS pré-parto)",1.478,"< 0,001",4.38,3.3,5.82
+"Grupo de Robson 3 (Multípara, espontânea)",-0.727,"< 0,001",0.48,0.35,0.66
+"Grupo de Robson 4 (Multípara, induzida/CS pré-parto)",0.62,"< 0,001",1.86,1.33,2.59
+"Grupo de Robson 5 (Multípara com cesárea prévia)",2.613,"< 0,001",13.65,9.88,18.85
+"Grupo de Robson 6 (Nulípara pélvica)",3.163,"< 0,001",23.65,5.49,101.89
+"Grupo de Robson 7 (Multípara pélvica)",3.13,"< 0,001",22.86,13.05,40.08
+"Grupo de Robson 9 (Apresentação anômala/transversa)",3.32,"< 0,001",27.66,6.49,117.89
+"Grupo de Robson 10 (Pré-termo)",0.988,"< 0,001",2.69,2.05,3.52
+"Constante",-0.384,"0,073",0.68,NA,NA

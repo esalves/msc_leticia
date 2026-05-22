@@ -4,7 +4,7 @@ This project analyzes data from pregnant women, focusing on factors such as type
 
 ## Dataset
 
-The primary dataset is an Excel file named `BD_completo_corrigido_12-02-2025.xlsx`. This file contains:
+The primary dataset is an Excel file named `BD_completo_corrigido_13-05-2026.xls` located in `data/raw/`. This file contains:
 - A sheet named "Sheet1" with the main data on pregnant women.
 - A sheet named "Dicionário" which serves as a data dictionary, providing explanations for the fields in the main data sheet.
 
@@ -25,7 +25,7 @@ You can install these libraries in R using the command `install.packages("librar
 ### Script Workflow
 The script follows these main steps:
 1.  **Loads Libraries:** Imports all necessary R packages.
-2.  **Reads Data:** Loads data from the "Sheet1" and "Dicionário" sheets in the `BD_completo_corrigido_12-02-2025.xlsx` Excel file.
+2.  **Reads Data:** Loads data from the "Sheet1" and "Dicionário" sheets in the `BD_completo_corrigido_13-05-2026.xls` Excel file.
 3.  **Filters Data:** Applies several filtering criteria:
     *   Removes records with missing type of birth (`tipo_parto`).
     *   Removes records with missing age (`idade`).
@@ -63,7 +63,7 @@ These files are saved in the same directory where the script is executed.
     ```
 3.  **Prepare Files:**
     *   Place the R script `2025_03_29_analisesGestantes.R` in a directory on your computer.
-    *   Ensure the Excel data file `BD_completo_corrigido_12-02-2025.xlsx` is in the *same directory* as the R script. If it's not, you will need to modify the file path in the `read_excel` functions within the script.
+    *   Ensure the Excel data file `BD_completo_corrigido_13-05-2026.xls` is in the `data/raw/` directory. If it's not, you will need to modify the file path in the `read_excel` functions within the script.
 4.  **Execute the Script:**
     *   Open the `2025_03_29_analisesGestantes.R` script in RStudio or your preferred R environment.
     *   Run the entire script.

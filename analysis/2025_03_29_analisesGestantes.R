@@ -11,15 +11,16 @@ library(readxl)
 library(vcd)
 library(ggplot2)
 library(scales)
-library(gemini.R)
+library(here)
+# library(gemini.R)
 
 ####### Configuracao do API do Gemini #######
-setAPI(Sys.getenv("GEMINI_API_KEY"))
+# setAPI(Sys.getenv("GEMINI_API_KEY"))
 
 ####### Ler dados #######
 # Planilha com dados originais:
-dados <- read_excel("../data/raw/BD_completo_corrigido_06-04-2026.xlsx"
-                    ,sheet = "Sheet1")
+dados <- read_excel(here("data", "raw", "BD_completo_corrigido_13-05-2026.xls")
+                    ,sheet = "BD_leticia_08-05")
 
 ####### Filtrar apenas registros que tenham tipo de parto diferente de nulo ####### 
 # Remover registros cujo tipo de parto é nulo:
@@ -77,7 +78,8 @@ assoc(contagensTipoParto
 
 ####### Tipo de gestante por cor ####### 
 # Cor por tipo de gestante::
-(contagensCor <- table(dadosFilt$origem, dadosFilt$cor_cat))
+dadosCor <- dadosFilt %>% filter(cor_cat != 999 & !is.na(cor_cat))
+(contagensCor <- table(dadosCor$origem, dadosCor$cor_cat))
 names(dimnames(contagensCor)) = c("Gestante", "Cor")
 colnames(contagensCor) = c("Branca", "Não branca")
 
@@ -122,7 +124,7 @@ graficoCor <- ggplot(dadosLongCor, aes(x = Gestante, y = Freq, fill = Cor)) +
         legend.text = element_text(size = 18))  # Aumenta texto da legenda
 
 # Salvar gráfico em PNG para inserção no Canvas
-ggsave("../results/figures/graficoGestantesCor.png", plot = graficoCor, width = 10, height = 6, dpi = 300)
+ggsave(here("results", "figures", "graficoGestantesCor.png"), plot = graficoCor, width = 10, height = 6, dpi = 300)
 
 
 #Criar gráfico de barras agrupado de frequencias com cores vivas
@@ -147,14 +149,14 @@ graficoCorFreq <- ggplot(dadosLongCorFreq, aes(x = Gestante, y = Freq, fill = Co
         legend.text = element_text(size = 18))  # Aumenta texto da legenda
 
 # Salvar gráfico em PNG para inserção no Canvas
-ggsave("../results/figures/graficoGestantesCorFreq.png", plot = graficoCorFreq, width = 10, height = 6, dpi = 300)
+ggsave(here("results", "figures", "graficoGestantesCorFreq.png"), plot = graficoCorFreq, width = 10, height = 6, dpi = 300)
 
 ####### Tipo de gestante por estado civil ####### 
 
 # Juntando estado civil, categoria 3 com categoria 1 (Solteira sem companheiro). No caso das casadas, continua sendo "Solteira sem companheiro". No caso das adolescentes, sáo os dois tipos de solteiras (com e sem companheiros):
 dadosFiltEstadoCivil <- dadosFilt %>%
   mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat)) %>%
-  filter(novo_estado_civil != 5 & novo_estado_civil != 6) # Removendo registros onde estado civil é "Ignorado")
+  filter(novo_estado_civil != 5 & novo_estado_civil != 6 & novo_estado_civil != 999 & !is.na(novo_estado_civil)) # Removendo registros onde estado civil é "Ignorado")
 
 # Estado civil por tipo de gestante::
 (contagensEstadoCivil <- table(dadosFiltEstadoCivil$origem, dadosFiltEstadoCivil$novo_estado_civil))
@@ -204,7 +206,7 @@ assoc(contagensEstadoCivil
 )
 
 # Salvar gráfico em PNG para inserção no Canvas
-ggsave("../results/figures/graficoGestantesEstadoCivil.png", plot = graficoEstadoCivil, width = 10, height = 6, dpi = 300)
+ggsave(here("results", "figures", "graficoGestantesEstadoCivil.png"), plot = graficoEstadoCivil, width = 10, height = 6, dpi = 300)
 
 
 
@@ -230,4 +232,4 @@ ggsave("../results/figures/graficoGestantesEstadoCivil.png", plot = graficoEstad
 )
 
 # Salvar gráfico em PNG para inserção no Canvas
-ggsave("../results/figures/graficoGestantesEstadoCivilFreq.png", plot = graficoEstadoCivilFreq, width = 10, height = 6, dpi = 300)
+ggsave(here("results", "figures", "graficoGestantesEstadoCivilFreq.png"), plot = graficoEstadoCivilFreq, width = 10, height = 6, dpi = 300)

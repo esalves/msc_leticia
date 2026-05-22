@@ -4,10 +4,10 @@ library(readxl)
 library(dplyr)
 
 # Path to the Excel file
-excel_file_path <- "BD_completo_corrigido_12-02-2025.xlsx"
+excel_file_path <- here::here("data", "raw", "BD_completo_corrigido_13-05-2026.xls")
 
 # Load original data
-dados <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "Sheet1")))
+dados <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "BD_leticia_08-05")))
 
 # Apply filtering steps from the main script to get dadosFilt
 dadosFilt <- dados %>%
@@ -19,7 +19,7 @@ dadosFilt <- dados %>%
 # Apply steps to get dadosFiltEstadoCivil for novo_estado_civil testing
 dadosFiltEstadoCivil <- dadosFilt %>%
   mutate(novo_estado_civil = ifelse(estado_civil_cat == 3, 1, estado_civil_cat)) %>%
-  filter(novo_estado_civil != 5 & novo_estado_civil != 6) # Removing "Ignorado"
+  filter(novo_estado_civil != 5 & novo_estado_civil != 6 & novo_estado_civil != 999) # Removing "Ignorado"
 
 context("Data Integrity Post-Filtering")
 
@@ -55,7 +55,7 @@ test_that("Unique values in 'cor_cat' are as expected", {
   if (nrow(dadosFilt) > 0) {
     # Assuming codes 1: Branca, 2: Não branca based on table column order
     # This is an assumption. Actual values in data should be confirmed.
-    expected_cor_cat_values <- c(1, 2) 
+    expected_cor_cat_values <- c(1, 2, 999) 
     expect_true(all(unique(dadosFilt$cor_cat) %in% expected_cor_cat_values))
   } else {
     skip("Skipping 'cor_cat' integrity test as dadosFilt is empty")

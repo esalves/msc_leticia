@@ -1,17 +1,29 @@
-﻿faixa_etaria,variavel,categoria,n,valor
-Adolescentes precoces (11-15),N total,Total,538,538
-Adolescentes precoces (11-15),Idade,Média (DP),538,14.4 (0.8)
-Adolescentes precoces (11-15),Escolaridade,2.0,379,379 (70.4%)
-Adolescentes precoces (11-15),Escolaridade,3.0,132,132 (24.5%)
-Adolescentes precoces (11-15),Escolaridade,1.0,1,1 (0.2%)
-Adolescentes tardias (16-19),N total,Total,829,829
-Adolescentes tardias (16-19),Idade,Média (DP),829,16.6 (0.6)
-Adolescentes tardias (16-19),Escolaridade,3.0,483,483 (58.3%)
-Adolescentes tardias (16-19),Escolaridade,2.0,286,286 (34.5%)
-Adolescentes tardias (16-19),Escolaridade,1.0,1,1 (0.1%)
-Adultas (20-34),N total,Total,5279,5279
-Adultas (20-34),Idade,Média (DP),5279,27.0 (4.1)
-Adultas (20-34),Escolaridade,3.0,2547,2547 (48.2%)
-Adultas (20-34),Escolaridade,2.0,1737,1737 (32.9%)
-Adultas (20-34),Escolaridade,4.0,267,267 (5.1%)
-Adultas (20-34),Escolaridade,1.0,45,45 (0.9%)
+"faixa_etaria_f","variavel","categoria","n","valor"
+"Adolescentes precoces (11-15)","Escolaridade","1",1,"1 (0.2%)"
+"Adolescentes precoces (11-15)","Escolaridade","2",379,"379 (70.4%)"
+"Adolescentes precoces (11-15)","Escolaridade","3",132,"132 (24.5%)"
+"Adolescentes precoces (11-15)","Escolaridade","999",26,"26 (4.8%)"
+"Adolescentes tardias (16-19)","Escolaridade","1",1,"1 (0.1%)"
+"Adolescentes tardias (16-19)","Escolaridade","2",286,"286 (34.5%)"
+"Adolescentes tardias (16-19)","Escolaridade","3",483,"483 (58.3%)"
+"Adolescentes tardias (16-19)","Escolaridade","999",59,"59 (7.1%)"
+"Adultas (20-34)","Escolaridade","1",45,"45 (0.9%)"
+"Adultas (20-34)","Escolaridade","2",1737,"1737 (32.9%)"
+"Adultas (20-34)","Escolaridade","3",2547,"2547 (48.2%)"
+"Adultas (20-34)","Escolaridade","4",267,"267 (5.1%)"
+"Adultas (20-34)","Escolaridade","999",683,"683 (12.9%)"
+"Adolescentes precoces (11-15)","Estado Civil","1",373,"373 (69.3%)"
+"Adolescentes precoces (11-15)","Estado Civil","2",8,"8 (1.5%)"
+"Adolescentes precoces (11-15)","Estado Civil","4",127,"127 (23.6%)"
+"Adolescentes precoces (11-15)","Estado Civil","999",30,"30 (5.6%)"
+"Adolescentes tardias (16-19)","Estado Civil","1",448,"448 (54%)"
+"Adolescentes tardias (16-19)","Estado Civil","2",58,"58 (7%)"
+"Adolescentes tardias (16-19)","Estado Civil","4",260,"260 (31.4%)"
+"Adolescentes tardias (16-19)","Estado Civil","5",1,"1 (0.1%)"
+"Adolescentes tardias (16-19)","Estado Civil","999",62,"62 (7.5%)"
+"Adultas (20-34)","Estado Civil","1",1460,"1460 (27.7%)"
+"Adultas (20-34)","Estado Civil","2",1827,"1827 (34.6%)"
+"Adultas (20-34)","Estado Civil","4",1645,"1645 (31.2%)"
+"Adultas (20-34)","Estado Civil","5",57,"57 (1.1%)"
+"Adultas (20-34)","Estado Civil","6",5,"5 (0.1%)"
+"Adultas (20-34)","Estado Civil","999",285,"285 (5.4%)"

@@ -1,7 +1,7 @@
 "Robson","n","test","statistic","df","p_value","significativo"
 1,1293,"Chi-quadrado",35.386,4,0,"***"
 2,1073,"Chi-quadrado",26.522,4,0,"***"
-3,921,"Fisher (Monte Carlo)",NA,NA,0.0014,"**"
+3,921,"Fisher (Monte Carlo)",NA,NA,0.0013,"**"
 4,424,"Não aplicável",NA,NA,NA,NA
 5,1175,"Não aplicável",NA,NA,NA,NA
 6,41,"Fisher (Monte Carlo)",NA,NA,1,"ns"

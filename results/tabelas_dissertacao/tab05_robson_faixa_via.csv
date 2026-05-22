@@ -1,56 +1,24 @@
-﻿Robson_cat,faixa_etaria,tipo_parto_desc,n,total,pct
-1,Adolescentes precoces (11-15),Cesárea,109,393,27.7
-1,Adolescentes precoces (11-15),Fórcipe (Instrumental),96,393,24.4
-1,Adolescentes precoces (11-15),Normal (Vaginal Espontâneo),188,393,47.8
-1,Adolescentes tardias (16-19),Cesárea,138,509,27.1
-1,Adolescentes tardias (16-19),Fórcipe (Instrumental),169,509,33.2
-1,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),202,509,39.7
-1,Adultas (20-34),Cesárea,147,391,37.6
-1,Adultas (20-34),Fórcipe (Instrumental),132,391,33.8
-1,Adultas (20-34),Normal (Vaginal Espontâneo),112,391,28.6
-10,Adolescentes precoces (11-15),Cesárea,11,56,19.6
-10,Adolescentes precoces (11-15),Fórcipe (Instrumental),11,56,19.6
-10,Adolescentes precoces (11-15),Normal (Vaginal Espontâneo),34,56,60.7
-10,Adolescentes tardias (16-19),Cesárea,36,115,31.3
-10,Adolescentes tardias (16-19),Fórcipe (Instrumental),18,115,15.7
-10,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),61,115,53.0
-10,Adultas (20-34),Cesárea,738,1180,62.5
-10,Adultas (20-34),Fórcipe (Instrumental),67,1180,5.7
-10,Adultas (20-34),Normal (Vaginal Espontâneo),375,1180,31.8
-2,Adolescentes precoces (11-15),Cesárea,25,53,47.2
-2,Adolescentes precoces (11-15),Fórcipe (Instrumental),22,53,41.5
-2,Adolescentes precoces (11-15),Normal (Vaginal Espontâneo),6,53,11.3
-2,Adolescentes tardias (16-19),Cesárea,47,81,58.0
-2,Adolescentes tardias (16-19),Fórcipe (Instrumental),22,81,27.2
-2,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),12,81,14.8
-2,Adultas (20-34),Cesárea,674,939,71.8
-2,Adultas (20-34),Fórcipe (Instrumental),157,939,16.7
-2,Adultas (20-34),Normal (Vaginal Espontâneo),108,939,11.5
-3,Adolescentes precoces (11-15),Cesárea,11,26,42.3
-3,Adolescentes precoces (11-15),Fórcipe (Instrumental),5,26,19.2
-3,Adolescentes precoces (11-15),Normal (Vaginal Espontâneo),10,26,38.5
-3,Adolescentes tardias (16-19),Cesárea,26,103,25.2
-3,Adolescentes tardias (16-19),Fórcipe (Instrumental),20,103,19.4
-3,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),57,103,55.3
-3,Adultas (20-34),Cesárea,153,792,19.3
-3,Adultas (20-34),Fórcipe (Instrumental),95,792,12.0
-3,Adultas (20-34),Normal (Vaginal Espontâneo),544,792,68.7
-4,Adultas (20-34),Cesárea,206,424,48.6
-4,Adultas (20-34),Fórcipe (Instrumental),39,424,9.2
-4,Adultas (20-34),Normal (Vaginal Espontâneo),179,424,42.2
-5,Adultas (20-34),Cesárea,1048,1175,89.2
-5,Adultas (20-34),Fórcipe (Instrumental),54,1175,4.6
-5,Adultas (20-34),Normal (Vaginal Espontâneo),73,1175,6.2
-6,Adolescentes precoces (11-15),Cesárea,1,1,100.0
-6,Adolescentes tardias (16-19),Cesárea,1,1,100.0
-6,Adultas (20-34),Cesárea,36,38,94.7
-6,Adultas (20-34),Normal (Vaginal Espontâneo),2,38,5.3
-7,Adolescentes precoces (11-15),Cesárea,4,4,100.0
-7,Adolescentes tardias (16-19),Cesárea,17,18,94.4
-7,Adolescentes tardias (16-19),Normal (Vaginal Espontâneo),1,18,5.6
-7,Adultas (20-34),Cesárea,272,300,90.7
-7,Adultas (20-34),Normal (Vaginal Espontâneo),28,300,9.3
-9,Adolescentes precoces (11-15),Cesárea,5,5,100.0
-9,Adolescentes tardias (16-19),Cesárea,2,2,100.0
-9,Adultas (20-34),Cesárea,36,40,90.0
-9,Adultas (20-34),Normal (Vaginal Espontâneo),4,40,10.0
+"Robson_cat_f","faixa_etaria_f","Cesárea","Fórcipe (Instrumental)","Normal (Vaginal Espontâneo)"
+"Grupo 1","Adolescentes precoces (11-15)","109 (27.7%)","96 (24.4%)","188 (47.8%)"
+"Grupo 1","Adolescentes tardias (16-19)","138 (27.1%)","169 (33.2%)","202 (39.7%)"
+"Grupo 1","Adultas (20-34)","147 (37.6%)","132 (33.8%)","112 (28.6%)"
+"Grupo 2","Adolescentes precoces (11-15)","25 (47.2%)","22 (41.5%)","6 (11.3%)"
+"Grupo 2","Adolescentes tardias (16-19)","47 (58%)","22 (27.2%)","12 (14.8%)"
+"Grupo 2","Adultas (20-34)","674 (71.8%)","157 (16.7%)","108 (11.5%)"
+"Grupo 3","Adolescentes precoces (11-15)","11 (42.3%)","5 (19.2%)","10 (38.5%)"
+"Grupo 3","Adolescentes tardias (16-19)","26 (25.2%)","20 (19.4%)","57 (55.3%)"
+"Grupo 3","Adultas (20-34)","153 (19.3%)","95 (12%)","544 (68.7%)"
+"Grupo 4","Adultas (20-34)","206 (48.6%)","39 (9.2%)","179 (42.2%)"
+"Grupo 5","Adultas (20-34)","1048 (89.2%)","54 (4.6%)","73 (6.2%)"
+"Grupo 6","Adolescentes precoces (11-15)","1 (100%)","0 (0%)","0 (0%)"
+"Grupo 6","Adolescentes tardias (16-19)","1 (100%)","0 (0%)","0 (0%)"
+"Grupo 6","Adultas (20-34)","36 (94.7%)","0 (0%)","2 (5.3%)"
+"Grupo 7","Adolescentes precoces (11-15)","4 (100%)","0 (0%)","0 (0%)"
+"Grupo 7","Adolescentes tardias (16-19)","17 (94.4%)","0 (0%)","1 (5.6%)"
+"Grupo 7","Adultas (20-34)","272 (90.7%)","0 (0%)","28 (9.3%)"
+"Grupo 9","Adolescentes precoces (11-15)","5 (100%)","0 (0%)","0 (0%)"
+"Grupo 9","Adolescentes tardias (16-19)","2 (100%)","0 (0%)","0 (0%)"
+"Grupo 9","Adultas (20-34)","36 (90%)","0 (0%)","4 (10%)"
+"Grupo 10","Adolescentes precoces (11-15)","11 (19.6%)","11 (19.6%)","34 (60.7%)"
+"Grupo 10","Adolescentes tardias (16-19)","36 (31.3%)","18 (15.7%)","61 (53%)"
+"Grupo 10","Adultas (20-34)","738 (62.5%)","67 (5.7%)","375 (31.8%)"

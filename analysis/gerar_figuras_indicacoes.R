@@ -30,8 +30,8 @@ tema_pub <- theme_minimal(base_size = 12) +
 
 # Carregar dados
 dados <- read_excel(
-    here("data", "raw", "BD_completo_corrigido_06-04-2026.xlsx"),
-    sheet = "Sheet1"
+    here("data", "raw", "BD_completo_corrigido_13-05-2026.xls"),
+    sheet = "BD_leticia_08-05"
 )
 
 # Aplicar filtros (espelho do chunk filtragem-dados)
@@ -56,7 +56,6 @@ dados_analise <- dados %>%
     mutate(
         ig_best = case_when(
             !is.na(ig_parto) & ig_parto > 0 ~ ig_parto,
-            !is.na(ig_parto2) & ig_parto2 > 0 ~ ig_parto2,
             TRUE ~ NA_real_
         )
     ) %>%

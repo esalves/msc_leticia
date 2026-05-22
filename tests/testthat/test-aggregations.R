@@ -5,10 +5,10 @@ library(dplyr)
 library(vcd) # For assoc() and mosaic() if their inputs are tested, though script uses table() directly
 
 # Path to the Excel file
-excel_file_path <- "BD_completo_corrigido_12-02-2025.xlsx"
+excel_file_path <- here::here("data", "raw", "BD_completo_corrigido_13-05-2026.xls")
 
 # Load original data
-dados <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "Sheet1")))
+dados <- suppressMessages(suppressWarnings(read_excel(excel_file_path, sheet = "BD_leticia_08-05")))
 
 # Apply filtering steps from the main script to get dadosFilt
 dadosFilt <- dados %>%

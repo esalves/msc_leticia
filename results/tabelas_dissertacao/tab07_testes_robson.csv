@@ -1,7 +1,7 @@
 "Robson","n","Teste","Estatística","gl","p-valor","Significância"
 1,1293,"Qui-quadrado",35.386,4,0,"***"
 2,1073,"Qui-quadrado",26.522,4,0,"***"
-3,921,"Fisher (MC)",NA,NA,0.0016,"**"
+3,921,"Fisher (MC)",NA,NA,0.0011,"**"
 4,424,"Não aplicável",NA,NA,NA,"—"
 5,1175,"Não aplicável",NA,NA,NA,"—"
 6,41,"Fisher (MC)",NA,NA,1,"ns"

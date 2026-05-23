@@ -156,7 +156,7 @@ def draw_forest(rows, title, out_path, ref_line=1.0):
         1, 3,
         width_ratios=[6, 2.2, 1.8],
         wspace=0.03,
-        left=0.30, right=0.97, top=0.90, bottom=0.10
+        left=0.30, right=0.97, top=0.83, bottom=0.10
     )
 
     ax_plot  = fig.add_subplot(gs[0])

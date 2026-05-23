@@ -120,9 +120,10 @@ A base de dados contém registros obstétricos do Hospital das Clínicas da FMUS
 
 ```{r}
 #| label: carregamento-dados
+# Fonte canônica para análise §3.3 — N esperado após filtros: 6.650
 dados <- read_excel(
-    here("data", "raw", "BD_completo_corrigido_13-05-2026.xls"),
-    sheet = "BD_leticia_08-05"
+    here("data", "raw", "BD_completo_corrigido_06-04-2026.xlsx"),
+    sheet = "Sheet1"
 )
 
 cat("Dimensões da base bruta:", nrow(dados), "registros ×", ncol(dados), "variáveis\n")
@@ -186,10 +187,13 @@ n_excl_s3 <- nrow(dados_s2) - nrow(dados_s3)
 # Passo 4: Filtrar por IG ≥ 22 semanas
 # Nota: ig_parto == 0 representa dado ausente (não parto com 0 semanas).
 # O filtro é aplicado SOMENTE quando a coluna tem valor válido (> 0).
+# ig_best usa ig_parto como primário; quando ausente, usa ig_parto2 como fallback.
+# Registros com ig_best NA ou == 0 são mantidos (dado não registrado, não abortamento).
 dados_s4 <- dados_s3 %>%
     mutate(
         ig_best = case_when(
             !is.na(ig_parto) & ig_parto > 0 ~ ig_parto,
+            is.na(ig_parto) & !is.na(ig_parto2) & ig_parto2 > 0 ~ ig_parto2,
             TRUE ~ NA_real_
         )
     ) %>%
@@ -225,12 +229,28 @@ dados_analise <- dados_s4 %>%
             labels = paste("Grupo", c(1, 2, 3, 4, 5, 6, 7, 9, 10))
         )
     )
+
+# ── Validação §3.3: N esperado após todos os filtros ─────────────────────────
+# N esperado: 6.650 (538 precoces, 829 tardias, 5.283 adultas)
+# ig_best usa ig_parto como primário e ig_parto2 como fallback; 2 registros têm
+# ig_parto=NA mas ig_parto2 < 22 semanas e são excluídos corretamente.
+n_final_esperado <- 6650L
+if (nrow(dados_analise) != n_final_esperado) {
+    warning(sprintf(
+        "ATENÇÃO §3.3: N obtido = %d, mas N esperado = %d. Verifique os filtros.",
+        nrow(dados_analise), n_final_esperado
+    ))
+} else {
+    cat(sprintf("OK §3.3: N = %d (conforme esperado).\n", nrow(dados_analise)))
+}
 ```
 
 ```{r}
 #| label: consort-flow
 #| echo: false
 # Diagrama de fluxo CONSORT em texto — rastreabilidade do N
+# N esperado: 6.650 total (538 precoces + 829 tardias + 5.283 adultas)
+# 13 registros excluídos por IG < 22 semanas (usando ig_parto + ig_parto2 fallback)
 cat("╔══════════════════════════════════════════════════════════════════════╗\n")
 cat("║           DIAGRAMA DE FLUXO DE ELEGIBILIDADE (CONSORT)             ║\n")
 cat("╠══════════════════════════════════════════════════════════════════════╣\n")
@@ -273,6 +293,42 @@ resumo %>%
     rename(`Faixa Etária` = faixa_etaria_f, `N` = n, `%` = pct) %>%
     kable(caption = "Distribuição da amostra por faixa etária") %>%
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+```{r}
+#| label: validacao-n-total
+#| echo: true
+#| include: true
+# =============================================================================
+# VALIDAÇÃO §3.3 — N total esperado: 6.650
+# Conforme filtro definitivo da seção 3.3 da dissertação:
+#   - Idade 11-34 anos, tipo_parto não nulo, Robson válido (1-7,9,10),
+#     IG ≥ 22 quando registrada (IG=0 = dado ausente, mantido).
+# =============================================================================
+N_ESPERADO <- 6650L
+N_OBTIDO   <- nrow(dados_analise)
+
+if (N_OBTIDO == N_ESPERADO) {
+    cat(sprintf(
+        "VALIDAÇÃO OK: nrow(dados_analise) = %d (esperado: %d)\n",
+        N_OBTIDO, N_ESPERADO
+    ))
+} else {
+    stop(sprintf(
+        "VALIDAÇÃO FALHOU: N obtido = %d, N esperado = %d. Revisar filtro §3.3.",
+        N_OBTIDO, N_ESPERADO
+    ))
+}
+
+# Distribuição esperada por faixa (ref. §3.3):
+#   precoces (11-15): 538  |  tardias (16-19): 829  |  adultas (20-34): 5.283
+cat("\nDistribuição por faixa etária (filtro §3.3):\n")
+cat(sprintf("  Adolescentes precoces (11-15): %d\n",
+    sum(dados_analise$faixa_etaria == "Adolescentes precoces (11-15)", na.rm = TRUE)))
+cat(sprintf("  Adolescentes tardias  (16-19): %d\n",
+    sum(dados_analise$faixa_etaria == "Adolescentes tardias (16-19)", na.rm = TRUE)))
+cat(sprintf("  Adultas               (20-34): %d\n",
+    sum(dados_analise$faixa_etaria == "Adultas (20-34)", na.rm = TRUE)))
 ```
 
 ::: {.callout-tip}

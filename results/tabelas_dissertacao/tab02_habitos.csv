@@ -1,0 +1,7 @@
+variavel,categoria,precoces (11-15),tardias (16-19),adultas (20-34),p_valor
+Tabagismo,Não,498 (92.6%),713 (86.2%),5281 (100.0%),0.0
+Tabagismo,Sim,40 (7.4%),114 (13.8%),2 (0.0%),
+Uso de drogas,Não,430 (92.5%),620 (88.1%),5266 (99.7%),0.0
+Uso de drogas,Sim,35 (7.5%),84 (11.9%),16 (0.3%),
+Uso de álcool,Não,509 (94.6%),781 (94.4%),5283 (100.0%),0.0
+Uso de álcool,Sim,29 (5.4%),46 (5.6%),0 (0.0%),

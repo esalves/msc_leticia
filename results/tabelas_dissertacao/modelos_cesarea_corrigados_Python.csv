@@ -1,0 +1,48 @@
+Modelo,Variavel,B,p_valor,OR,IC95_inf,IC95_sup
+Sug1_corrigida,Intercept,-1.046,0.0,0.35,0.29,0.43
+Sug1_corrigida,adulta,1.353,0.0,3.87,3.18,4.71
+Sug1_corrigida,dheg_corr,0.976,0.0,2.65,2.17,3.24
+Sug1_corrigida,apres_anomala,2.146,0.0,8.55,5.98,12.21
+Sug2_corrigida,Intercept,-0.0,1.0,1.0,0.06,15.99
+Sug2_corrigida,adulta,0.267,0.8504,1.31,0.08,20.89
+Sug2_corrigida,dheg_corr,0.986,0.0,2.68,2.18,3.3
+Sug2_corrigida,apres_anomala,1.918,0.0,6.81,4.76,9.74
+Sug2_corrigida,dmg_obst,0.419,0.0,1.52,1.26,1.83
+Sug3_corrigida,Intercept,-1.394,0.0,0.25,0.2,0.31
+Sug3_corrigida,"C(robson, Treatment(reference=1.0))[T.2.0]",1.481,0.0,4.4,3.52,5.5
+Sug3_corrigida,"C(robson, Treatment(reference=1.0))[T.5.0]",-0.841,0.0,0.43,0.34,0.55
+Sug3_corrigida,"C(robson, Treatment(reference=1.0))[T.6.0]",0.435,0.0014,1.55,1.18,2.02
+Sug3_corrigida,"C(robson, Treatment(reference=1.0))[T.9.0]",2.663,0.0,14.34,11.04,18.63
+Sug3_corrigida,"C(robson, Treatment(reference=1.0))[T.10.0]",45299097.367,,inf,,
+Sug3_corrigida,"C(robson, Treatment(reference=1.0))[T.11.0]",45299095.7,,inf,,
+Sug3_corrigida,"C(robson, Treatment(reference=1.0))[T.12.0]",45299096.4,,inf,,
+Sug3_corrigida,"C(robson, Treatment(reference=1.0))[T.13.0]",0.913,0.0,2.49,2.01,3.08
+Sug3_corrigida,adulta,0.778,0.0,2.18,1.73,2.74
+Sug3_corrigida,dheg_corr,0.942,0.0,2.57,2.07,3.18
+Sug3_corrigida,apres_anomala,-45299092.772,,0.0,,
+Sug4_corrigida,Intercept,-1.077,0.0,0.34,0.3,0.39
+Sug4_corrigida,"C(robson, Treatment(reference=1.0))[T.2.0]",1.294,0.0,3.65,2.99,4.44
+Sug4_corrigida,"C(robson, Treatment(reference=1.0))[T.5.0]",-0.843,0.0,0.43,0.34,0.54
+Sug4_corrigida,"C(robson, Treatment(reference=1.0))[T.6.0]",0.339,0.008,1.4,1.09,1.8
+Sug4_corrigida,"C(robson, Treatment(reference=1.0))[T.9.0]",2.545,0.0,12.75,9.97,16.29
+Sug4_corrigida,"C(robson, Treatment(reference=1.0))[T.10.0]",3.439,0.0,31.15,7.44,130.35
+Sug4_corrigida,"C(robson, Treatment(reference=1.0))[T.11.0]",2.737,0.0,15.44,10.29,23.17
+Sug4_corrigida,"C(robson, Treatment(reference=1.0))[T.12.0]",3.163,0.0,23.63,7.24,77.2
+Sug4_corrigida,"C(robson, Treatment(reference=1.0))[T.13.0]",0.758,0.0,2.13,1.78,2.57
+Sug4_corrigida,adulta,0.587,0.0,1.8,1.52,2.12
+Sug4_corrigida,dheg_corr,0.869,0.0,2.39,1.94,2.93
+Sug1_SPSS_incorreta,Intercept,-0.525,0.0713,0.59,0.33,1.05
+Sug1_SPSS_incorreta,adulta,0.811,0.0051,2.25,1.28,3.97
+Sug1_SPSS_incorreta,dheg_spss,0.795,0.0,2.21,1.87,2.62
+Sug1_SPSS_incorreta,apres_anomala,1.912,0.0,6.76,4.73,9.67
+Sug4_SPSS_incorreta,Intercept,-1.028,0.0,0.36,0.23,0.56
+Sug4_SPSS_incorreta,"C(robson, Treatment(reference=1.0))[T.2.0]",1.38,0.0,3.98,3.12,5.07
+Sug4_SPSS_incorreta,"C(robson, Treatment(reference=1.0))[T.5.0]",-0.898,0.0,0.41,0.31,0.53
+Sug4_SPSS_incorreta,"C(robson, Treatment(reference=1.0))[T.6.0]",0.405,0.0041,1.5,1.14,1.98
+Sug4_SPSS_incorreta,"C(robson, Treatment(reference=1.0))[T.9.0]",2.598,0.0,13.44,10.24,17.64
+Sug4_SPSS_incorreta,"C(robson, Treatment(reference=1.0))[T.10.0]",3.428,0.0,30.81,7.31,129.79
+Sug4_SPSS_incorreta,"C(robson, Treatment(reference=1.0))[T.11.0]",2.714,0.0,15.09,9.79,23.25
+Sug4_SPSS_incorreta,"C(robson, Treatment(reference=1.0))[T.12.0]",2.886,0.0,17.91,5.41,59.37
+Sug4_SPSS_incorreta,"C(robson, Treatment(reference=1.0))[T.13.0]",0.914,0.0,2.5,1.98,3.14
+Sug4_SPSS_incorreta,adulta,0.448,0.051,1.56,1.0,2.45
+Sug4_SPSS_incorreta,dheg_spss,0.729,0.0,2.07,1.72,2.49

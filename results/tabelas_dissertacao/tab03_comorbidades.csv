@@ -1,0 +1,16 @@
+variavel,categoria,precoces (11-15),tardias (16-19),adultas (20-34),p_valor
+Asma,Sim,3 (0.6%),6 (0.7%),186 (3.5%),0.0
+Cardiopatia materna,Sim,1 (0.2%),5 (0.6%),184 (3.5%),0.0
+DHEG (alternativo),Sim,26 (4.8%),35 (4.2%),599 (11.3%),0.0
+Diabetes mellitus gestacional (DMG - alt),Sim,3 (0.6%),4 (0.5%),552 (10.4%),0.0
+Diabetes mellitus gestacional (DMG),Sim,0 (0.0%),0 (0.0%),552 (10.5%),0.6288
+Diabetes pré-gestacional,Sim,0 (0.0%),0 (0.0%),176 (3.3%),0.0
+Eclâmpsia,Sim,0 (0.0%),0 (0.0%),95 (1.8%),0.8481
+Epilepsia,Sim,3 (0.6%),1 (0.1%),74 (1.4%),0.0024
+Hipertensão arterial crônica (pré-existente),Sim,2 (0.4%),3 (0.4%),382 (7.2%),0.0
+Hipertensão gestacional / DHEG,Sim,0 (0.0%),0 (0.0%),812 (15.4%),0.5464
+Iminência de eclâmpsia,Sim,1 (0.2%),1 (0.1%),13 (0.2%),0.7626
+Pré-eclâmpsia,Sim,0 (0.0%),0 (0.0%),15 (0.3%),0.9398
+Qualquer patologia materna pré-existente,Sim,19 (3.5%),40 (4.8%),1499 (28.4%),0.0
+Rotura prematura de membranas (RPMO),Sim,1 (0.2%),0 (0.0%),450 (8.5%),0.0
+Trombofilias,Sim,0 (0.0%),1 (0.1%),41 (0.8%),0.0134

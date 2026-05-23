@@ -1,5 +1,10 @@
 """
 =============================================================================
+DEPRECATED — 2026-05-23
+Substituído por: analysis/04_modelo4_regressao.R
+Razão: usa BD_completo_corrigido_13-05-2026.xls e filtro ad-hoc (não §3.3).
+=============================================================================
+=============================================================================
 ANÁLISE CORRIGIDA: Modelos de Regressão Logística para Cesárea
 Correção: Uso de 'dheg' (variável correta) no lugar de 'dheg_hipertensao_obst'
 Baseado nos 4 modelos sugeridos pela estatística (arquivo: Resultados_finais.ods)

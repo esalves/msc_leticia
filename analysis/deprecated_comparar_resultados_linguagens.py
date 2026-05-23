@@ -1,5 +1,10 @@
 """
 =============================================================================
+DEPRECATED — 2026-05-23
+Substituído por: analysis/04_modelo4_regressao.R + analysis/05_forest_plot_modelo4.py
+Razão: script exploratório sem filtro §3.3; supersedido pela arquitetura nova.
+=============================================================================
+=============================================================================
 SCRIPT DE COMPARAÇÃO: R vs Python vs Julia
 Compara os resultados dos 4 modelos de regressão logística para cesárea
 gerados nas três linguagens e verifica consistência dos coeficientes.

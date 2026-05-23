@@ -1,4 +1,10 @@
 # =============================================================================
+# DEPRECATED — 2026-05-23
+# Substituído por: analysis/03_indicacoes_parto.R
+# Razão: usa BD_completo_corrigido_13-05-2026.xls e filtro incompleto (sem IG).
+# O script novo aplica o filtro §3.3 completo (N = 6.650).
+# =============================================================================
+# =============================================================================
 # Script: gerar_figuras_indicacoes.R
 # Objetivo: Gerar os PNGs das figuras de indicações de cesárea e fórcipe
 #           (fig_obj3_indicacoes_cesarea.png e fig_obj3_indicacoes_forcipe.png)

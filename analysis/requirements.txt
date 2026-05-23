@@ -1,0 +1,16 @@
+# Dependências Python para o pipeline de análise da dissertação.
+# Instale com: pip install -r analysis/requirements.txt
+#
+# Script que usa cada pacote:
+#   - matplotlib: 05_forest_plot_modelo4.py
+#   - numpy, pandas: 05_forest_plot_modelo4.py
+#   - (statsmodels, scipy, openpyxl não são usados pelos scripts ativos hoje,
+#      mas estão listados porque os scripts deprecated_* dependem deles e
+#      Eduardo pode querer rodar análises ad-hoc nos microdados.)
+
+matplotlib>=3.7
+numpy>=1.24
+pandas>=2.0
+openpyxl>=3.1
+statsmodels>=0.14
+scipy>=1.10

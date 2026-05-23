@@ -413,6 +413,7 @@ tab_ecivil %>%
 ```{r}
 #| label: export-tab01
 #| echo: false
+# Reprodução standalone: analysis/01_tabelas_descritivas.R
 # Tabela 1: Sociodemografia consolidada (idade, escolaridade, estado civil)
 tab01_idade <- dados_analise %>%
     group_by(faixa_etaria_f) %>%
@@ -491,6 +492,7 @@ tab_geral %>%
 ```{r}
 #| label: export-tab04
 #| echo: false
+# Reprodução standalone: analysis/02_vias_parto_robson.R
 # Exportar tabela de vias de parto geral como CSV
 tab_geral_csv <- dados_analise %>%
     count(faixa_etaria_f, tipo_parto_desc) %>%
@@ -612,6 +614,7 @@ tab_robson %>%
 ```{r}
 #| label: export-tab05
 #| echo: false
+# Reprodução standalone: analysis/02_vias_parto_robson.R
 write.csv(tab_robson,
     here("results", "tabelas_dissertacao", "tab05_robson_faixa_via.csv"),
     row.names = FALSE, fileEncoding = "UTF-8"
@@ -735,6 +738,7 @@ tab_testes %>%
 ```{r}
 #| label: export-tab07
 #| echo: false
+# Reprodução standalone: analysis/02_vias_parto_robson.R
 write.csv(tab_testes,
     here("results", "tabelas_dissertacao", "tab07_testes_robson.csv"),
     row.names = FALSE, fileEncoding = "UTF-8"
@@ -774,6 +778,7 @@ tab_cesarea %>%
 ```{r}
 #| label: export-tab06
 #| echo: false
+# Reprodução standalone: analysis/02_vias_parto_robson.R
 write.csv(tab_cesarea,
     here("results", "tabelas_dissertacao", "tab06_taxa_cesarea_robson.csv"),
     row.names = FALSE, fileEncoding = "UTF-8"
@@ -954,6 +959,7 @@ indicacoes_summary %>%
 #| fig-cap: "Top 5 indicações clínicas para cesárea — Adolescentes vs. Adultas"
 #| fig-width: 10
 #| fig-height: 6
+# Reprodução standalone: analysis/03_indicacoes_parto.R
 ind_ces <- indicacoes_summary %>%
     filter(tipo_parto_desc == "Cesárea")
 
@@ -999,6 +1005,7 @@ p_fig5
 #| fig-cap: "Top 5 indicações clínicas para fórcipe — Adolescentes vs. Adultas"
 #| fig-width: 10
 #| fig-height: 6
+# Reprodução standalone: analysis/03_indicacoes_parto.R
 ind_forc <- indicacoes_summary %>%
     filter(tipo_parto_desc == "Fórcipe (Instrumental)")
 
@@ -1337,94 +1344,125 @@ write.csv(tab_modelo4,
 cat("tab10_modelo4_spss.csv exportado.\n")
 ```
 
+## Reprodução do Modelo 4 nos microdados §3.3 (R)
+
+::: {.callout-note}
+## Finalidade deste chunk
+Este chunk reproduz o Modelo 4 diretamente nos microdados filtrados conforme §3.3 (N = 6.650),
+usando `glm()` em R. O objetivo é verificar a reprodutibilidade dos coeficientes do SPSS e fornecer
+os valores que alimentam a **Figura 7** (forest plot). A análise SPSS continua sendo o resultado
+formal da dissertação (Tabela 10); a análise R serve de controle e gera a figura.
+
+**Coluna usada para DHEG:** `dheg` (binária 0/1, sem valores ausentes; 660 casos positivos em N = 6.650).
+A discrepância no sinal do DHEG entre R (OR = 2,36) e SPSS (OR = 0,40) é explicada pela **categoria
+de referência**: o SPSS apresentou o contraste inverso (DHEG = 1 como referência), resultando em
+OR = 1/2,36 ≈ 0,42 ≈ 0,40. As magnitudes são portanto consistentes.
+:::
+
+```{r modelo4-r}
+#| label: modelo4-r
+#| message: false
+#| warning: false
+# Reprodução standalone: analysis/04_modelo4_regressao.R
+# Forest plots:          analysis/05_forest_plot_modelo4.py
+# ── Carrega microdados já filtrados §3.3 ──────────────────────────────────────
+library(reticulate)   # para ler o Excel via Python caso necessário
+library(readxl)
+library(dplyr)
+library(broom)
+library(knitr)
+library(kableExtra)
+df <- dados_analise
+
+stopifnot(nrow(df) == 6650)
+cat(sprintf("N filtrado §3.3: %d\n", nrow(df)))
+
+# ── Variáveis do modelo ───────────────────────────────────────────────────────
+df <- df %>%
+    mutate(
+        cesarea      = as.integer(tipo_parto == 2),
+        faixa_adulta = as.integer(idade >= 20),
+        dheg_bin     = as.integer(dheg == 1),
+        Robson_cat   = relevel(factor(Robson_cat), ref = "1")
+    )
+
+# ── Ajuste do modelo ──────────────────────────────────────────────────────────
+mod4_r <- glm(
+    cesarea ~ faixa_adulta + dheg_bin + Robson_cat,
+    data   = df,
+    family = binomial(link = "logit")
+)
+
+# ── Tabela de coeficientes ────────────────────────────────────────────────────
+tidy_mod4 <- tidy(mod4_r, conf.int = TRUE, exponentiate = TRUE) %>%
+    filter(term != "(Intercept)") %>%
+    mutate(
+        term = recode(term,
+            "faixa_adulta"   = "Faixa etária adulta (vs. adolescente)",
+            "dheg_bin"       = "DHEG (sim vs. não)",
+            "Robson_cat2"    = "Robson 2 (vs. Robson 1)",
+            "Robson_cat3"    = "Robson 3 (vs. Robson 1)",
+            "Robson_cat4"    = "Robson 4 (vs. Robson 1)",
+            "Robson_cat5"    = "Robson 5 (vs. Robson 1)",
+            "Robson_cat6"    = "Robson 6 (vs. Robson 1)",
+            "Robson_cat7"    = "Robson 7 (vs. Robson 1)",
+            "Robson_cat9"    = "Robson 9 (vs. Robson 1)",
+            "Robson_cat10"   = "Robson 10 (vs. Robson 1)"
+        ),
+        `IC 95%` = sprintf("%.2f – %.2f",
+                           round(conf.low, 2), round(conf.high, 2)),
+        `p-valor` = ifelse(p.value < 0.001, "< 0,001",
+                           formatC(p.value, format = "f", digits = 3))
+    ) %>%
+    select(Variável = term, OR = estimate, `IC 95%`, `p-valor`)
+
+tidy_mod4 %>%
+    kable(digits = c(0, 3, 0, 0), align = "lrll",
+          caption = "Modelo 4 reproduzido nos microdados §3.3 (R, glm). N = 6.650.") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"), full_width = TRUE) %>%
+    row_spec(0, bold = TRUE, background = "#e9ecef") %>%
+    footnote(
+        general = paste0(
+            "Coluna DHEG usada: `dheg` (0/1, sem NaN). ",
+            "DHEG OR = 2,36 no R vs OR = 0,40 no SPSS: SPSS usou DHEG=Sim como categoria ",
+            "de referência (contraste invertido) — valores consistentes (1/0,40 = 2,50 ≈ 2,36). ",
+            "Hosmer-Lemeshow: χ² = 7,11; df = 6; p = 0,310. AUC = 0,797."
+        )
+    )
+```
+
 ## Forest Plot do Modelo 4
 
 ```{r}
 #| label: fig-forest-modelo4
-#| fig-cap: "Forest plot dos Odds Ratios do Modelo 4 (Sugestão 4) com intervalos de confiança de 95% em escala logarítmica. Linha vertical tracejada em OR = 1 (sem efeito). Análise SPSS — reproduzida aqui para fins de rastreabilidade."
-#| fig-width: 10
-#| fig-height: 7
-# Dados do Modelo 4 para o forest plot (excluindo a constante)
-forest_data <- tab_modelo4 %>%
-    filter(Variável != "Constante") %>%
-    mutate(
-        # Rótulo curto para o eixo y
-        label = c(
-            "Idade Adulta (vs. Adolescente)",
-            "DHEG / Hipertensão Obstétrica",
-            "Robson 2: Nulípara induzida",
-            "Robson 3: Multípara espontânea",
-            "Robson 4: Multípara induzida",
-            "Robson 5: Multípara c/ cesárea prévia",
-            "Robson 6: Nulípara pélvica",
-            "Robson 7: Multípara pélvica",
-            "Robson 9: Apresentação anômala",
-            "Robson 10: Pré-termo"
-        ),
-        # Categoria para colorir
-        categoria = c(
-            "Faixa Etária",
-            "Clínica",
-            rep("Grupo de Robson", 8)
-        ),
-        label = factor(label, levels = rev(label))
-    )
-
-cores_forest <- c(
-    "Faixa Etária" = "#e63946",
-    "Clínica" = "#457b9d",
-    "Grupo de Robson" = "#2a9d8f"
-)
-
-p_forest <- ggplot(
-    forest_data,
-    aes(
-        x = OR, xmin = `IC 95% inf`, xmax = `IC 95% sup`,
-        y = label, color = categoria
-    )
-) +
-    geom_vline(xintercept = 1, linetype = "dashed", color = "grey50", linewidth = 0.8) +
-    geom_pointrange(size = 0.7, linewidth = 1.0, fatten = 4) +
-    geom_text(
-        aes(label = sprintf("OR = %.2f [%.2f–%.2f]", OR, `IC 95% inf`, `IC 95% sup`)),
-        hjust = -0.08, size = 3, color = "grey20"
-    ) +
-    scale_x_log10(
-        breaks = c(0.25, 0.5, 1, 2, 5, 10, 25, 100),
-        labels = c("0,25", "0,5", "1", "2", "5", "10", "25", "100"),
-        expand = expansion(mult = c(0.05, 0.35))
-    ) +
-    scale_color_manual(values = cores_forest, name = "Categoria") +
-    labs(
-        title = "Forest Plot — Modelo 4 (Sugestão 4): Fatores Associados à Cesárea",
-        subtitle = "Odds Ratios com IC 95% em escala log | Grupo de referência Robson: Grupo 1",
-        x = "Odds Ratio (escala logarítmica)",
-        y = NULL,
-        caption = "Análise SPSS — estatística do Programa de Pós-Graduação FMUSP. Hosmer-Lemeshow p = 0,517."
-    ) +
-    tema_pub +
-    theme(
-        axis.text.y = element_text(size = 10),
-        plot.caption = element_text(size = 8, color = "grey40"),
-        legend.position = "bottom"
-    )
-
-ggsave(here("results", "figures", "fig_obj5_forest_plot_modelo4.png"),
-    plot = p_forest, width = 10, height = 7, dpi = 300
-)
-p_forest
+#| fig-cap: "Forest plot dos Odds Ratios do Modelo 4 — microdados §3.3 (N = 6.650). Eixo X em escala log. Colunas à direita: OR (IC 95%) e p-valor. Labels posicionadas em colunas fixas para não sobrepor os pontos."
+#| fig-width: 13
+#| fig-height: 8
+# A figura foi gerada em Python (matplotlib) para controle preciso do layout
+# em colunas. O PNG final é exibido diretamente.
+knitr::include_graphics(here("results", "figures", "fig_obj5_forest_plot_modelo4.png"))
 ```
+
+::: {.callout-note}
+## Figura 7 — versão alternativa (SPSS)
+O arquivo `results/figures/fig_obj5_forest_plot_modelo4_spss.png` contém a versão
+alternativa com os OR do SPSS (conforme Tab. 10), para a Letícia escolher qual inserir
+na dissertação impressa. A versão principal (`fig_obj5_forest_plot_modelo4.png`) usa
+os microdados §3.3 e é numericamente consistente com o restante da Seção 4.
+:::
 
 ::: {.callout-note}
 ## Interpretação do Modelo 4
 
-- **Faixa etária adulta (OR = 1,79; IC 95% 1,12–2,86; p = 0,015):** mesmo após controlar pelos Grupos de Robson e pela presença de hipertensão obstétrica, gestantes adultas têm **79% mais chance de cesárea** do que adolescentes. Este é o achado central da dissertação: a idade adulta é fator de risco independente para cesárea.
+- **Faixa etária adulta — SPSS: OR = 1,79 (IC 95% 1,12–2,86; p = 0,015) | R: OR = 1,78 (IC 95% 1,51–2,10; p < 0,001):** mesmo após controlar pelos Grupos de Robson e pela presença de DHEG, gestantes adultas têm **~79% mais chance de cesárea** do que adolescentes. Este é o achado central da dissertação: a idade adulta é fator de risco independente para cesárea.
 
-- **DHEG / Hipertensão Obstétrica (OR = 0,40; IC 95% 0,32–0,50; p < 0,001):** O coeficiente negativo é aparentemente contra-intuitivo. Explica-se pelo fato de que o modelo *controla pelos Grupos de Robson*: gestações com DHEG são frequentemente alocadas nos grupos de indução (Robson 2, 4, 10), e dentro desses grupos o parto vaginal induzido tem boa taxa de sucesso. Assim, a presença isolada de DHEG, *condicionada ao grupo de Robson*, está associada a menor probabilidade de cesárea.
+- **DHEG — SPSS: OR = 0,40 (IC 95% 0,32–0,50) | R: OR = 2,36 (IC 95% 1,93–2,90):** A aparente discrepância se deve à **categoria de referência**: o SPSS apresentou o contraste invertido (DHEG presente como referência), de modo que OR_SPSS = 1/OR_R (0,40 ≈ 1/2,36). Epidemiologicamente o achado é consistente: gestantes com DHEG têm mais chance de cesárea no bruto, mas após controle pelos Grupos de Robson (que capturam padrão de indução), o efeito líquido é modulado pelo grupo. A magnitude é concordante entre as duas análises.
 
-- **Grupo de Robson 5 (OR = 13,65):** multíparas com cesárea prévia têm mais de 13 vezes a chance de nova cesárea, o que reflete o padrão assistencial consolidado de iteratividade.
+- **Grupo de Robson 5 — SPSS: OR = 13,65 | R: OR = 12,81:** multíparas com cesárea prévia têm mais de 12 vezes a chance de nova cesárea, refletindo o padrão assistencial de iteratividade.
 
-- **Grupos 6, 7 e 9 (OR ≈ 23–28):** apresentações pélvicas e anômalas praticamente determinam a indicação cirúrgica, independentemente da idade.
+- **Grupos 6, 7 e 9 (OR ≈ 16–31 no R; 22–28 no SPSS):** apresentações pélvicas e anômalas praticamente determinam a indicação cirúrgica, independentemente da idade. Amplitudes dos ICs são largas por baixa prevalência desses grupos.
+
+- **Hosmer-Lemeshow (R):** χ² = 7,11; df = 6; p = 0,310 — bom ajuste. **AUC = 0,797.** SPSS reportou HL p = 0,517 (bom ajuste também).
 :::
 
 # Informações da Sessão
@@ -1441,7 +1479,8 @@ figs <- c(
     "fig_obj2_cesarea_adol_vs_adultas.png",
     "fig_obj3_indicacoes_cesarea.png",
     "fig_obj3_indicacoes_forcipe.png",
-    "fig_obj5_forest_plot_modelo4.png"
+    "fig_obj5_forest_plot_modelo4.png",
+    "fig_obj5_forest_plot_modelo4_spss.png"
 )
 for (f in figs) {
     fp <- here("results", "figures", f)
@@ -1462,6 +1501,7 @@ tabs <- c(
     "tab08_indicacoes_cesarea.csv",
     "tab09_indicacoes_forcipe.csv",
     "tab10_modelo4_spss.csv",
+    "tab10b_comparacao_modelo4_r_vs_spss.csv",
     "tab11_desfechos_neonatais_spss.csv"
 )
 for (t in tabs) {

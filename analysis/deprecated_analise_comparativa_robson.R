@@ -1,3 +1,15 @@
+# =============================================================================
+# DEPRECATED — 2026-05-23
+# Este script foi substituído por:
+#   analysis/02_vias_parto_robson.R  (tabelas e figuras de vias de parto/Robson)
+#   analysis/00_filtro_elegibilidade.R  (filtro §3.3 correto com N = 6.650)
+#
+# Razão da deprecação:
+#   - Usa BD_completo_corrigido_13-05-2026.xls (sheet BD_leticia_08-05)
+#     em vez da fonte canônica BD_completo_corrigido_06-04-2026.xlsx (Sheet1)
+#   - Não aplica o filtro IG ≥ 22 semanas (Passo 4 do §3.3)
+#   - NÃO produz IC Wilson 95% para a taxa de cesárea
+# =============================================================================
 library(tidyverse)
 library(readxl)
 library(here)

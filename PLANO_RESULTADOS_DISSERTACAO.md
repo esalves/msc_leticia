@@ -101,6 +101,10 @@ Manteve-se a ordem natural: descrever a amostra → descrever exposições (como
 - **Texto:** uma frase definindo o n final consolidado entre R e SPSS (ver alerta da §1).
 - **Tabela 1 (NOVA):** sociodemografia consolidada — Idade média (DP), faixa etária, cor/raça, estado civil (categorias), escolaridade. Em formato 3 colunas: Adolescentes precoces / Adolescentes tardias / Adultas, com coluna de p-valor. Fontes: `index.qmd` (tabelas tbl-idade, tbl-escolaridade, tbl-estado-civil) + SPSS (cor/raça com p = 0,337).
 - **Tabela 2 (NOVA, opcional):** hábitos de vida — álcool, fumo, drogas, n (%) por faixa, com p. Fonte: SPSS.
+- **Tabela 12 (NOVA, contínuas):** variáveis obstétricas/neonatais contínuas por faixa etária — IG de início do pré-natal, gestações, paridade, abortos, IMC, nº de consultas, IG no parto, peso do RN, Apgar 1º/5º/10º min. Mediana (IIQ) em 3 colunas + p (Kruskal-Wallis). Fonte: `results/tabelas_dissertacao/tab12_caracterizacao_continuas.csv` (gerada por `01b_caracterizacao_continuas.R`).
+- **Tabela 13 (NOVA, derivadas):** proporções derivadas — prematuridade (<37 sem), baixo peso ao nascer (<2500 g), Apgar 1º/5º min <7, nuliparidade, primigestação. n (%) por faixa + p (qui-quadrado). Fonte: `tab13_proporcoes_derivadas.csv`.
+- **Figuras obj1:** `fig_obj1_caracterizacao_continuas.png` (boxplots facetados) e `fig_obj1_proporcoes_derivadas.png` (barras). Tabelas+figuras consolidadas também em `tab_caracterizacao_faixa_etaria.docx`.
+- **Leitura:** captação do pré-natal mais tardia e menor nº de consultas nas adolescentes precoces; história gestacional fortemente associada à idade (quase todas as adolescentes primigestas/nulíparas); IMC maior nas adultas; prematuridade e baixo peso mais frequentes nas adultas; Apgar sem diferença entre faixas.
 
 ### 3.2 Comorbidades e patologias da gestação (NOVA — 4.2)
 
@@ -155,10 +159,14 @@ Manteve-se a ordem natural: descrever a amostra → descrever exposições (como
 | Tabela 9 | Top 5 indicações fórcipe | R (qmd) | Código pronto, só rodar | Subagente Sonnet |
 | Tabela 10 | Modelo 4 — OR/IC | SPSS | Sim — está no Relatorio Analise SPSS.md | Letícia copia |
 | Tabela 11 | Desfechos neonatais (se incluir) | SPSS | Texto bruto | Eduardo monta |
+| Tabela 12 | Caracterização contínua por faixa | R | Sim — `tab12_caracterizacao_continuas.csv` | Pronta (docx incluído) |
+| Tabela 13 | Proporções derivadas por faixa | R | Sim — `tab13_proporcoes_derivadas.csv` | Pronta (docx incluído) |
 | Figura 1 | Barras vias de parto geral | R | Sim — `fig_obj2_vias_parto_geral.png` | — |
 | Figura 2 | Painel facetado Robson | R | Sim — `fig_obj2_robson_facetado.png` | — |
 | Figura 3 | Heatmap taxa de cesárea | R | Sim — `fig_obj2_heatmap_cesarea.png` | — |
 | Figura 4 | Comparação adol vs adulta com IC | R | Sim — `fig_obj2_cesarea_adol_vs_adultas.png` | — |
+| Figura obj1a | Boxplots contínuas por faixa | R | Sim — `fig_obj1_caracterizacao_continuas.png` | — |
+| Figura obj1b | Barras proporções derivadas | R | Sim — `fig_obj1_proporcoes_derivadas.png` | — |
 | Figura 5 | Indicações cesárea (barras) | R (qmd) | Código pronto, falta exportar PNG | Subagente Sonnet |
 | Figura 6 | Indicações fórcipe (barras) | R (qmd) | Código pronto, falta exportar PNG | Subagente Sonnet |
 | Figura 7 | Forest plot do Modelo 4 | (criar) | **Não existe** | Subagente Sonnet (R) |

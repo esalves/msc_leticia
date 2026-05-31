@@ -11,7 +11,8 @@ executado individualmente; `run_all.R` executa o pipeline completo na ordem corr
 ```
 analysis/
 ├── 00_filtro_elegibilidade.R      biblioteca de filtro §3.3 (fonte para os demais)
-├── 01_tabelas_descritivas.R       tab01, tab02, tab03, tab11
+├── 01_tabelas_descritivas.R       tab01, tab02, tab03, tab11 (categóricas)
+├── 01b_caracterizacao_continuas.R tab12, tab13 + 2 figs obj1 (contínuas/derivadas)
 ├── 02_vias_parto_robson.R         tab04–tab07 + figs obj2 (4 PNGs)
 ├── 03_indicacoes_parto.R          tab08–tab09 + figs obj3 (2 PNGs)
 ├── 04_modelo4_regressao.R         tab10b + mod4_r.rds (cache)
@@ -36,8 +37,11 @@ Rscript analysis/run_all.R
 ### Scripts Individuais
 
 ```bash
-# Tabelas descritivas (tab01–tab03, tab11)
+# Tabelas descritivas categóricas (tab01–tab03, tab11)
 Rscript analysis/01_tabelas_descritivas.R
+
+# Caracterização contínua por faixa etária (tab12, tab13 + 2 PNGs)
+Rscript analysis/01b_caracterizacao_continuas.R
 
 # Vias de parto e Robson (tab04–tab07 + 4 PNGs)
 Rscript analysis/02_vias_parto_robson.R

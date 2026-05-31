@@ -6,6 +6,7 @@
 # Executa em ordem:
 #   00_filtro_elegibilidade.R  (carregado como biblioteca pelos demais)
 #   01_tabelas_descritivas.R
+#   01b_caracterizacao_continuas.R
 #   02_vias_parto_robson.R
 #   03_indicacoes_parto.R
 #   04_modelo4_regressao.R
@@ -38,6 +39,7 @@ run_script <- function(script_rel) {
 
 # --- Scripts R ---------------------------------------------------------------
 run_script("analysis/01_tabelas_descritivas.R")
+run_script("analysis/01b_caracterizacao_continuas.R")
 run_script("analysis/02_vias_parto_robson.R")
 run_script("analysis/03_indicacoes_parto.R")
 run_script("analysis/04_modelo4_regressao.R")

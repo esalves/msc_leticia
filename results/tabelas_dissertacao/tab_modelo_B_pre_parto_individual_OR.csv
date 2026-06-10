@@ -1,0 +1,13 @@
+,OR,IC95_inf,IC95_sup,p
+Intercept,0.023,0.01,0.054,0.0
+"C(faixa, Treatment('adulta'))[T.precoce]",0.272,0.219,0.339,0.0
+"C(faixa, Treatment('adulta'))[T.tardia]",0.317,0.263,0.381,0.0
+nulipara,2.978,2.591,3.423,0.0
+cesarea_previa,12.618,10.418,15.281,0.0
+apres_nao_cef,11.434,7.688,17.005,0.0
+ig_parto,1.082,1.059,1.107,0.0
+inducao_bin,0.757,0.649,0.883,0.0
+dheg,3.04,2.462,3.754,0.0
+dmg,1.423,1.145,1.767,0.001
+hac_pre,1.406,1.08,1.831,0.011
+diabetes_pre,2.452,1.647,3.65,0.0

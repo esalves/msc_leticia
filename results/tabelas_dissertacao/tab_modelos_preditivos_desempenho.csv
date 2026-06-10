@@ -1,0 +1,7 @@
+"Coorte","Modelo","n","AUC_aparente","AUC_corr_otimismo","Brier","Nagelkerke_R2"
+"Completa","A — Pré-natal (sem Robson)",6650,0.754,0.752,0.196,0.264
+"Completa","B — Pré-parto (var. individuais)",6650,0.784,0.782,0.184,0.326
+"Completa","C — Pré-parto (Robson)",6650,0.798,0.797,0.181,0.338
+"Adolescentes","A — Pré-natal (sem Robson)",1367,0.545,NA,0.215,0.008
+"Adolescentes","B — Pré-parto (var. individuais)",1367,0.63,0.621,0.199,0.108
+"Adolescentes","C — Pré-parto (Robson)",1367,0.605,0.59,0.199,0.107

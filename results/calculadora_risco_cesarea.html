@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de risco pré-natal de cesárea — Modelo A</title>
+<style>
+  :root{
+    --bg:#f4f6f9; --card:#ffffff; --ink:#1f2933; --muted:#6b7280;
+    --accent:#4C72B0; --low:#2e7d32; --mid:#ed9b1c; --high:#c0392b; --line:#e3e8ef;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;padding:24px}
+  .wrap{max-width:860px;margin:0 auto}
+  h1{font-size:1.45rem;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 20px;font-size:.95rem}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;box-shadow:0 1px 3px rgba(16,24,40,.04)}
+  label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+  select,input[type=number]{width:100%;padding:9px 11px;font-size:.95rem;
+    border:1px solid #cbd2dc;border-radius:9px;background:#fff;color:var(--ink)}
+  .result{text-align:center}
+  .prob{font-size:3.2rem;font-weight:700;line-height:1.1;margin:6px 0 0}
+  .band{display:inline-block;padding:5px 16px;border-radius:999px;color:#fff;
+    font-weight:700;font-size:.95rem;margin-top:8px}
+  .bar{height:16px;border-radius:999px;margin:20px 0 6px;position:relative;
+    background:linear-gradient(90deg,var(--low) 0%,var(--low) 30%,var(--mid) 30%,
+      var(--mid) 60%,var(--high) 60%,var(--high) 100%)}
+  .needle{position:absolute;top:-6px;width:3px;height:28px;background:#111;border-radius:2px;
+    transform:translateX(-1.5px);transition:left .25s ease}
+  .scale{display:flex;justify-content:space-between;color:var(--muted);font-size:.78rem}
+  .pts{margin-top:18px;font-size:.92rem;color:var(--muted)}
+  .pts b{color:var(--ink)}
+  details{margin-top:18px;font-size:.88rem;color:var(--muted)}
+  summary{cursor:pointer;font-weight:600;color:var(--accent)}
+  .disc{margin-top:22px;font-size:.82rem;color:var(--muted);
+    border-top:1px solid var(--line);padding-top:14px}
+  code{background:#eef1f6;padding:1px 5px;border-radius:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Risco pré-natal de cesárea</h1>
+  <p class="sub">Modelo A (pré-natal) — estudo de gestantes adolescentes e adultas, coorte total
+  (N = 6.650). Estimativa para <b>aconselhamento e planejamento</b>, a partir de informações
+  disponíveis no início do pré-natal.</p>
+
+  <div class="grid">
+    <div class="card">
+      <label for="faixa">Faixa etária</label>
+      <select id="faixa">
+        <option value="precoce">Adolescente precoce (11–15 anos)</option>
+        <option value="tardia">Adolescente tardia (16–19 anos)</option>
+        <option value="adulta" selected>Adulta (20–34 anos)</option>
+      </select>
+
+      <label for="paridade">Paridade / cesárea prévia</label>
+      <select id="paridade">
+        <option value="multi" selected>Multípara sem cesárea prévia</option>
+        <option value="nuli">Nulípara (primeira gestação)</option>
+        <option value="prevcs">Cesárea prévia (≥ 1)</option>
+      </select>
+
+      <label for="esc">Escolaridade</label>
+      <select id="esc">
+        <option value="m9">&lt; 9 anos de estudo</option>
+        <option value="912" selected>9–12 anos de estudo</option>
+        <option value="13">≥ 13 anos de estudo</option>
+      </select>
+
+      <label for="civil">Situação conjugal</label>
+      <select id="civil">
+        <option value="com" selected>Com companheiro</option>
+        <option value="sem">Sem companheiro</option>
+      </select>
+
+      <label for="fumo">Tabagismo</label>
+      <select id="fumo"><option value="0" selected>Não</option><option value="1">Sim</option></select>
+
+      <label for="hac">Hipertensão arterial crônica</label>
+      <select id="hac"><option value="0" selected>Não</option><option value="1">Sim</option></select>
+
+      <label for="dm">Diabetes pré-gestacional</label>
+      <select id="dm"><option value="0" selected>Não</option><option value="1">Sim</option></select>
+
+      <label for="ig">IG na 1ª consulta (semanas) — opcional</label>
+      <input type="number" id="ig" value="17" min="4" max="42" step="1">
+    </div>
+
+    <div class="card result">
+      <div style="color:var(--muted);font-size:.9rem">Probabilidade estimada de cesárea</div>
+      <div class="prob" id="prob">—</div>
+      <div class="band" id="band">—</div>
+
+      <div class="bar"><div class="needle" id="needle" style="left:50%"></div></div>
+      <div class="scale"><span>0%</span><span>30%</span><span>60%</span><span>100%</span></div>
+
+      <div class="pts">Escore de pontos: <b id="pts">0</b>
+        <span id="ptsband"></span></div>
+
+      <details>
+        <summary>Detalhes técnicos</summary>
+        <p>Regressão logística (Modelo A), coeficientes combinados por imputação múltipla.
+        Probabilidade = 1 / (1 + e<sup>−LP</sup>), com
+        LP = −0,492 + faixa + escolaridade + conjugal + 1,023·nulípara
+        + 2,533·cesárea prévia + 0,442·tabagismo + 0,215·HAC + 0,692·diabetes pré
+        − 0,0008·IG. Faixa (vs. adulta): precoce −1,271; tardia −1,204.
+        Faixas de risco (relativas a esta coorte de alto risco): baixo &lt; 30%,
+        intermediário 30–60%, alto &gt; 60%.</p>
+      </details>
+    </div>
+  </div>
+
+  <p class="disc"><b>Aviso.</b> Ferramenta de apoio ao aconselhamento e à estratificação de
+  risco — <b>não</b> é uma indicação de via de parto nem substitui o julgamento clínico.
+  Desenvolvida em centro terciário de referência, com taxa de cesárea elevada (~56%);
+  ainda <b>sem validação externa</b>. As faixas de risco são relativas a esta população.
+  Uso em pesquisa/educação.</p>
+</div>
+
+<script>
+  // Coeficientes exatos (log-odds) — Modelo A, pooled por imputação múltipla
+  const B = {
+    intercept:-0.4923,
+    faixa:{precoce:-1.2705, tardia:-1.2037, adulta:0},
+    esc:{m9:-0.0359, "912":0, "13":0.1519},
+    civil:{com:0, sem:-0.1280},
+    nulipara:1.0229, cesarea_previa:2.5334,
+    fumo:0.4419, hac:0.2150, dm:0.6920, ig:-0.0008
+  };
+  // pontos (escore de Sullivan, B=0,4)
+  const PTS = {
+    faixa:{precoce:0, tardia:0, adulta:3},
+    paridade:{multi:0, nuli:3, prevcs:6},
+    fumo:1, hac:1, dm:2
+  };
+  const $ = id => document.getElementById(id);
+
+  function calc(){
+    const f = $("faixa").value, par = $("paridade").value;
+    const nuli = par==="nuli"?1:0, prevcs = par==="prevcs"?1:0;
+    const fumo=+$("fumo").value, hac=+$("hac").value, dm=+$("dm").value;
+    const ig = parseFloat($("ig").value)||17;
+
+    let lp = B.intercept + B.faixa[f] + B.esc[$("esc").value] + B.civil[$("civil").value]
+      + B.nulipara*nuli + B.cesarea_previa*prevcs
+      + B.fumo*fumo + B.hac*hac + B.dm*dm + B.ig*ig;
+    const p = 1/(1+Math.exp(-lp));
+    const pct = p*100;
+
+    $("prob").textContent = pct.toFixed(0)+"%";
+    let band, col;
+    if(pct<30){band="Risco baixo";col="var(--low)";}
+    else if(pct<60){band="Risco intermediário";col="var(--mid)";}
+    else{band="Risco alto";col="var(--high)";}
+    $("band").textContent = band; $("band").style.background = col;
+    $("needle").style.left = Math.min(99,Math.max(1,pct))+"%";
+
+    const pts = PTS.faixa[f] + PTS.paridade[par] + PTS.fumo*fumo + PTS.hac*hac + PTS.dm*dm;
+    $("pts").textContent = pts;
+    $("ptsband").textContent = " (de 0 a 13)";
+  }
+  document.querySelectorAll("select,input").forEach(e=>e.addEventListener("input",calc));
+  calc();
+</script>
+</body>
+</html>

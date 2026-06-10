@@ -7,8 +7,9 @@ output:
 # Relatório de Revisão Numérica Cruzada
 **Dissertação de Mestrado — Letícia Schimidt Arruda (FMUSP)**  
 **Revisor:** Sub-agente Sonnet (revisão automática)  
-**Data:** 19 de maio de 2026  
+**Data:** 19 de maio de 2026 · **Atualizado:** 10 de junho de 2026  
 **Arquivos revisados:** `index.qmd`, `manuscript/tabelas_dissertacao.docx`, `manuscript/resultados_redacao.docx`, `results/tab_obj2_*.csv`, `results/tabelas_dissertacao/tab*.csv`, `results/Relatorio Analise SPSS.md`, `manuscript/Dissertação Maio_26.docx`
+**Adicionados em 10/06/2026:** `analysis/06_modelos_preditivos_cesarea.R`, `results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv`, `tab_modelo_{A,B,C}_*_OR.csv`, `tab_escore_pre_natal_*.csv`, `results/figures/fig_obj6_*`, `results/RELATORIO_RESULTADOS_MODELOS_PREDITIVOS.md`, `results/RELATORIO_MODELOS_PREDITIVOS_CESAREA.md`, `results/FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md`, `results/calculadora_risco_cesarea.html`
 
 ---
 
@@ -20,6 +21,7 @@ output:
 - **CRÍTICO:** Existem quatro valores distintos de N total circulando nos documentos (6.646, 6.663, 6.830 e 8.300/8.724). Nenhuma tabela usa exatamente o mesmo N, e os cinco placeholders da redação ainda não foram preenchidos.
 - **IMPORTANTE:** CSVs derivados (`tab05/tab06_*.csv`) têm valores diferentes dos CSVs primários (`tab_obj2_*.csv`) em quatro células — as Tabelas 5–7 do docx foram construídas corretamente a partir dos primários, mas os derivados contêm um bug de recomputação.
 - **IMPORTANTE:** Figuras 5 e 6 (indicações de cesárea e fórcipe) são citadas na redação §4.4 mas os arquivos PNG não existem em `results/figures/`. Figura 7 (forest plot) existe mas não é referenciada na redação.
+- **NOVO (10/06/2026):** Acrescentada a estratégia de **três modelos preditivos** (`analysis/06_modelos_preditivos_cesarea.R`). Coorte total N = **6.650** (filtro §3.3 codificado em `00_filtro_elegibilidade.R`) — quinto valor de N em circulação, mas agora **determinístico e versionado** (ver §1.1). O script R foi **executado** e seus resultados **conferem com a validação em Python** (≤ 0,002 na AUC); coeficientes clinicamente coerentes e tabelas/figuras consistentes (ver §1.14). Pendência remanescente: validação externa + curva de decisão antes de uso clínico da ferramenta derivada.
 
 ---
 
@@ -33,6 +35,7 @@ output:
 |---|---|---|---|---|
 | R pipeline — `tab_obj2_vias_parto_geral.csv` (primário) | 538 | 829 | 5.279 | **6.646** |
 | Tabelas 4–7 no `tabelas_dissertacao.docx` (rodapé Tab4) | 538 | 830 | 5.295 | **6.663** |
+| **Pipeline modular `analysis/00–06` (`00_filtro_elegibilidade.R`)** | **538** | **829** | **5.283** | **6.650** |
 | SPSS — cabeçalho da Tabela 1 no `tabelas_dissertacao.docx` | 551 | 856 | 5.423 | **6.830** |
 | Dissertação §154 (texto corrido) | — | 1.348 adol | 6.952 adul | **8.300** |
 | Dissertação legenda Tabelas 1–2 | — | 1.677 adol | 7.047 adul | **8.724** |
@@ -40,6 +43,7 @@ output:
 **Problema:** Há quatro valores de N distintos, cada um correspondendo a um escopo diferente de filtragem:
 - **6.646** = R com todos os critérios de elegibilidade aplicados (IG ≥ 22, Robson 1–10 exceto 8, idade 11–34, tipo_parto preenchido).
 - **6.663** = Tabelas 5–7 do docx: soma dos n por Robson a partir de `tab_obj2_taxa_cesarea.csv` — 17 casos a mais que o primário, sugerindo que a tabela de taxa e a de vias usaram cortes de código diferentes no mesmo render.
+- **6.650** = pipeline modular `analysis/00–06` (filtro §3.3 codificado), determinístico: o script `00_filtro_elegibilidade.R` aplica os mesmos critérios e dispara `stopifnot(nrow == 6650)`. É a fonte recomendada para padronizar o N daqui em diante, pois é versionada, testada (`tests/testthat/`) e replicável. A diferença para 6.646/6.663 (±4 a ±13 casos) vem de pequenas variações de corte entre o `index.qmd` antigo e o pipeline novo — convém migrar as Tabelas 4–7 para o pipeline modular.
 - **6.830** = SPSS: inclui os 184 casos que o R exclui por Robson ausente/inválido ou IG < 22.
 - **8.300** e **8.724** = dissertação original: inclui gestantes ≥ 35 anos (n ≈ 1.469 no SPSS) e casos pré-filtro; os dois valores são incompatíveis entre si (diferença de 424), indicando que §154 e as legendas das Tabelas 1–2 da dissertação usam cortes distintos.
 
@@ -227,6 +231,35 @@ Verificação completa de todos os 11 coeficientes:
 
 ---
 
+### 1.14 Modelos preditivos de cesárea (NOVO — 10/06/2026)
+
+**Arquivos:** `analysis/06_modelos_preditivos_cesarea.R`, `results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv`, `tab_modelo_{A,B,C}_*_OR.csv`, `tab_escore_pre_natal_*.csv`, `results/figures/fig_obj6_*`, relatórios em `results/RELATORIO_*MODELOS_PREDITIVOS*.md` e `FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md`.
+
+Acrescentou-se a estratégia de **três modelos** (A pré-natal, B pré-parto individual, C pré-parto com Robson), ajustados na coorte total (N = 6.650) com imputação múltipla (MICE) e comparados por AUC, Brier, R² de Nagelkerke e calibração.
+
+**Verificações realizadas (consistência interna — OK):**
+
+| Item | Resultado |
+|---|---|
+| AUC corrigida por otimismo (coorte total) | A = 0,752; B = 0,782; C = 0,797 — gradiente coerente |
+| AUC (subgrupo adolescente, n = 1.367) | A = n/e (aparente 0,545); B = 0,621; C = 0,590 — hierarquia invertida, consistente com a baixa variação de Robson no grupo |
+| Paridade R × Python | Confirmada: diferenças ≤ 0,002 na AUC entre `mice` (R) e `miceforest` (Python) |
+| Direção/magnitude dos OR | Clinicamente coerentes: cesárea prévia ~12,6; Robson 5 ~12,6; Robson 6/7/9 de 16 a 31; adolescentes OR < 1 vs. adultas em todos os modelos |
+| Escore de pontos × calculadora | Concordância ≤ 3 p.p. (diferença esperada do arredondamento do escore de Sullivan) |
+| Tabela de desempenho × figuras `fig_obj6_*` | Valores das figuras batem com `tab_modelos_preditivos_desempenho.csv` |
+
+**Pontos de atenção (não são erros, mas precisam de registro):**
+
+1. **Origem dos números (RESOLVIDO em 10/06/2026).** O script R canônico (`06_modelos_preditivos_cesarea.R`, `mice`/`pROC`/`rms`) foi executado e a `tab_modelos_preditivos_desempenho.csv` resultante reproduz os valores da validação em Python (`miceforest`) dentro de ±0,002 na AUC. Os relatórios passam a citar os valores do R como canônicos. Os arquivos OR foram padronizados nos nomes do R (`tab_modelo_A_pre_natal_OR.csv`, `tab_modelo_B_pre_parto_OR.csv`, `tab_modelo_C_robson_OR.csv`); as duplicatas com nomes do Python foram removidas.
+2. **Calibração aparente.** As inclinações/intercepto de calibração "perfeitos" são triviais por construção (ajuste e avaliação na mesma base); por isso reporta-se AUC corrigida por otimismo (bootstrap) e calibração por decis (`fig_obj6_calibracao.png`). Não confundir com validação.
+3. **Subgrupo adolescente — Modelo C.** Robson foi colapsado (6/7/9 → "anômala") e a AUC corrigida pode sair `NA` por separação quase-perfeita; interpretar OR desses termos com cautela.
+4. **Variáveis fora dos modelos** (IMC 74% ausente; pré-eclâmpsia 15 casos; gestação múltipla = Grupo 8 já excluído; renda/SUS ausente) — documentado nos relatórios; coerente com os critérios §3.3.
+5. **Ferramenta clínica** derivada do Modelo A — sem validação externa; enquadrar como apoio ao aconselhamento, não regra de decisão.
+
+**Conclusão:** Artefatos internamente consistentes e clinicamente plausíveis, com **paridade R × Python confirmada** (≤ 0,002 na AUC). Sem erros numéricos identificados; pendência remanescente é apenas externa ao dado atual — validação externa/temporal e curva de decisão antes de uso clínico da ferramenta.
+
+---
+
 ## 2. Itens em Branco (ND e Placeholders)
 
 ### 2.1 Cinco placeholders na redação — ação obrigatória
@@ -290,6 +323,8 @@ Verificação completa de todos os 11 coeficientes:
 
 6. **Nota de rodapé na Tabela 8:** Acrescentar a informação de cobertura: "Partos operatórios com indicação registrada: 138/300 (46%) precoces; 227/496 (46%) tardias; 3.228/3.859 (84%) adultas."
 
+7. **(10/06/2026) Confirmar os modelos preditivos no R:** Rodar `Rscript analysis/06_modelos_preditivos_cesarea.R` (requer `mice`, `pROC`, `rms`) e cotejar a `tab_modelos_preditivos_desempenho.csv` resultante com os valores deste relatório (§1.14). Avaliar migrar as Tabelas 4–7 para o pipeline modular `analysis/00–06` (N = 6.650) para encerrar a divergência de N. Considerar acrescentar uma **curva de decisão** para a ferramenta clínica.
+
 ---
 
 ## Apêndice — Rastreabilidade dos Placeholders
@@ -304,4 +339,4 @@ Verificação completa de todos os 11 coeficientes:
 
 ---
 
-*Relatório gerado automaticamente por revisão cruzada de 13 arquivos. Última atualização: 19/05/2026.*
+*Relatório gerado automaticamente por revisão cruzada de 13 arquivos. Última atualização: 10/06/2026 (acréscimo da §1.14 — modelos preditivos e ferramenta clínica).*

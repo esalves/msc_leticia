@@ -43,17 +43,17 @@ O desempenho de cada modelo foi avaliado quanto à **discriminação**, pela ár
 
 ## 2. Resultados — desempenho comparativo dos três modelos
 
-Na coorte total, a capacidade de discriminação **aumentou progressivamente** do modelo pré-natal para o modelo pré-parto e atingiu o máximo com a Classificação de Robson (Tabela 1, Figuras 1 e 2). Os três modelos apresentaram **boa calibração**, com as probabilidades preditas próximas às proporções observadas ao longo de toda a faixa de risco (Figura 3).
+Na coorte total, a capacidade de discriminação **aumentou progressivamente** do modelo pré-natal (0,752) para o modelo pré-parto (0,782) e atingiu o máximo com a Classificação de Robson (0,797) (Tabela 1, Figuras 1 e 2). Os três modelos apresentaram **boa calibração**, com as probabilidades preditas próximas às proporções observadas ao longo de toda a faixa de risco (Figura 3).
 
 **Tabela 1.** Desempenho preditivo dos três modelos (coorte total, N = 6.650).
 
 | Modelo | AUC (corrigida) | Escore de Brier | R² de Nagelkerke |
 |---|:--:|:--:|:--:|
-| A — Pré-natal (sem Robson) | 0,752 | 0,196 | 0,265 |
-| B — Pré-parto, variáveis individuais | 0,784 | 0,184 | 0,327 |
+| A — Pré-natal (sem Robson) | 0,752 | 0,196 | 0,264 |
+| B — Pré-parto, variáveis individuais | 0,782 | 0,184 | 0,326 |
 | C — Pré-parto com Robson | **0,797** | **0,181** | **0,338** |
 
-*AUC = área sob a curva ROC (corrigida por otimismo via bootstrap). Brier e R² calculados sobre as cinco bases imputadas e promediados.*
+*AUC = área sob a curva ROC (corrigida por otimismo via bootstrap). Brier e R² calculados sobre as cinco bases imputadas e promediados. Valores obtidos com o script R (`mice`/`pROC`/`rms`) e concordantes com a validação em Python (`miceforest`) dentro de ±0,002.*
 
 O achado de maior interesse metodológico é que o **Modelo C, com apenas quatro termos** (Robson, faixa etária, DHEG e diabetes gestacional), alcançou desempenho **igual ou superior** ao Modelo B, que emprega um número bem maior de variáveis obstétricas individuais. Em outras palavras, a Classificação de Robson condensa em uma única variável a informação preditiva que, de outro modo, exigiria vários preditores isolados.
 
@@ -162,7 +162,7 @@ Como análise de sensibilidade, os três modelos foram reajustados apenas nas ad
 
 ## 5. Arquivos
 
-**Tabelas:** `results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv`; `tab_modelo_A_pre_natal_OR.csv`; `tab_modelo_B_pre_parto_individual_OR.csv`; `tab_modelo_C_pre_parto_robson_OR.csv`
+**Tabelas:** `results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv`; `tab_modelo_A_pre_natal_OR.csv`; `tab_modelo_B_pre_parto_OR.csv`; `tab_modelo_C_robson_OR.csv`
 
 **Figuras:** `results/figures/fig_obj6_roc_modelos.png`; `fig_obj6_comparacao_auc.png`; `fig_obj6_calibracao.png`; `fig_obj6_forest_modelo_A.png`; `fig_obj6_forest_modelo_B.png`; `fig_obj6_forest_modelo_C.png`
 

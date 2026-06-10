@@ -108,12 +108,14 @@ pré-gestacional) foram removidos.
 
 | Coorte | Modelo | n | AUC aparente | **AUC corrigida** | Brier | Nagelkerke R² |
 |---|---|--:|:--:|:--:|:--:|:--:|
-| Completa | A — Pré-natal | 6.650 | 0,755 | **0,752** | 0,196 | 0,265 |
-| Completa | B — Pré-parto individuais | 6.650 | 0,786 | **0,784** | 0,184 | 0,327 |
+| Completa | A — Pré-natal | 6.650 | 0,754 | **0,752** | 0,196 | 0,264 |
+| Completa | B — Pré-parto individuais | 6.650 | 0,784 | **0,782** | 0,184 | 0,326 |
 | Completa | C — Pré-parto Robson | 6.650 | 0,798 | **0,797** | 0,181 | 0,338 |
-| Adolescentes | A — Pré-natal | 1.367 | 0,546 | **0,516** | 0,215 | 0,008 |
-| Adolescentes | B — Pré-parto individuais | 1.367 | 0,635 | **0,620** | 0,199 | 0,105 |
-| Adolescentes | C — Pré-parto Robson | 1.367 | 0,605 | **0,591** | 0,199 | 0,107 |
+| Adolescentes | A — Pré-natal | 1.367 | 0,545 | **n/e** | 0,215 | 0,008 |
+| Adolescentes | B — Pré-parto individuais | 1.367 | 0,630 | **0,621** | 0,199 | 0,108 |
+| Adolescentes | C — Pré-parto Robson | 1.367 | 0,605 | **0,590** | 0,199 | 0,107 |
+
+*n/e = não estimável: a correção por bootstrap (`rms::validate`) do Modelo A no subgrupo adolescente retornou NA por quase-separação; AUC aparente 0,545, próxima do acaso.*
 
 *(Figuras: `results/figures/fig_obj6_roc_modelos.png`, `fig_obj6_calibracao.png`,
 `fig_obj6_comparacao_auc.png`.)*
@@ -121,7 +123,7 @@ pré-gestacional) foram removidos.
 ### 4.2 Dois achados centrais
 
 **(1) Na coorte completa, Robson agrega valor preditivo.** A AUC sobe de forma
-escalonada do pré-natal (0,752) para o pré-parto individual (0,784) e atinge o
+escalonada do pré-natal (0,752) para o pré-parto individual (0,782) e atinge o
 máximo com Robson (0,797). O Modelo C, com apenas quatro termos (Robson, faixa
 etária, DHEG, DMG), iguala ou supera o Modelo B que usa muito mais variáveis
 obstétricas — um resultado metodologicamente elegante: *a Classificação de Robson
@@ -129,9 +131,9 @@ condensa em uma única variável o que vários preditores individuais expressam.
 
 **(2) No subgrupo adolescente, Robson perde poder e as variáveis individuais
 predizem melhor.** A discriminação despenca em todos os modelos, mas a ordem se
-**inverte**: o Modelo B (variáveis individuais, AUC 0,620) supera o Modelo C
-(Robson, AUC 0,591). O modelo pré-natal nas adolescentes fica praticamente no acaso
-(AUC 0,516). Isso confirma a hipótese do orientador: como 97,9% das adolescentes
+**inverte**: o Modelo B (variáveis individuais, AUC 0,621) supera o Modelo C
+(Robson, AUC 0,590). O modelo pré-natal nas adolescentes fica praticamente no acaso
+(AUC aparente 0,545; correção não estimável). Isso confirma a hipótese do orientador: como 97,9% das adolescentes
 se concentram nos Grupos 1, 2, 3, 6 e 10 (nenhuma no Grupo 5, nenhuma multípara
 com cesárea prévia), Robson tem pouca variação interna e, portanto, pouco poder
 discriminatório dentro do grupo.
@@ -182,9 +184,9 @@ discriminatório dentro do grupo.
 - **Casos quase-separados** no subgrupo adolescente (apresentações anômalas, ~100%
   cesárea) foram colapsados; estimativas de OR desses termos devem ser lidas com
   cautela. Uma regressão de Firth seria uma alternativa robusta para esse subgrupo.
-- Os números deste relatório vêm da execução validada em Python (`miceforest`);
-  o script R (`mice`) reproduz a mesma estrutura e deve render valores muito
-  próximos (pequenas diferenças são esperadas entre algoritmos de imputação).
+- Os números deste relatório foram gerados pelo script R canônico
+  (`06_modelos_preditivos_cesarea.R`, `mice`/`pROC`/`rms`) e **confirmados** pela
+  validação independente em Python (`miceforest`), com diferenças ≤ 0,002 na AUC.
 
 ---
 

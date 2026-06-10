@@ -3,8 +3,10 @@
 **Documento de origem:** `manuscript/Dissertação Maio_26.docx`
 **Análises R (Eduardo):** `index.qmd`, `index.html`, pastas `results/` e `analysis/`
 **Análises SPSS (estatística do programa):** `results/Relatorio Analise SPSS.md` (resumo do `analysis/Resultados_finais.ods`)
-**Data:** 19 de maio de 2026
+**Data:** 19 de maio de 2026 · **Atualizado:** 10 de junho de 2026
 **Autor:** Eduardo (com curadoria de Claude)
+
+> **Atualização de 10/06/2026 — modelos preditivos e ferramenta clínica.** Foi acrescentada a estratégia de **três modelos preditivos de cesárea** sugerida pelo orientador (pré-natal / pré-parto individual / pré-parto com Robson), reproduzível em `analysis/06_modelos_preditivos_cesarea.R` e validada em Python (MICE). Isso **expande** a §3.5 (que antes contemplava apenas o Modelo 4 do SPSS). Detalhes em `results/RELATORIO_RESULTADOS_MODELOS_PREDITIVOS.md` (métodos + resultados, coorte total) e `results/RELATORIO_MODELOS_PREDITIVOS_CESAREA.md` (viabilidade + análise de sensibilidade no subgrupo adolescente). Derivou-se ainda uma **ferramenta clínica** a partir do modelo pré-natal (`results/FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md` + `results/calculadora_risco_cesarea.html`). Ver nova §3.7 e checklist atualizado na §4. Esse pipeline usa o filtro §3.3 codificado (`analysis/00_filtro_elegibilidade.R`, **N = 6.650**), que serve de referência para a reconciliação de N discutida na §1.
 
 ---
 
@@ -81,6 +83,8 @@ A estatística do programa fez **quatro modelos de regressão logística** para 
 - O **Grupo de Robson 5** (multíparas com cesárea prévia) eleva o OR para **13,65** — coerente com a literatura mundial: cesárea prévia é o principal driver de cesárea atual.
 - A **DHEG aparece como "protetora" (OR = 0,40)** *quando* se ajusta por Robson. Isso parece contraintuitivo mas faz sentido: a DHEG empurra a paciente para o Grupo 2 (indução) ou Grupo 10 (pré-termo), e dentro desses grupos uma parte significativa termina em parto vaginal induzido com sucesso. Esse achado precisa de uma frase cuidadosa na discussão para não confundir o leitor.
 
+> **Atualização jun/2026:** essa análise multivariada foi ampliada para uma estratégia de **três modelos preditivos** (pré-natal, pré-parto individual e pré-parto com Robson), com imputação múltipla e comparação de desempenho — ver §3.7. No novo ajuste (coorte total, R/Python), a DHEG mantém sinal positivo de risco quando entra junto de Robson como classificação completa (OR ~2,4 no Modelo C), diferentemente da referência invertida que o SPSS usou no Modelo 4 — outra razão para conciliar a apresentação dos modelos.
+
 ### 2.6 Desfechos para o bebê (a estatística analisou; depende se vai entrar na dissertação)
 
 - **Prematuridade < 37 sem:** mais comum nas adultas (24,4 %) que nas adolescentes (10–14 %), p < 0,001.
@@ -142,6 +146,28 @@ Manteve-se a ordem natural: descrever a amostra → descrever exposições (como
 - Se mantiver: **Tabela 11** (prematuridade, baixo peso, Apgar < 7, óbito fetal, malformação fetal) por faixa etária, n (%), p.
 - Se cortar: levar 2–3 frases para a discussão como "elementos contextuais".
 
+### 3.7 Modelos preditivos de cesárea e proposta de ferramenta clínica (NOVO — jun/2026)
+
+Esta seção **expande a §3.5**: em vez de um único modelo, adota-se a estratégia de **três modelos** proposta pelo orientador, todos ajustados na **coorte total (N = 6.650)** com **imputação múltipla (MICE)** e comparação formal de desempenho. Reprodução: `analysis/06_modelos_preditivos_cesarea.R`.
+
+- **Modelo A — pré-natal (sem Robson):** variáveis do início da gestação (faixa etária, escolaridade, estado civil, nuliparidade, cesárea prévia, tabagismo, HAC crônica, diabetes pré-gestacional, IG na 1ª consulta).
+- **Modelo B — pré-parto, variáveis individuais:** acrescenta apresentação, IG ao parto, indução, DHEG e DMG.
+- **Modelo C — pré-parto com Robson:** substitui os componentes de Robson pela própria classificação (1–10) + faixa etária + DHEG + DMG.
+
+**Resultado central (coorte total):** a discriminação cresce de forma escalonada — AUC corrigida por otimismo **0,752 → 0,782 → 0,797** —, com boa calibração. O Modelo C iguala o Modelo B usando bem menos variáveis (Robson como preditor sintético). Em **todos** os três modelos, a idade adulta permanece fator de risco independente (adolescentes com OR ~0,28–0,59 vs. adultas), reforçando o achado central da dissertação.
+
+**Análise de sensibilidade (subgrupo adolescente, n = 1.367):** a discriminação cai e a hierarquia se inverte (Robson 0,590 < variáveis individuais 0,621), porque 97,9% das adolescentes concentram-se em poucos grupos de Robson e nenhuma no Grupo 5 — confirma a hipótese do orientador. Detalhes em `results/RELATORIO_MODELOS_PREDITIVOS_CESAREA.md`.
+
+- **Tabela P1:** desempenho comparativo dos 3 modelos — `tab_modelos_preditivos_desempenho.csv`.
+- **Tabelas P2–P4:** OR (IC95%) dos Modelos A/B/C — `tab_modelo_{A_pre_natal,B_pre_parto,C_robson}_OR.csv`.
+- **Figuras P1–P3:** ROC (`fig_obj6_roc_modelos.png`), comparação de AUC (`fig_obj6_comparacao_auc.png`), calibração (`fig_obj6_calibracao.png`).
+- **Figuras P4–P6:** forest plots dos OR de cada modelo (`fig_obj6_forest_modelo_{A,B,C}.png`).
+- **Texto pronto:** `results/RELATORIO_RESULTADOS_MODELOS_PREDITIVOS.md` traz a redação de Métodos (para a §3 da dissertação) e a interpretação dos resultados, prontas para adaptar.
+
+**Proposta de ferramenta clínica (a partir do Modelo A — pré-natal).** Como o Modelo A usa apenas dados da primeira consulta, é o candidato a instrumento de aconselhamento. Foram derivados três formatos equivalentes: **escore de pontos** (`tab_escore_pre_natal_pontos.csv` / `tab_escore_pre_natal_risco.csv`), **nomograma** (`fig_obj6_nomograma_pre_natal.png`) e **calculadora interativa** (`calculadora_risco_cesarea.html`), documentados em `results/FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md`. *Enquadramento obrigatório no texto:* apoio ao aconselhamento, não regra de decisão; centro único terciário (tende a superestimar fora dele); validação apenas interna; recomenda-se validação externa e análise de curva de decisão antes de uso assistencial.
+
+> **Como encaixar na dissertação.** A §3.5 (Modelo 4 do SPSS) pode ser mantida como a análise multivariada principal já consolidada, **ou** ser substituída/complementada pela estratégia dos três modelos, que é metodologicamente mais robusta e responde a duas perguntas (predição precoce e valor agregado de Robson). Decisão da Letícia + orientador. Se entrar, vira uma subseção de Resultados (ex.: 4.6) e a ferramenta clínica pode ser destacada na Discussão como contribuição aplicada.
+
 ---
 
 ## 4. Tabelas e figuras — checklist pronto/a fazer
@@ -170,6 +196,19 @@ Manteve-se a ordem natural: descrever a amostra → descrever exposições (como
 | Figura 5 | Indicações cesárea (barras) | R (qmd) | Código pronto, falta exportar PNG | Subagente Sonnet |
 | Figura 6 | Indicações fórcipe (barras) | R (qmd) | Código pronto, falta exportar PNG | Subagente Sonnet |
 | Figura 7 | Forest plot do Modelo 4 | (criar) | **Não existe** | Subagente Sonnet (R) |
+| **— Modelos preditivos (jun/2026) —** | | | | |
+| Tabela P1 | Desempenho dos 3 modelos (AUC/Brier/R²) | R/Py | Sim — `tab_modelos_preditivos_desempenho.csv` | Pronta |
+| Tabela P2 | OR Modelo A (pré-natal) | R/Py | Sim — `tab_modelo_A_pre_natal_OR.csv` | Pronta |
+| Tabela P3 | OR Modelo B (pré-parto individual) | R/Py | Sim — `tab_modelo_B_pre_parto_OR.csv` | Pronta |
+| Tabela P4 | OR Modelo C (Robson) | R/Py | Sim — `tab_modelo_C_robson_OR.csv` | Pronta |
+| Tabela P5 | Escore de pontos pré-natal | R/Py | Sim — `tab_escore_pre_natal_pontos.csv` | Pronta |
+| Tabela P6 | Escore → risco | R/Py | Sim — `tab_escore_pre_natal_risco.csv` | Pronta |
+| Figura P1 | Curvas ROC dos 3 modelos | Py | Sim — `fig_obj6_roc_modelos.png` | Pronta |
+| Figura P2 | Comparação de AUC | Py | Sim — `fig_obj6_comparacao_auc.png` | Pronta |
+| Figura P3 | Calibração | Py | Sim — `fig_obj6_calibracao.png` | Pronta |
+| Figura P4–P6 | Forest plots Modelos A/B/C | Py | Sim — `fig_obj6_forest_modelo_{A,B,C}.png` | Pronta |
+| Figura P7 | Nomograma pré-natal | Py | Sim — `fig_obj6_nomograma_pre_natal.png` | Pronta |
+| Ferramenta | Calculadora interativa | HTML | Sim — `results/calculadora_risco_cesarea.html` | Pronta |
 
 ---
 
@@ -183,6 +222,8 @@ Manteve-se a ordem natural: descrever a amostra → descrever exposições (como
 4. **Extrair do `Resultados_finais.ods`** as tabelas de hábitos, comorbidades, patologias gestacionais, indicações e neonatais (se for incluir), exportando para CSV legível.
 5. **Gerar a Figura 7 (forest plot)** dos OR do Modelo 4.
 6. Rodar `quarto render index.qmd` (ou `Rscript -e ...`) para gerar PNGs das Figuras 5 e 6 que hoje só existem como código.
+7. **(jun/2026 — FEITO) `Rscript analysis/06_modelos_preditivos_cesarea.R` executado:** os números do R conferem com a validação em Python (≤ 0,002 na AUC). Tabelas/figuras `fig_obj6_*` regeneradas e relatórios atualizados com os valores canônicos do R.
+8. **(jun/2026) Decidir com o orientador** se a estratégia dos 3 modelos substitui ou complementa o Modelo 4 do SPSS na §3.5/§3.7, e se a ferramenta clínica entra na Discussão. Avaliar gerar a **curva de decisão** (decision curve analysis) para fortalecer a proposta da ferramenta.
 
 ### 5.2 Para subagentes Sonnet — bloco 2: documentos
 

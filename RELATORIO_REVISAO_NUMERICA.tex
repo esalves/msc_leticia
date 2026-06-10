@@ -1,25 +1,20 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
+%
 \documentclass[
 ]{article}
-\usepackage{xcolor}
-\usepackage[margin=1in]{geometry}
-\usepackage{amsmath,amssymb}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
-\usepackage{iftex}
-\ifPDFTeX
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
+  \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-\usepackage{lmodern}
-\ifPDFTeX\else
-  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -37,8 +32,14 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{longtable,booktabs,array}
-\usepackage{calc} % for calculating minipage widths
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage{longtable,booktabs}
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
 \makeatletter
@@ -47,53 +48,45 @@
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
-\usepackage{graphicx}
-\makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
-% Set default figure placement to htbp
-\def\fps@figure{htbp}
-\makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\usepackage{bookmark}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same}
-\hypersetup{
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 
 \author{}
-\date{\vspace{-2.5em}}
+\date{}
 
 \begin{document}
 
+\hypertarget{relatuxf3rio-de-revisuxe3o-numuxe9rica-cruzada}{%
 \section{Relatório de Revisão Numérica
-Cruzada}\label{relatuxf3rio-de-revisuxe3o-numuxe9rica-cruzada}
+Cruzada}\label{relatuxf3rio-de-revisuxe3o-numuxe9rica-cruzada}}
 
 \textbf{Dissertação de Mestrado --- Letícia Schimidt Arruda (FMUSP)}\\
 \textbf{Revisor:} Sub-agente Sonnet (revisão automática)\\
-\textbf{Data:} 19 de maio de 2026\\
+\textbf{Data:} 19 de maio de 2026 · \textbf{Atualizado:} 10 de junho de
+2026\\
 \textbf{Arquivos revisados:} \texttt{index.qmd},
 \texttt{manuscript/tabelas\_dissertacao.docx},
 \texttt{manuscript/resultados\_redacao.docx},
 \texttt{results/tab\_obj2\_*.csv},
 \texttt{results/tabelas\_dissertacao/tab*.csv},
 \texttt{results/Relatorio\ Analise\ SPSS.md},
-\texttt{manuscript/Dissertação\ Maio\_26.docx}
+\texttt{manuscript/Dissertação\ Maio\_26.docx} \textbf{Adicionados em
+10/06/2026:} \texttt{analysis/06\_modelos\_preditivos\_cesarea.R},
+\texttt{results/tabelas\_dissertacao/tab\_modelos\_preditivos\_desempenho.csv},
+\texttt{tab\_modelo\_\{A,B,C\}\_*\_OR.csv},
+\texttt{tab\_escore\_pre\_natal\_*.csv},
+\texttt{results/figures/fig\_obj6\_*},
+\texttt{results/RELATORIO\_RESULTADOS\_MODELOS\_PREDITIVOS.md},
+\texttt{results/RELATORIO\_MODELOS\_PREDITIVOS\_CESAREA.md},
+\texttt{results/FERRAMENTA\_CLINICA\_ESCORE\_PRE\_NATAL.md},
+\texttt{results/calculadora\_risco\_cesarea.html}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{Sumário Executivo}\label{sumuxe1rio-executivo}
+\hypertarget{sumuxe1rio-executivo}{%
+\subsection{Sumário Executivo}\label{sumuxe1rio-executivo}}
 
 \begin{itemize}
 \tightlist
@@ -128,53 +121,120 @@ Cruzada}\label{relatuxf3rio-de-revisuxe3o-numuxe9rica-cruzada}
   são citadas na redação §4.4 mas os arquivos PNG não existem em
   \texttt{results/figures/}. Figura 7 (forest plot) existe mas não é
   referenciada na redação.
+\item
+  \textbf{NOVO (10/06/2026):} Acrescentada a estratégia de \textbf{três
+  modelos preditivos}
+  (\texttt{analysis/06\_modelos\_preditivos\_cesarea.R}). Coorte total N
+  = \textbf{6.650} (filtro §3.3 codificado em
+  \texttt{00\_filtro\_elegibilidade.R}) --- quinto valor de N em
+  circulação, mas agora \textbf{determinístico e versionado} (ver §1.1).
+  O script R foi \textbf{executado} e seus resultados \textbf{conferem
+  com a validação em Python} (≤ 0,002 na AUC); coeficientes clinicamente
+  coerentes e tabelas/figuras consistentes (ver §1.14). Pendência
+  remanescente: validação externa + curva de decisão antes de uso
+  clínico da ferramenta derivada.
 \end{itemize}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{inconsistuxeancias-encontradas}{%
 \subsection{1. Inconsistências
-Encontradas}\label{inconsistuxeancias-encontradas}
+Encontradas}\label{inconsistuxeancias-encontradas}}
 
+\hypertarget{n-total-da-amostra-quatro-valores-em-circulauxe7uxe3o-cruxedtico}{%
 \subsubsection{1.1 N total da amostra --- quatro valores em circulação
-(CRÍTICO)}\label{n-total-da-amostra-quatro-valores-em-circulauxe7uxe3o-cruxedtico}
+(CRÍTICO)}\label{n-total-da-amostra-quatro-valores-em-circulauxe7uxe3o-cruxedtico}}
 
 \textbf{Arquivos:} \texttt{Dissertação\ Maio\_26.docx},
 \texttt{tabelas\_dissertacao.docx},
 \texttt{tab\_obj2\_vias\_parto\_geral.csv},
 \texttt{tab01\_sociodemografia.csv}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Fonte
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Precoces
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Tardias
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Adultas
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Total
-\end{minipage} \\
-\midrule\noalign{}
+\begin{longtable}[]{@{}lllll@{}}
+\toprule
+\begin{minipage}[b]{0.17\columnwidth}\raggedright
+Fonte\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+Precoces\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+Tardias\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+Adultas\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+Total\strut
+\end{minipage}\tabularnewline
+\midrule
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
-R pipeline --- \texttt{tab\_obj2\_vias\_parto\_geral.csv} (primário) &
-538 & 829 & 5.279 & \textbf{6.646} \\
-Tabelas 4--7 no \texttt{tabelas\_dissertacao.docx} (rodapé Tab4) & 538 &
-830 & 5.295 & \textbf{6.663} \\
-SPSS --- cabeçalho da Tabela 1 no \texttt{tabelas\_dissertacao.docx} &
-551 & 856 & 5.423 & \textbf{6.830} \\
-Dissertação §154 (texto corrido) & --- & 1.348 adol & 6.952 adul &
-\textbf{8.300} \\
-Dissertação legenda Tabelas 1--2 & --- & 1.677 adol & 7.047 adul &
-\textbf{8.724} \\
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+R pipeline --- \texttt{tab\_obj2\_vias\_parto\_geral.csv}
+(primário)\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+538\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+829\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+5.279\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{6.646}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+Tabelas 4--7 no \texttt{tabelas\_dissertacao.docx} (rodapé Tab4)\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+538\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+830\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+5.295\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{6.663}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{Pipeline modular \texttt{analysis/00–06}
+(\texttt{00\_filtro\_elegibilidade.R})}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{538}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{829}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{5.283}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{6.650}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+SPSS --- cabeçalho da Tabela 1 no
+\texttt{tabelas\_dissertacao.docx}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+551\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+856\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+5.423\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{6.830}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+Dissertação §154 (texto corrido)\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+---\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+1.348 adol\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+6.952 adul\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{8.300}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.17\columnwidth}\raggedright
+Dissertação legenda Tabelas 1--2\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+---\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+1.677 adol\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+7.047 adul\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\textbf{8.724}\strut
+\end{minipage}\tabularnewline
+\bottomrule
 \end{longtable}
 
 \textbf{Problema:} Há quatro valores de N distintos, cada um
@@ -184,13 +244,20 @@ exceto 8, idade 11--34, tipo\_parto preenchido). - \textbf{6.663} =
 Tabelas 5--7 do docx: soma dos n por Robson a partir de
 \texttt{tab\_obj2\_taxa\_cesarea.csv} --- 17 casos a mais que o
 primário, sugerindo que a tabela de taxa e a de vias usaram cortes de
-código diferentes no mesmo render. - \textbf{6.830} = SPSS: inclui os
-184 casos que o R exclui por Robson ausente/inválido ou IG \textless{}
-22. - \textbf{8.300} e \textbf{8.724} = dissertação original: inclui
-gestantes ≥ 35 anos (n ≈ 1.469 no SPSS) e casos pré-filtro; os dois
-valores são incompatíveis entre si (diferença de 424), indicando que
-§154 e as legendas das Tabelas 1--2 da dissertação usam cortes
-distintos.
+código diferentes no mesmo render. - \textbf{6.650} = pipeline modular
+\texttt{analysis/00–06} (filtro §3.3 codificado), determinístico: o
+script \texttt{00\_filtro\_elegibilidade.R} aplica os mesmos critérios e
+dispara \texttt{stopifnot(nrow\ ==\ 6650)}. É a fonte recomendada para
+padronizar o N daqui em diante, pois é versionada, testada
+(\texttt{tests/testthat/}) e replicável. A diferença para 6.646/6.663
+(±4 a ±13 casos) vem de pequenas variações de corte entre o
+\texttt{index.qmd} antigo e o pipeline novo --- convém migrar as Tabelas
+4--7 para o pipeline modular. - \textbf{6.830} = SPSS: inclui os 184
+casos que o R exclui por Robson ausente/inválido ou IG \textless{} 22. -
+\textbf{8.300} e \textbf{8.724} = dissertação original: inclui gestantes
+≥ 35 anos (n ≈ 1.469 no SPSS) e casos pré-filtro; os dois valores são
+incompatíveis entre si (diferença de 424), indicando que §154 e as
+legendas das Tabelas 1--2 da dissertação usam cortes distintos.
 
 \textbf{Correção sugerida:} Adotar \textbf{6.663} como N definitivo das
 análises de via de parto (Tabelas 4--7), pois é o valor que soma os n de
@@ -206,9 +273,10 @@ os valores da tabela de análise escolhida (ver Seção 3).
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{discrepuxe2ncia-entre-csvs-primuxe1rios-e-csvs-derivados-tabelas-57}{%
 \subsubsection{1.2 Discrepância entre CSVs primários e CSVs derivados
 (Tabelas
-5--7)}\label{discrepuxe2ncia-entre-csvs-primuxe1rios-e-csvs-derivados-tabelas-57}
+5--7)}\label{discrepuxe2ncia-entre-csvs-primuxe1rios-e-csvs-derivados-tabelas-57}}
 
 \textbf{Arquivos:} \texttt{tab\_obj2\_taxa\_cesarea.csv} vs
 \texttt{tab06\_taxa\_cesarea\_robson.csv};
@@ -218,33 +286,56 @@ os valores da tabela de análise escolhida (ver Seção 3).
 Quatro células diferem entre os CSVs primários (\texttt{tab\_obj2\_*}) e
 os derivados (\texttt{tab0X\_*}):
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Célula
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Primário (\texttt{tab\_obj2\_taxa})
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Derivado (\texttt{tab06})
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Diferença
-\end{minipage} \\
-\midrule\noalign{}
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\raggedright
+Célula\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Primário (\texttt{tab\_obj2\_taxa})\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Derivado (\texttt{tab06})\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Diferença\strut
+\end{minipage}\tabularnewline
+\midrule
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
-Grupo 6 --- Adultas & n = 39, taxa = 94,9\% & n = 38, taxa = 94,7\% & −1
-caso \\
-Grupo 7 --- Adultas & n = 302, taxa = 90,4\% & n = 300, taxa = 90,7\% &
-−2 casos \\
-Grupo 10 --- Tardias & n = 116, taxa = 31,0\% & n = 115, taxa = 31,3\% &
-−1 caso \\
-Grupo 10 --- Adultas & n = 1.193, taxa = 62,0\% & n = 1.180, taxa =
-62,5\% & −13 casos \\
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Grupo 6 --- Adultas\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+n = 39, taxa = 94,9\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+n = 38, taxa = 94,7\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+−1 caso\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Grupo 7 --- Adultas\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+n = 302, taxa = 90,4\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+n = 300, taxa = 90,7\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+−2 casos\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Grupo 10 --- Tardias\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+n = 116, taxa = 31,0\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+n = 115, taxa = 31,3\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+−1 caso\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Grupo 10 --- Adultas\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+n = 1.193, taxa = 62,0\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+n = 1.180, taxa = 62,5\%\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+−13 casos\strut
+\end{minipage}\tabularnewline
+\bottomrule
 \end{longtable}
 
 \textbf{Problema:} As Tabelas 5--7 do \texttt{tabelas\_dissertacao.docx}
@@ -262,22 +353,23 @@ primários (\texttt{tab\_obj2\_*}) como fonte de verdade para Tabelas
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{discrepuxe2ncia-entre-totais-de-tabela-4-no-docx-e-csv-primuxe1rio}{%
 \subsubsection{1.3 Discrepância entre totais de Tabela 4 no docx e CSV
-primário}\label{discrepuxe2ncia-entre-totais-de-tabela-4-no-docx-e-csv-primuxe1rio}
+primário}\label{discrepuxe2ncia-entre-totais-de-tabela-4-no-docx-e-csv-primuxe1rio}}
 
 \textbf{Arquivo:} \texttt{tabelas\_dissertacao.docx} Tabela 4 vs
 \texttt{tab\_obj2\_vias\_parto\_geral.csv}
 
 \begin{longtable}[]{@{}lll@{}}
-\toprule\noalign{}
-Grupo & CSV primário (\texttt{tab\_obj2\_vias}) & Tab4 docx \\
-\midrule\noalign{}
+\toprule
+Grupo & CSV primário (\texttt{tab\_obj2\_vias}) & Tab4
+docx\tabularnewline
+\midrule
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
-Tardias & n = 829 & n = 830 (+1) \\
-Adultas & n = 5.279 & n = 5.295 (+16) \\
-\textbf{Total} & \textbf{6.646} & \textbf{6.663} \\
+Tardias & n = 829 & n = 830 (+1)\tabularnewline
+Adultas & n = 5.279 & n = 5.295 (+16)\tabularnewline
+\textbf{Total} & \textbf{6.646} & \textbf{6.663}\tabularnewline
+\bottomrule
 \end{longtable}
 
 \textbf{Problema:} A Tabela 4 no docx exibe totais diferentes dos totais
@@ -298,24 +390,26 @@ consistente.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{dissertauxe7uxe3o-original-p-valor-de-corrauxe7a}{%
 \subsubsection{1.4 Dissertação original --- p-valor de
-cor/raça}\label{dissertauxe7uxe3o-original-p-valor-de-corrauxe7a}
+cor/raça}\label{dissertauxe7uxe3o-original-p-valor-de-corrauxe7a}}
 
 \textbf{Arquivo:} \texttt{Dissertação\ Maio\_26.docx} §160 vs
 \texttt{resultados\_redacao.docx} §4.1.2 vs
 \texttt{Relatorio\ Analise\ SPSS.md}
 
 \begin{longtable}[]{@{}lll@{}}
-\toprule\noalign{}
-Fonte & p-valor & Conclusão \\
-\midrule\noalign{}
+\toprule
+Fonte & p-valor & Conclusão\tabularnewline
+\midrule
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
-Dissertação original §160 & p = \textbf{0,06} & não significativo \\
-Relatório SPSS & p = \textbf{0,337} & não significativo \\
-Nova redação (§4.1.2) & p = \textbf{0,337} & não significativo \\
-Tabela 1 docx & p = \textbf{0,337} & não significativo \\
+Dissertação original §160 & p = \textbf{0,06} & não
+significativo\tabularnewline
+Relatório SPSS & p = \textbf{0,337} & não significativo\tabularnewline
+Nova redação (§4.1.2) & p = \textbf{0,337} & não
+significativo\tabularnewline
+Tabela 1 docx & p = \textbf{0,337} & não significativo\tabularnewline
+\bottomrule
 \end{longtable}
 
 \textbf{Problema:} O texto original da dissertação (§160) cita p = 0,06,
@@ -331,9 +425,10 @@ elegibilidade.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{dissertauxe7uxe3o-original-incompatibilidade-entre-154-e-legendas-das-tabelas-12}{%
 \subsubsection{1.5 Dissertação original --- incompatibilidade entre §154
 e legendas das Tabelas
-1--2}\label{dissertauxe7uxe3o-original-incompatibilidade-entre-154-e-legendas-das-tabelas-12}
+1--2}\label{dissertauxe7uxe3o-original-incompatibilidade-entre-154-e-legendas-das-tabelas-12}}
 
 \textbf{Arquivo:} \texttt{Dissertação\ Maio\_26.docx}
 
@@ -365,9 +460,10 @@ da versão original de §154 e legendas.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{redauxe7uxe3o-4.1.2-percentual-de-corrauxe7a-pode-nuxe3o-representar-todas-as-adolescentes}{%
 \subsubsection{1.6 Redação §4.1.2 --- percentual de cor/raça pode não
 representar todas as
-adolescentes}\label{redauxe7uxe3o-4.1.2-percentual-de-corrauxe7a-pode-nuxe3o-representar-todas-as-adolescentes}
+adolescentes}\label{redauxe7uxe3o-4.1.2-percentual-de-corrauxe7a-pode-nuxe3o-representar-todas-as-adolescentes}}
 
 \textbf{Arquivo:} \texttt{resultados\_redacao.docx} §4.1.2
 
@@ -389,44 +485,27 @@ SPSS, diferente dos 56,6\% (precoces) e 56,3\% (tardias) da Tabela 1.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{tabela-4-docx-vs-spss-diferenuxe7a-de-percentuais-de-vias-de-parto}{%
 \subsubsection{1.7 Tabela 4 docx vs SPSS --- diferença de percentuais de
 vias de
-parto}\label{tabela-4-docx-vs-spss-diferenuxe7a-de-percentuais-de-vias-de-parto}
+parto}\label{tabela-4-docx-vs-spss-diferenuxe7a-de-percentuais-de-vias-de-parto}}
 
 \textbf{Arquivos:} \texttt{tabelas\_dissertacao.docx} Tabela 4 (fonte R)
 vs \texttt{Relatorio\ Analise\ SPSS.md} §4 (tabela de via de parto)
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Faixa
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Normal R
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Normal SPSS
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Fórcipe R
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Fórcipe SPSS
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Cesárea R
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Cesárea SPSS
-\end{minipage} \\
-\midrule\noalign{}
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule
+Faixa & Normal R & Normal SPSS & Fórcipe R & Fórcipe SPSS & Cesárea R &
+Cesárea SPSS\tabularnewline
+\midrule
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
-Precoces & 44,2\% & 45,4\% & 24,9\% & 24,5\% & 30,9\% & 30,1\% \\
-Tardias & 40,2\% & 41,2\% & 27,6\% & 27,3\% & 32,2\% & 31,4\% \\
-Adultas & 27,1\% & 27,5\% & 10,3\% & 10,2\% & 62,6\% & 62,3\% \\
+Precoces & 44,2\% & 45,4\% & 24,9\% & 24,5\% & 30,9\% &
+30,1\%\tabularnewline
+Tardias & 40,2\% & 41,2\% & 27,6\% & 27,3\% & 32,2\% &
+31,4\%\tabularnewline
+Adultas & 27,1\% & 27,5\% & 10,3\% & 10,2\% & 62,6\% &
+62,3\%\tabularnewline
+\bottomrule
 \end{longtable}
 
 \textbf{Problema:} As diferenças são pequenas (\textless{} 1,3 p.p.) mas
@@ -442,9 +521,10 @@ os valores do R, que é a escolha correta.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{tabela-8-cobertura-muito-baixa-e-desigual-de-ind_final-para-adolescentes}{%
 \subsubsection{1.8 Tabela 8 --- cobertura muito baixa e desigual de
 ind\_final para
-adolescentes}\label{tabela-8-cobertura-muito-baixa-e-desigual-de-ind_final-para-adolescentes}
+adolescentes}\label{tabela-8-cobertura-muito-baixa-e-desigual-de-ind_final-para-adolescentes}}
 
 \textbf{Arquivo:} \texttt{tabelas\_dissertacao.docx} Tabela 8
 
@@ -471,8 +551,9 @@ Considerar mencionar essa limitação também no texto de §4.4.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{tabela-9-inteiramente-nd-confirmado-como-limitauxe7uxe3o}{%
 \subsubsection{1.9 Tabela 9 --- inteiramente ND (confirmado como
-limitação)}\label{tabela-9-inteiramente-nd-confirmado-como-limitauxe7uxe3o}
+limitação)}\label{tabela-9-inteiramente-nd-confirmado-como-limitauxe7uxe3o}}
 
 \textbf{Arquivo:} \texttt{tabelas\_dissertacao.docx} Tabela 9;
 \texttt{Relatorio\ Analise\ SPSS.md}
@@ -495,9 +576,10 @@ para extrair as indicações específicas de fórcipe.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{figuras-5-e-6-citadas-na-redauxe7uxe3o-mas-arquivos-png-inexistentes}{%
 \subsubsection{1.10 Figuras 5 e 6 --- citadas na redação mas arquivos
 PNG
-inexistentes}\label{figuras-5-e-6-citadas-na-redauxe7uxe3o-mas-arquivos-png-inexistentes}
+inexistentes}\label{figuras-5-e-6-citadas-na-redauxe7uxe3o-mas-arquivos-png-inexistentes}}
 
 \textbf{Arquivo:} \texttt{resultados\_redacao.docx} §4.4 vs
 \texttt{results/figures/}
@@ -519,9 +601,10 @@ removida da redação §4.4.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{figura-7-forest-plot-existe-mas-nuxe3o-uxe9-referenciada-na-redauxe7uxe3o}{%
 \subsubsection{1.11 Figura 7 (forest plot) --- existe mas não é
 referenciada na
-redação}\label{figura-7-forest-plot-existe-mas-nuxe3o-uxe9-referenciada-na-redauxe7uxe3o}
+redação}\label{figura-7-forest-plot-existe-mas-nuxe3o-uxe9-referenciada-na-redauxe7uxe3o}}
 
 \textbf{Arquivo:}
 \texttt{results/figures/fig\_obj5\_forest\_plot\_modelo4.png} vs
@@ -539,9 +622,10 @@ o plano (Figura 7 = forest plot).
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{modelo-4-verificauxe7uxe3o-dos-or-e-ic-95-resultado-sem-erros}{%
 \subsubsection{1.12 Modelo 4 --- verificação dos OR e IC 95\%
 (resultado: SEM
-ERROS)}\label{modelo-4-verificauxe7uxe3o-dos-or-e-ic-95-resultado-sem-erros}
+ERROS)}\label{modelo-4-verificauxe7uxe3o-dos-or-e-ic-95-resultado-sem-erros}}
 
 \textbf{Arquivos:} \texttt{tab10\_modelo4\_spss.csv},
 \texttt{tabelas\_dissertacao.docx} Tabela 10,
@@ -549,70 +633,142 @@ ERROS)}\label{modelo-4-verificauxe7uxe3o-dos-or-e-ic-95-resultado-sem-erros}
 
 Verificação completa de todos os 11 coeficientes:
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Variável
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-SPSS (Relatorio)
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Tabela 10 docx
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Situação
-\end{minipage} \\
-\midrule\noalign{}
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\raggedright
+Variável\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+SPSS (Relatorio)\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Tabela 10 docx\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Situação\strut
+\end{minipage}\tabularnewline
+\midrule
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
-Faixa etária adulta & OR=1,79 {[}1,12--2,86{]} p=0,015 & OR=1,79
-{[}1,12--2,86{]} p=0,015 & ✓ \\
-DHEG & OR=0,40 {[}0,32--0,50{]} p\textless0,001 & OR=0,40
-{[}0,32--0,50{]} p\textless0,001 & ✓ \\
-Robson 2 & OR=4,38 {[}3,30--5,82{]} p\textless0,001 & OR=4,38
-{[}3,30--5,82{]} p\textless0,001 & ✓ \\
-Robson 3 & OR=0,48 {[}0,35--0,66{]} p\textless0,001 & OR=0,48
-{[}0,35--0,66{]} p\textless0,001 & ✓ \\
-Robson 4 & OR=1,86 {[}1,33--2,59{]} p\textless0,001 & OR=1,86
-{[}1,33--2,59{]} p\textless0,001 & ✓ \\
-Robson 5 & OR=13,65 {[}9,88--18,85{]} p\textless0,001 & OR=13,65
-{[}9,88--18,85{]} p\textless0,001 & ✓ \\
-Robson 6 & OR=23,65 {[}5,49--101,89{]} p\textless0,001 & OR=23,65
-{[}5,49--101,89{]} p\textless0,001 & ✓ \\
-Robson 7 & OR=22,86 {[}13,05--40,08{]} p\textless0,001 & OR=22,86
-{[}13,05--40,08{]} p\textless0,001 & ✓ \\
-Robson 9 & OR=27,66 {[}6,49--117,89{]} p\textless0,001 & OR=27,66
-{[}6,49--117,89{]} p\textless0,001 & ✓ \\
-Robson 10 & OR=2,69 {[}2,05--3,52{]} p\textless0,001 & OR=2,69
-{[}2,05--3,52{]} p\textless0,001 & ✓ \\
-Constante & −0,384 / p=0,073 / OR=0,68 & −0,384 / p=0,073 / OR=0,68 &
-✓ \\
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Faixa etária adulta\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=1,79 {[}1,12--2,86{]} p=0,015\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=1,79 {[}1,12--2,86{]} p=0,015\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+DHEG\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=0,40 {[}0,32--0,50{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=0,40 {[}0,32--0,50{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Robson 2\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=4,38 {[}3,30--5,82{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=4,38 {[}3,30--5,82{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Robson 3\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=0,48 {[}0,35--0,66{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=0,48 {[}0,35--0,66{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Robson 4\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=1,86 {[}1,33--2,59{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=1,86 {[}1,33--2,59{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Robson 5\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=13,65 {[}9,88--18,85{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=13,65 {[}9,88--18,85{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Robson 6\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=23,65 {[}5,49--101,89{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=23,65 {[}5,49--101,89{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Robson 7\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=22,86 {[}13,05--40,08{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=22,86 {[}13,05--40,08{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Robson 9\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=27,66 {[}6,49--117,89{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=27,66 {[}6,49--117,89{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Robson 10\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=2,69 {[}2,05--3,52{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+OR=2,69 {[}2,05--3,52{]} p\textless0,001\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+Constante\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+−0,384 / p=0,073 / OR=0,68\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+−0,384 / p=0,073 / OR=0,68\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+✓\strut
+\end{minipage}\tabularnewline
+\bottomrule
 \end{longtable}
 
 \textbf{Conclusão:} Tabela 10 está perfeita. Sem correções necessárias.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{tabela-7-arredondamento-do-p-valor-do-grupo-3}{%
 \subsubsection{1.13 Tabela 7 --- arredondamento do p-valor do Grupo
-3}\label{tabela-7-arredondamento-do-p-valor-do-grupo-3}
+3}\label{tabela-7-arredondamento-do-p-valor-do-grupo-3}}
 
 \textbf{Arquivo:} \texttt{tab\_obj2\_testes\_por\_robson.csv} vs
 \texttt{tabelas\_dissertacao.docx} Tabela 7 vs
 \texttt{resultados\_redacao.docx} §4.3.2
 
 \begin{longtable}[]{@{}ll@{}}
-\toprule\noalign{}
-Fonte & Grupo 3 p-valor \\
-\midrule\noalign{}
+\toprule
+Fonte & Grupo 3 p-valor\tabularnewline
+\midrule
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
-CSV primário & p = 0,0014 \\
-Tabela 7 docx & p = 0,001 \\
-Redação §4.3.2 & p = 0,001 \\
+CSV primário & p = 0,0014\tabularnewline
+Tabela 7 docx & p = 0,001\tabularnewline
+Redação §4.3.2 & p = 0,001\tabularnewline
+\bottomrule
 \end{longtable}
 
 \textbf{Problema:} O CSV primário mostra p = 0,0014. O docx e a redação
@@ -628,48 +784,189 @@ então está OK.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{2. Itens em Branco (ND e
-Placeholders)}\label{itens-em-branco-nd-e-placeholders}
+\hypertarget{modelos-preditivos-de-cesuxe1rea-novo-10062026}{%
+\subsubsection{1.14 Modelos preditivos de cesárea (NOVO ---
+10/06/2026)}\label{modelos-preditivos-de-cesuxe1rea-novo-10062026}}
 
+\textbf{Arquivos:} \texttt{analysis/06\_modelos\_preditivos\_cesarea.R},
+\texttt{results/tabelas\_dissertacao/tab\_modelos\_preditivos\_desempenho.csv},
+\texttt{tab\_modelo\_\{A,B,C\}\_*\_OR.csv},
+\texttt{tab\_escore\_pre\_natal\_*.csv},
+\texttt{results/figures/fig\_obj6\_*}, relatórios em
+\texttt{results/RELATORIO\_*MODELOS\_PREDITIVOS*.md} e
+\texttt{FERRAMENTA\_CLINICA\_ESCORE\_PRE\_NATAL.md}.
+
+Acrescentou-se a estratégia de \textbf{três modelos} (A pré-natal, B
+pré-parto individual, C pré-parto com Robson), ajustados na coorte total
+(N = 6.650) com imputação múltipla (MICE) e comparados por AUC, Brier,
+R² de Nagelkerke e calibração.
+
+\textbf{Verificações realizadas (consistência interna --- OK):}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+\begin{minipage}[b]{0.47\columnwidth}\raggedright
+Item\strut
+\end{minipage} & \begin{minipage}[b]{0.47\columnwidth}\raggedright
+Resultado\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+AUC corrigida por otimismo (coorte total)\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+A = 0,752; B = 0,782; C = 0,797 --- gradiente coerente\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+AUC (subgrupo adolescente, n = 1.367)\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+A = n/e (aparente 0,545); B = 0,621; C = 0,590 --- hierarquia invertida,
+consistente com a baixa variação de Robson no grupo\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+Paridade R × Python\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Confirmada: diferenças ≤ 0,002 na AUC entre \texttt{mice} (R) e
+\texttt{miceforest} (Python)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+Direção/magnitude dos OR\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Clinicamente coerentes: cesárea prévia \textasciitilde12,6; Robson 5
+\textasciitilde12,6; Robson 6/7/9 de 16 a 31; adolescentes OR
+\textless{} 1 vs.~adultas em todos os modelos\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+Escore de pontos × calculadora\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Concordância ≤ 3 p.p. (diferença esperada do arredondamento do escore de
+Sullivan)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.47\columnwidth}\raggedright
+Tabela de desempenho × figuras \texttt{fig\_obj6\_*}\strut
+\end{minipage} & \begin{minipage}[t]{0.47\columnwidth}\raggedright
+Valores das figuras batem com
+\texttt{tab\_modelos\_preditivos\_desempenho.csv}\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\textbf{Pontos de atenção (não são erros, mas precisam de registro):}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Origem dos números (RESOLVIDO em 10/06/2026).} O script R
+  canônico (\texttt{06\_modelos\_preditivos\_cesarea.R},
+  \texttt{mice}/\texttt{pROC}/\texttt{rms}) foi executado e a
+  \texttt{tab\_modelos\_preditivos\_desempenho.csv} resultante reproduz
+  os valores da validação em Python (\texttt{miceforest}) dentro de
+  ±0,002 na AUC. Os relatórios passam a citar os valores do R como
+  canônicos. Os arquivos OR foram padronizados nos nomes do R
+  (\texttt{tab\_modelo\_A\_pre\_natal\_OR.csv},
+  \texttt{tab\_modelo\_B\_pre\_parto\_OR.csv},
+  \texttt{tab\_modelo\_C\_robson\_OR.csv}); as duplicatas com nomes do
+  Python foram removidas.
+\item
+  \textbf{Calibração aparente.} As inclinações/intercepto de calibração
+  ``perfeitos'' são triviais por construção (ajuste e avaliação na mesma
+  base); por isso reporta-se AUC corrigida por otimismo (bootstrap) e
+  calibração por decis (\texttt{fig\_obj6\_calibracao.png}). Não
+  confundir com validação.
+\item
+  \textbf{Subgrupo adolescente --- Modelo C.} Robson foi colapsado
+  (6/7/9 → ``anômala'') e a AUC corrigida pode sair \texttt{NA} por
+  separação quase-perfeita; interpretar OR desses termos com cautela.
+\item
+  \textbf{Variáveis fora dos modelos} (IMC 74\% ausente; pré-eclâmpsia
+  15 casos; gestação múltipla = Grupo 8 já excluído; renda/SUS ausente)
+  --- documentado nos relatórios; coerente com os critérios §3.3.
+\item
+  \textbf{Ferramenta clínica} derivada do Modelo A --- sem validação
+  externa; enquadrar como apoio ao aconselhamento, não regra de decisão.
+\end{enumerate}
+
+\textbf{Conclusão:} Artefatos internamente consistentes e clinicamente
+plausíveis, com \textbf{paridade R × Python confirmada} (≤ 0,002 na
+AUC). Sem erros numéricos identificados; pendência remanescente é apenas
+externa ao dado atual --- validação externa/temporal e curva de decisão
+antes de uso clínico da ferramenta.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{itens-em-branco-nd-e-placeholders}{%
+\subsection{2. Itens em Branco (ND e
+Placeholders)}\label{itens-em-branco-nd-e-placeholders}}
+
+\hypertarget{cinco-placeholders-na-redauxe7uxe3o-auxe7uxe3o-obrigatuxf3ria}{%
 \subsubsection{2.1 Cinco placeholders na redação --- ação
-obrigatória}\label{cinco-placeholders-na-redauxe7uxe3o-auxe7uxe3o-obrigatuxf3ria}
+obrigatória}\label{cinco-placeholders-na-redauxe7uxe3o-auxe7uxe3o-obrigatuxf3ria}}
 
 \textbf{Arquivo:} \texttt{resultados\_redacao.docx} §4.1 (parágrafo 2 e
 parágrafo de §4.1.1)
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Placeholder
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Descrição
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Fonte recomendada
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Valor provisório (R)
-\end{minipage} \\
-\midrule\noalign{}
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\raggedright
+Placeholder\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Descrição\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Fonte recomendada\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\raggedright
+Valor provisório (R)\strut
+\end{minipage}\tabularnewline
+\midrule
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
-\texttt{{[}N\_TOTAL{]}} & Total de partos analisados & Tabela 4 rodapé
---- \texttt{tab\_obj2\_taxa\_cesarea.csv} (soma de todos os grupos) &
-\textbf{6.663} \\
-\texttt{{[}N\_ADOL{]}} & Total de adolescentes & Soma precoces + tardias
-da mesma fonte & \textbf{1.368} (538+830) \\
-\texttt{{[}N\_PREC{]}} & Adolescentes precoces (11--15) &
-\texttt{tab\_obj2\_taxa\_cesarea.csv} soma Grupo 1-10 para precoces &
-\textbf{538} \\
-\texttt{{[}N\_TARD{]}} & Adolescentes tardias (16--19) &
-\texttt{tab\_obj2\_taxa\_cesarea.csv} soma Grupo 1-10 para tardias &
-\textbf{830} \\
-\texttt{{[}N\_ADUL{]}} & Adultas (20--34) &
-\texttt{tab\_obj2\_taxa\_cesarea.csv} soma Grupo 1-10 para adultas &
-\textbf{5.295} \\
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+\texttt{{[}N\_TOTAL{]}}\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+Total de partos analisados\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+Tabela 4 rodapé --- \texttt{tab\_obj2\_taxa\_cesarea.csv} (soma de todos
+os grupos)\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+\textbf{6.663}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+\texttt{{[}N\_ADOL{]}}\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+Total de adolescentes\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+Soma precoces + tardias da mesma fonte\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+\textbf{1.368} (538+830)\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+\texttt{{[}N\_PREC{]}}\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+Adolescentes precoces (11--15)\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+\texttt{tab\_obj2\_taxa\_cesarea.csv} soma Grupo 1-10 para
+precoces\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+\textbf{538}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+\texttt{{[}N\_TARD{]}}\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+Adolescentes tardias (16--19)\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+\texttt{tab\_obj2\_taxa\_cesarea.csv} soma Grupo 1-10 para tardias\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+\textbf{830}\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\raggedright
+\texttt{{[}N\_ADUL{]}}\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+Adultas (20--34)\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+\texttt{tab\_obj2\_taxa\_cesarea.csv} soma Grupo 1-10 para adultas\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright
+\textbf{5.295}\strut
+\end{minipage}\tabularnewline
+\bottomrule
 \end{longtable}
 
 \begin{quote}
@@ -680,8 +977,9 @@ tardias=829 e adultas=5.279), use esses valores menores. A decisão de
 qual N usar deve vir ANTES de colar qualquer número no docx principal.
 \end{quote}
 
+\hypertarget{tabela-9-todas-as-cuxe9lulas-nd}{%
 \subsubsection{2.2 Tabela 9 --- todas as células
-ND}\label{tabela-9-todas-as-cuxe9lulas-nd}
+ND}\label{tabela-9-todas-as-cuxe9lulas-nd}}
 
 \textbf{Arquivo:} \texttt{tabelas\_dissertacao.docx} Tabela 9
 
@@ -693,9 +991,10 @@ transformar §4.4 ``Indicações de fórcipe'' em um parágrafo descritivo
 que reconhece a limitação do dado e cita apenas a frequência global de
 fórcipe (já disponível na Tabela 4).
 
+\hypertarget{tabela-11-desfechos-neonatais-csv-existe-nuxe3o-estuxe1-no-docx}{%
 \subsubsection{2.3 Tabela 11 (desfechos neonatais) --- CSV existe, não
 está no
-docx}\label{tabela-11-desfechos-neonatais-csv-existe-nuxe3o-estuxe1-no-docx}
+docx}\label{tabela-11-desfechos-neonatais-csv-existe-nuxe3o-estuxe1-no-docx}}
 
 \textbf{Arquivo:} \texttt{tab11\_desfechos\_neonatais\_spss.csv} existe;
 \texttt{tabelas\_dissertacao.docx} não contém Tabela 11.
@@ -710,9 +1009,11 @@ Resultados, levar os principais achados para a Discussão como
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\subsection{3. Recomendações Finais}\label{recomendauxe7uxf5es-finais}
+\hypertarget{recomendauxe7uxf5es-finais}{%
+\subsection{3. Recomendações Finais}\label{recomendauxe7uxf5es-finais}}
 
-\subsubsection{Para a Letícia}\label{para-a-letuxedcia}
+\hypertarget{para-a-letuxedcia}{%
+\subsubsection{Para a Letícia}\label{para-a-letuxedcia}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -755,7 +1056,8 @@ Resultados, levar os principais achados para a Discussão como
   automáticas convertam vírgula para ponto.
 \end{enumerate}
 
-\subsubsection{Para o Eduardo}\label{para-o-eduardo}
+\hypertarget{para-o-eduardo}{%
+\subsubsection{Para o Eduardo}\label{para-o-eduardo}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -795,30 +1097,41 @@ Resultados, levar os principais achados para a Discussão como
   \textbf{Nota de rodapé na Tabela 8:} Acrescentar a informação de
   cobertura: ``Partos operatórios com indicação registrada: 138/300
   (46\%) precoces; 227/496 (46\%) tardias; 3.228/3.859 (84\%) adultas.''
+\item
+  \textbf{(10/06/2026) Confirmar os modelos preditivos no R:} Rodar
+  \texttt{Rscript\ analysis/06\_modelos\_preditivos\_cesarea.R} (requer
+  \texttt{mice}, \texttt{pROC}, \texttt{rms}) e cotejar a
+  \texttt{tab\_modelos\_preditivos\_desempenho.csv} resultante com os
+  valores deste relatório (§1.14). Avaliar migrar as Tabelas 4--7 para o
+  pipeline modular \texttt{analysis/00–06} (N = 6.650) para encerrar a
+  divergência de N. Considerar acrescentar uma \textbf{curva de decisão}
+  para a ferramenta clínica.
 \end{enumerate}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
+\hypertarget{apuxeandice-rastreabilidade-dos-placeholders}{%
 \subsection{Apêndice --- Rastreabilidade dos
-Placeholders}\label{apuxeandice-rastreabilidade-dos-placeholders}
+Placeholders}\label{apuxeandice-rastreabilidade-dos-placeholders}}
 
 \begin{longtable}[]{@{}llll@{}}
-\toprule\noalign{}
-Placeholder & Valor R (6.663) & Valor R (6.646) & Tabela de origem \\
-\midrule\noalign{}
+\toprule
+Placeholder & Valor R (6.663) & Valor R (6.646) & Tabela de
+origem\tabularnewline
+\midrule
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
-{[}N\_TOTAL{]} & 6.663 & 6.646 & Rodapé Tabela 4 \\
-{[}N\_ADOL{]} & 1.368 & 1.367 & Soma precoces + tardias \\
-{[}N\_PREC{]} & 538 & 538 & Tabela 4, coluna precoces \\
-{[}N\_TARD{]} & 830 & 829 & Tabela 4, coluna tardias \\
-{[}N\_ADUL{]} & 5.295 & 5.279 & Tabela 4, coluna adultas \\
+{[}N\_TOTAL{]} & 6.663 & 6.646 & Rodapé Tabela 4\tabularnewline
+{[}N\_ADOL{]} & 1.368 & 1.367 & Soma precoces + tardias\tabularnewline
+{[}N\_PREC{]} & 538 & 538 & Tabela 4, coluna precoces\tabularnewline
+{[}N\_TARD{]} & 830 & 829 & Tabela 4, coluna tardias\tabularnewline
+{[}N\_ADUL{]} & 5.295 & 5.279 & Tabela 4, coluna adultas\tabularnewline
+\bottomrule
 \end{longtable}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
 \emph{Relatório gerado automaticamente por revisão cruzada de 13
-arquivos. Última atualização: 19/05/2026.}
+arquivos. Última atualização: 10/06/2026 (acréscimo da §1.14 --- modelos
+preditivos e ferramenta clínica).}
 
 \end{document}

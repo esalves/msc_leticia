@@ -26,10 +26,18 @@
 #   perde poder discriminatório onde há pouca variação de grupos — 97,9% das
 #   adolescentes caem em 1/2/3/6/10 e nenhuma no Grupo 5).
 #
-# Dados faltantes: IMPUTAÇÃO MÚLTIPLA (mice, m = 5). Coeficientes combinados por
-#   regras de Rubin; métricas de desempenho calculadas em cada base imputada e
-#   promediadas. A imputação garante o MESMO N nos três modelos (comparação
-#   justa de AUC entre modelos não aninhados).
+# MEDIDA DE EFEITO: RAZÃO DE PREVALÊNCIA (PR), não Odds Ratio. A cesárea é um
+#   desfecho de alta prevalência (~56%); o OR superestima a associação. Por
+#   decisão do orientador, os coeficientes reportados são PR, estimados por
+#   regressão de POISSON com VARIÂNCIA ROBUSTA (sandwich HC0) — modified Poisson
+#   de Zou (2004). As métricas de DESEMPENHO PREDITIVO (AUC, Brier, Nagelkerke,
+#   calibração, c-statistic corrigido) — objetivo central deste script — exigem
+#   probabilidades em [0,1] e continuam calculadas sobre ajustes LOGÍSTICOS.
+#
+# Dados faltantes: IMPUTAÇÃO MÚLTIPLA (mice, m = 5). Coeficientes (log-PR)
+#   combinados por regras de Rubin e depois exponenciados; métricas de desempenho
+#   calculadas em cada base imputada e promediadas. A imputação garante o MESMO
+#   N nos três modelos (comparação justa de AUC entre modelos não aninhados).
 #
 # Variáveis NÃO incluídas e por quê:
 #   - IMC inicial: 74% ausente na coorte → imputação não confiável (excluído).
@@ -40,7 +48,7 @@
 #
 # Saídas:
 #   results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv
-#   results/tabelas_dissertacao/tab_modelo_{A,B,C}_OR.csv
+#   results/tabelas_dissertacao/tab_modelo_{A,B,C}_PR.csv   (Razão de Prevalência)
 #   results/figures/fig_obj6_roc_modelos.png
 #   results/figures/fig_obj6_calibracao.png
 #
@@ -59,6 +67,7 @@ has_rms <- requireNamespace("rms", quietly = TRUE)
 
 set.seed(20260610)
 source(here("analysis", "00_filtro_elegibilidade.R"))
+source(here("analysis", "statistical_utils.R"))   # robust_vcov_hc0(), tidy_pr_robust_log()
 dados <- aplicar_filtro_3_3(PATH_XLSX_DEFAULT)
 
 dir.create(here("results", "tabelas_dissertacao"), showWarnings = FALSE, recursive = TRUE)
@@ -194,13 +203,46 @@ nagelkerke <- function(model) {
 }
 brier <- function(y, p) mean((p - y)^2)
 
+# Pooling de Rubin para PR (Poisson robusto): combina log-PR + EP robusto
+# (sandwich HC0) entre as M imputações e exponencia. Replica mice::pool na
+# escala log usando os erros-padrão robustos (mice::pool usaria os EP do
+# modelo, não-robustos — por isso o pooling é feito manualmente aqui).
+pool_pr_rubin <- function(tidy_list, conf.level = 0.95) {
+  m     <- length(tidy_list)
+  terms <- tidy_list[[1]]$term
+  est   <- sapply(tidy_list, function(t) t$estimate[match(terms, t$term)])
+  se    <- sapply(tidy_list, function(t) t$std.error[match(terms, t$term)])
+  if (is.null(dim(est))) { est <- matrix(est, nrow = 1); se <- matrix(se, nrow = 1) }
+  qbar  <- rowMeans(est)                       # log-PR médio
+  ubar  <- rowMeans(se^2)                      # variância intra-imputação média
+  B     <- apply(est, 1, stats::var)           # variância entre imputações
+  Tvar  <- ubar + (1 + 1 / m) * B              # variância total (Rubin)
+  se_t  <- sqrt(Tvar)
+  df    <- (m - 1) * (1 + ubar / ((1 + 1 / m) * B))^2   # g.l. de Rubin (1987)
+  df[!is.finite(df)] <- 1e6                     # B ≈ 0 → g.l. grande
+  tcrit <- stats::qt(1 - (1 - conf.level) / 2, df = df)
+  data.frame(
+    term      = terms,
+    estimate  = exp(qbar),                      # PR
+    conf.low  = exp(qbar - tcrit * se_t),
+    conf.high = exp(qbar + tcrit * se_t),
+    p.value   = 2 * stats::pt(abs(qbar / se_t), df = df, lower.tail = FALSE),
+    stringsAsFactors = FALSE
+  )
+}
+
 ajustar_pool <- function(form, bases, prep = NULL) {
+  # Ajuste LOGÍSTICO — usado apenas para métricas de desempenho preditivo
   fits <- lapply(bases, function(d) {
     if (!is.null(prep)) d <- prep(d)
     glm(form, data = d, family = binomial())
   })
-  pooled <- pool(as.mira(fits))
-  smry   <- summary(pooled, conf.int = TRUE, exponentiate = TRUE)
+  # Ajuste POISSON (link log) — base para a MEDIDA DE EFEITO (PR) com EP robusto
+  fits_pois <- lapply(bases, function(d) {
+    if (!is.null(prep)) d <- prep(d)
+    glm(form, data = d, family = poisson(link = "log"))
+  })
+  coef_pr <- pool_pr_rubin(lapply(fits_pois, tidy_pr_robust_log))
 
   auc <- brs <- r2 <- numeric(M); probs <- vector("list", M); yv <- NULL
   for (i in seq_len(M)) {
@@ -211,10 +253,10 @@ ajustar_pool <- function(form, bases, prep = NULL) {
     r2[i]  <- nagelkerke(fits[[i]])
     probs[[i]] <- p; yv <- d$cesarea
   }
-  list(coef = smry,
+  list(coef = coef_pr,
        AUC = mean(auc), Brier = mean(brs), R2 = mean(r2),
        n = length(yv), y = yv,
-       p = rowMeans(do.call(cbind, probs)),  # prob média entre imputações
+       p = rowMeans(do.call(cbind, probs)),  # prob média entre imputações (logística)
        fit1 = fits[[1]], base1 = if (!is.null(prep)) prep(bases[[1]]) else bases[[1]])
 }
 
@@ -269,10 +311,11 @@ write.csv(tab_desemp,
   row.names = FALSE, fileEncoding = "UTF-8")
 cat("\n--- Tabela comparativa ---\n"); print(tab_desemp)
 
-# Tabelas de OR (coorte completa)
+# Tabelas de PR — Razão de Prevalência (coorte completa)
+# Colunas: term, estimate (PR), conf.low, conf.high, p.value
 for (k in names(res_full)) {
   write.csv(res_full[[k]]$coef,
-    here("results", "tabelas_dissertacao", sprintf("tab_modelo_%s_OR.csv", k)),
+    here("results", "tabelas_dissertacao", sprintf("tab_modelo_%s_PR.csv", k)),
     row.names = FALSE, fileEncoding = "UTF-8")
 }
 

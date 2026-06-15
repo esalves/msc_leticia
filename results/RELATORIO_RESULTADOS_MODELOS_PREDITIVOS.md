@@ -4,6 +4,7 @@
 **Amostra:** coorte total de elegibilidade §3.3 — N = 6.650 (538 adolescentes precoces 11–15 anos, 829 adolescentes tardias 16–19 anos, 5.283 adultas 20–34 anos)
 **Script:** `analysis/06_modelos_preditivos_cesarea.R`
 **Data:** 10 de junho de 2026
+**Revisão (14/06/2026):** medida de associação alterada de Odds Ratio para **Razão de Prevalência (PR)**, estimada por regressão de Poisson com variância robusta (Zou, 2004), por ser menos enviesada em desfecho de alta prevalência (cesárea ~56%). As métricas de discriminação (AUC/Brier/calibração) seguem inalteradas — calculadas sobre os ajustes logísticos.
 
 > Este documento traz o texto de **Métodos** (pronto para inserção na dissertação) e os **Resultados** dos três modelos, com tabelas, figuras e interpretação. Os resultados aqui apresentados referem-se à **coorte total** (adolescentes + adultas), que apresentou o melhor desempenho preditivo. A análise de sensibilidade no subgrupo adolescente é resumida ao final (§4.4).
 
@@ -13,7 +14,7 @@
 
 ### 1.1 Desfecho e estratégia de modelagem
 
-O desfecho foi o **parto cesárea** (variável binária: cesárea *vs.* parto vaginal — normal ou fórcipe). Para predizer a cesárea foram construídos **três modelos de regressão logística** com finalidades clínicas distintas, definidos pelo momento em que as variáveis preditoras se tornam disponíveis ao longo da assistência:
+O desfecho foi o **parto cesárea** (variável binária: cesárea *vs.* parto vaginal — normal ou fórcipe). Para predizer a cesárea foram construídos **três modelos** com finalidades clínicas distintas, definidos pelo momento em que as variáveis preditoras se tornam disponíveis ao longo da assistência:
 
 - **Modelo A — pré-natal:** utiliza apenas informações disponíveis no início do pré-natal (sociodemográficas e antecedentes), respondendo à pergunta "qual o risco de esta gestante terminar a gestação em cesárea?". Não inclui a Classificação de Robson, que ainda não está definida nesse momento.
 - **Modelo B — pré-parto, variáveis individuais:** acrescenta as variáveis obstétricas conhecidas ao final da gestação/admissão para o parto (apresentação fetal, idade gestacional ao parto, indução, distúrbios hipertensivos e diabetes), sem a Classificação de Robson.
@@ -38,6 +39,8 @@ Os dados faltantes nas variáveis preditoras (de 2% a 23% conforme a variável) 
 ### 1.4 Avaliação de desempenho
 
 O desempenho de cada modelo foi avaliado quanto à **discriminação**, pela área sob a curva ROC (AUC / estatística-c), e à **calibração**, por gráficos de probabilidade observada *versus* predita por decis. Reportou-se ainda o **escore de Brier** (erro quadrático médio das probabilidades preditas; menor é melhor) e o **R² de Nagelkerke**. Para reduzir o otimismo do ajuste, a AUC foi **corrigida por bootstrap** (200 reamostragens, método de Harrell). As análises foram conduzidas em R (pacotes `mice`, `pROC` e `rms`); a reprodução completa está em `analysis/06_modelos_preditivos_cesarea.R`.
+
+A **medida de associação** reportada é a **razão de prevalência (PR)**, estimada por **regressão de Poisson com variância robusta** (*modified Poisson*; Zou, 2004, *Am J Epidemiol* 159:702–706), porque a cesárea é um desfecho de **alta prevalência** (~56%) e o *odds ratio* superestimaria a magnitude das associações. Os coeficientes (log-PR) foram combinados pelas regras de Rubin e exponenciados. As métricas de **discriminação e calibração**, por exigirem probabilidades em [0,1], foram obtidas dos **ajustes logísticos** correspondentes; a troca da medida de efeito não altera a discriminação.
 
 ---
 
@@ -70,77 +73,79 @@ O achado de maior interesse metodológico é que o **Modelo C, com apenas quatro
 
 ## 3. Resultados — coeficientes de cada modelo
 
-As tabelas a seguir apresentam as razões de chance (*odds ratio*, OR) ajustadas, com intervalo de confiança de 95% (IC 95%) e valor-p, combinadas pelas regras de Rubin. Cada modelo é ilustrado por um *forest plot*.
+As tabelas a seguir apresentam as **razões de prevalência (PR)** ajustadas, com intervalo de confiança de 95% (IC 95%) e valor-p, estimadas por Poisson robusto (Zou, 2004) e combinadas pelas regras de Rubin na escala log.
+
+> **Nota:** os *forest plots* por modelo (Figuras 4–6, `fig_obj6_forest_modelo_*.png`) são gerados em PR pelo script `analysis/07_forest_plots_modelos_preditivos.py`, a partir das tabelas `_PR.csv`.
 
 ### 3.1 Modelo A — pré-natal
 
 **Tabela 2.** Modelo A: preditores pré-natais de cesárea (coorte total).
 
-| Variável | OR | IC 95% | p |
+| Variável | PR | IC 95% | p |
 |---|:--:|:--:|:--:|
-| Adolescente precoce (vs. adulta) | 0,28 | 0,23–0,35 | < 0,001 |
-| Adolescente tardia (vs. adulta) | 0,31 | 0,26–0,37 | < 0,001 |
-| Nuliparidade | 2,75 | 2,40–3,15 | < 0,001 |
-| Cesárea prévia | 12,61 | 10,51–15,13 | < 0,001 |
-| Diabetes pré-gestacional | 2,00 | 1,36–2,94 | < 0,001 |
-| Tabagismo | 1,53 | 1,06–2,21 | 0,023 |
-| Hipertensão crônica | 1,25 | 0,97–1,61 | 0,091 |
-| Escolaridade < 9 anos (vs. 9–12) | 0,97 | 0,87–1,10 | 0,666 |
-| Escolaridade ≥ 13 anos (vs. 9–12) | 1,11 | 0,82–1,50 | 0,498 |
-| Sem companheiro (vs. com companheiro) | 0,89 | 0,78–1,00 | 0,059 |
-| IG na 1ª consulta (por semana) | 1,00 | 0,99–1,01 | 0,829 |
+| Adolescente precoce (vs. adulta) | 0,50 | 0,44–0,58 | < 0,001 |
+| Adolescente tardia (vs. adulta) | 0,53 | 0,48–0,60 | < 0,001 |
+| Nuliparidade | 1,63 | 1,52–1,74 | < 0,001 |
+| Cesárea prévia | 2,29 | 2,16–2,43 | < 0,001 |
+| Diabetes pré-gestacional | 1,19 | 1,10–1,29 | < 0,001 |
+| Tabagismo | 1,30 | 1,04–1,62 | 0,021 |
+| Hipertensão crônica | 1,06 | 1,00–1,13 | 0,060 |
+| Escolaridade < 9 anos (vs. 9–12) | 0,99 | 0,95–1,03 | 0,561 |
+| Escolaridade ≥ 13 anos (vs. 9–12) | 1,03 | 0,95–1,12 | 0,474 |
+| Sem companheiro (vs. com companheiro) | 0,96 | 0,92–1,00 | 0,064 |
+| IG na 1ª consulta (por semana) | 1,00 | 1,00–1,00 | 0,732 |
 
 ![Forest plot Modelo A](figures/fig_obj6_forest_modelo_A.png)
-**Figura 4.** Forest plot do Modelo A.
+**Figura 4.** Forest plot do Modelo A (PR).
 
-Mesmo usando apenas informações do início da gestação, o modelo discrimina razoavelmente (AUC 0,752). Os preditores dominantes são a **cesárea prévia** (OR 12,6) e a **nuliparidade** (OR 2,8). A **faixa etária adulta** já se associa a maior chance de cesárea: adolescentes precoces e tardias têm cerca de **70% menos chance** de cesárea que as adultas (OR ≈ 0,28–0,31), mesmo antes de qualquer ajuste obstétrico. Diabetes pré-gestacional e tabagismo aumentam o risco; escolaridade, estado civil e idade gestacional de início do pré-natal não foram preditores relevantes.
+Mesmo usando apenas informações do início da gestação, o modelo discrimina razoavelmente (AUC 0,752). Os preditores dominantes são a **cesárea prévia** (PR 2,29 — ~2,3× a prevalência de cesárea) e a **nuliparidade** (PR 1,63). A **faixa etária adulta** já se associa a maior prevalência de cesárea: adolescentes precoces e tardias têm cerca de **47–50% menos cesáreas** que as adultas (PR ≈ 0,50–0,53), mesmo antes de qualquer ajuste obstétrico. Diabetes pré-gestacional e tabagismo aumentam o risco; escolaridade, estado civil e idade gestacional de início do pré-natal não foram preditores relevantes.
 
 ### 3.2 Modelo B — pré-parto, variáveis individuais
 
 **Tabela 3.** Modelo B: preditores obstétricos individuais (coorte total).
 
-| Variável | OR | IC 95% | p |
+| Variável | PR | IC 95% | p |
 |---|:--:|:--:|:--:|
-| Adolescente precoce (vs. adulta) | 0,27 | 0,22–0,34 | < 0,001 |
-| Adolescente tardia (vs. adulta) | 0,32 | 0,26–0,38 | < 0,001 |
-| Cesárea prévia | 12,62 | 10,42–15,28 | < 0,001 |
-| Apresentação não-cefálica | 11,43 | 7,69–17,01 | < 0,001 |
-| Nuliparidade | 2,98 | 2,59–3,42 | < 0,001 |
-| DHEG (distúrbio hipertensivo) | 3,04 | 2,46–3,75 | < 0,001 |
-| Diabetes pré-gestacional | 2,45 | 1,65–3,65 | < 0,001 |
-| Diabetes gestacional | 1,42 | 1,15–1,77 | 0,001 |
-| Hipertensão crônica | 1,41 | 1,08–1,83 | 0,011 |
-| IG ao parto (por semana) | 1,08 | 1,06–1,11 | < 0,001 |
-| Indução do parto | 0,76 | 0,65–0,88 | < 0,001 |
+| Adolescente precoce (vs. adulta) | 0,52 | 0,45–0,59 | < 0,001 |
+| Adolescente tardia (vs. adulta) | 0,56 | 0,51–0,63 | < 0,001 |
+| Cesárea prévia | 2,20 | 2,07–2,34 | < 0,001 |
+| Apresentação não-cefálica | 1,64 | 1,56–1,72 | < 0,001 |
+| Nuliparidade | 1,62 | 1,52–1,73 | < 0,001 |
+| DHEG (distúrbio hipertensivo) | 1,33 | 1,27–1,40 | < 0,001 |
+| Diabetes pré-gestacional | 1,25 | 1,16–1,35 | < 0,001 |
+| Diabetes gestacional | 1,10 | 1,04–1,16 | < 0,001 |
+| Hipertensão crônica | 1,11 | 1,05–1,18 | < 0,001 |
+| IG ao parto (por semana) | 1,02 | 1,01–1,03 | < 0,001 |
+| Indução do parto | 0,91 | 0,85–0,98 | 0,010 |
 
 ![Forest plot Modelo B](figures/fig_obj6_forest_modelo_B.png)
-**Figura 5.** Forest plot do Modelo B.
+**Figura 5.** Forest plot do Modelo B (PR).
 
-Ao incorporar as variáveis do final da gestação, a discriminação sobe para AUC 0,784. **Cesárea prévia** (OR 12,6) e **apresentação não-cefálica** (OR 11,4) são os fatores mais fortes, seguidos de nuliparidade e dos distúrbios hipertensivos (DHEG, OR 3,0). Cada semana adicional de idade gestacional ao parto aumenta levemente a chance de cesárea (OR 1,08). A **indução do parto** associa-se a *menor* chance de cesárea (OR 0,76), coerente com o fato de que partos induzidos frequentemente evoluem para via vaginal, ao passo que a ausência de trabalho de parto inclui as cesáreas eletivas. O efeito protetor da adolescência mantém-se praticamente inalterado (OR ≈ 0,27–0,32).
+Ao incorporar as variáveis do final da gestação, a discriminação sobe para AUC 0,784. **Cesárea prévia** (PR 2,20) e **apresentação não-cefálica** (PR 1,64) são os fatores mais fortes, seguidos de nuliparidade (PR 1,62) e dos distúrbios hipertensivos (DHEG, PR 1,33). Cada semana adicional de idade gestacional ao parto aumenta levemente a prevalência de cesárea (PR 1,02). A **indução do parto** associa-se a *menor* prevalência de cesárea (PR 0,91), coerente com o fato de que partos induzidos frequentemente evoluem para via vaginal, ao passo que a ausência de trabalho de parto inclui as cesáreas eletivas. O efeito protetor da adolescência mantém-se praticamente inalterado (PR ≈ 0,52–0,56).
 
 ### 3.3 Modelo C — pré-parto com Classificação de Robson
 
 **Tabela 4.** Modelo C: Classificação de Robson e covariáveis (coorte total).
 
-| Variável | OR | IC 95% | p |
+| Variável | PR | IC 95% | p |
 |---|:--:|:--:|:--:|
-| Robson 6 — nulípara pélvica (vs. 1) | 31,36 | 7,49–131,26 | < 0,001 |
-| Robson 9 — situação transversa (vs. 1) | 17,52 | 6,19–49,60 | < 0,001 |
-| Robson 7 — multípara pélvica (vs. 1) | 16,03 | 10,62–24,20 | < 0,001 |
-| Robson 5 — multípara com cesárea prévia (vs. 1) | 12,61 | 9,86–16,13 | < 0,001 |
-| Robson 2 — nulípara induzida/CS pré-TP (vs. 1) | 3,63 | 2,98–4,42 | < 0,001 |
-| Robson 10 — pré-termo (vs. 1) | 2,17 | 1,80–2,61 | < 0,001 |
-| Robson 4 — multípara induzida/CS pré-TP (vs. 1) | 1,38 | 1,07–1,77 | 0,013 |
-| Robson 3 — multípara, espontânea (vs. 1) | 0,44 | 0,35–0,55 | < 0,001 |
-| Adolescente precoce (vs. adulta) | 0,55 | 0,44–0,69 | < 0,001 |
-| Adolescente tardia (vs. adulta) | 0,59 | 0,49–0,72 | < 0,001 |
-| DHEG (distúrbio hipertensivo) | 2,43 | 1,98–2,99 | < 0,001 |
-| Diabetes gestacional | 1,33 | 1,08–1,65 | 0,008 |
+| Robson 6 — nulípara pélvica (vs. 1) | 2,56 | 2,27–2,90 | < 0,001 |
+| Robson 9 — situação transversa (vs. 1) | 2,48 | 2,16–2,83 | < 0,001 |
+| Robson 7 — multípara pélvica (vs. 1) | 2,44 | 2,20–2,71 | < 0,001 |
+| Robson 5 — multípara com cesárea prévia (vs. 1) | 2,37 | 2,14–2,62 | < 0,001 |
+| Robson 2 — nulípara induzida/CS pré-TP (vs. 1) | 1,89 | 1,70–2,09 | < 0,001 |
+| Robson 10 — pré-termo (vs. 1) | 1,58 | 1,42–1,75 | < 0,001 |
+| Robson 4 — multípara induzida/CS pré-TP (vs. 1) | 1,28 | 1,11–1,47 | < 0,001 |
+| Robson 3 — multípara, espontânea (vs. 1) | 0,58 | 0,49–0,68 | < 0,001 |
+| Adolescente precoce (vs. adulta) | 0,72 | 0,63–0,83 | < 0,001 |
+| Adolescente tardia (vs. adulta) | 0,76 | 0,68–0,85 | < 0,001 |
+| DHEG (distúrbio hipertensivo) | 1,26 | 1,20–1,32 | < 0,001 |
+| Diabetes gestacional | 1,08 | 1,03–1,14 | 0,004 |
 
 ![Forest plot Modelo C](figures/fig_obj6_forest_modelo_C.png)
-**Figura 6.** Forest plot do Modelo C.
+**Figura 6.** Forest plot do Modelo C (PR).
 
-Este foi o modelo de melhor desempenho (AUC 0,797). O gradiente de risco entre os grupos de Robson é coerente com a fisiopatologia obstétrica: as apresentações anômalas (Grupos 6, 7 e 9) e a multípara com cesárea prévia (Grupo 5) concentram as maiores chances de cesárea (OR de 12 a 31, relativos ao Grupo 1), enquanto a multípara em trabalho de parto espontâneo (Grupo 3) tem **menor** chance que a nulípara de referência (OR 0,44). É importante notar que, **mesmo após o ajuste pela Classificação de Robson, DHEG e diabetes gestacional, a faixa etária adulta permanece como fator de risco independente para cesárea** — adolescentes precoces e tardias mantêm OR ≈ 0,55–0,59 em relação às adultas. Ou seja, a maior taxa de cesárea entre as adultas não se explica integralmente pela diferente distribuição de grupos de Robson ou de comorbidades.
+Este foi o modelo de melhor desempenho (AUC 0,797). O gradiente de risco entre os grupos de Robson é coerente com a fisiopatologia obstétrica: as apresentações anômalas (Grupos 6, 7 e 9) e a multípara com cesárea prévia (Grupo 5) concentram as maiores prevalências de cesárea (PR ≈ 2,4–2,6, relativos ao Grupo 1), enquanto a multípara em trabalho de parto espontâneo (Grupo 3) tem **menor** prevalência que a nulípara de referência (PR 0,58). É importante notar que, **mesmo após o ajuste pela Classificação de Robson, DHEG e diabetes gestacional, a faixa etária adulta permanece como fator de risco independente para cesárea** — adolescentes precoces e tardias mantêm PR ≈ 0,72–0,76 em relação às adultas. Ou seja, a maior taxa de cesárea entre as adultas não se explica integralmente pela diferente distribuição de grupos de Robson ou de comorbidades.
 
 ---
 
@@ -162,7 +167,7 @@ Como análise de sensibilidade, os três modelos foram reajustados apenas nas ad
 
 ## 5. Arquivos
 
-**Tabelas:** `results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv`; `tab_modelo_A_pre_natal_OR.csv`; `tab_modelo_B_pre_parto_OR.csv`; `tab_modelo_C_robson_OR.csv`
+**Tabelas:** `results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv`; `tab_modelo_A_pre_natal_PR.csv`; `tab_modelo_B_pre_parto_PR.csv`; `tab_modelo_C_robson_PR.csv`
 
 **Figuras:** `results/figures/fig_obj6_roc_modelos.png`; `fig_obj6_comparacao_auc.png`; `fig_obj6_calibracao.png`; `fig_obj6_forest_modelo_A.png`; `fig_obj6_forest_modelo_B.png`; `fig_obj6_forest_modelo_C.png`
 

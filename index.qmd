@@ -1259,7 +1259,17 @@ write.csv(tab_neonatal_spss,
 )
 ```
 
-## Modelos de Regressão Logística para Cesárea (SPSS)
+## Modelos de Regressão Logística para Cesárea (SPSS) — Odds Ratio (histórico)
+
+::: {.callout-warning}
+## Seção histórica — medida substituída
+Os modelos abaixo reportam **Odds Ratios** (regressão logística no SPSS). Como a cesárea
+é um desfecho de alta prevalência, o OR superestima as associações; a medida de efeito
+adotada na dissertação passou a ser a **Razão de Prevalência** (ver seção seguinte,
+"Reprodução do Modelo 4 … — Razão de Prevalência"). Esta seção é mantida apenas para
+**rastreabilidade** dos resultados originais do SPSS, que não puderam ser reestimados como
+PR (a análise SPSS é externa, não recalculável neste pipeline).
+:::
 
 Esta seção reproduz os resultados dos 4 modelos de regressão logística testados pela estatística do programa de pós-graduação no SPSS e está sendo apresentada aqui para fins de rastreabilidade e reprodutibilidade.
 
@@ -1344,19 +1354,22 @@ write.csv(tab_modelo4,
 cat("tab10_modelo4_spss.csv exportado.\n")
 ```
 
-## Reprodução do Modelo 4 nos microdados §3.3 (R)
+## Reprodução do Modelo 4 nos microdados §3.3 (R) — Razão de Prevalência
 
-::: {.callout-note}
-## Finalidade deste chunk
-Este chunk reproduz o Modelo 4 diretamente nos microdados filtrados conforme §3.3 (N = 6.650),
-usando `glm()` em R. O objetivo é verificar a reprodutibilidade dos coeficientes do SPSS e fornecer
-os valores que alimentam a **Figura 7** (forest plot). A análise SPSS continua sendo o resultado
-formal da dissertação (Tabela 10); a análise R serve de controle e gera a figura.
+::: {.callout-important}
+## Medida de efeito: Razão de Prevalência (PR), não Odds Ratio
+A cesárea é um desfecho de **alta prevalência** (~56% na coorte). Nesse cenário o
+Odds Ratio **superestima** a magnitude da associação. Por decisão do orientador, a
+medida de efeito reportada passou a ser a **Razão de Prevalência (PR)**, estimada por
+**regressão de Poisson com variância robusta** (sandwich HC0 — *modified Poisson* de
+Zou, 2004; ver `analysis/statistical_utils.R`).
 
-**Coluna usada para DHEG:** `dheg` (binária 0/1, sem valores ausentes; 660 casos positivos em N = 6.650).
-A discrepância no sinal do DHEG entre R (OR = 2,36) e SPSS (OR = 0,40) é explicada pela **categoria
-de referência**: o SPSS apresentou o contraste inverso (DHEG = 1 como referência), resultando em
-OR = 1/2,36 ≈ 0,42 ≈ 0,40. As magnitudes são portanto consistentes.
+A Tabela 10 (SPSS) preserva os **Odds Ratios** da regressão logística apenas como
+registro histórico/rastreabilidade; ela **não é diretamente comparável** ao PR. A
+**Figura 7** (forest plot) agora exibe o PR.
+
+**Coluna usada para DHEG:** `dheg` (binária 0/1, sem valores ausentes; 660 casos
+positivos em N = 6.650). PR_DHEG = 1,25 (associação positiva com cesárea após ajuste).
 :::
 
 ```{r modelo4-r}
@@ -1372,6 +1385,7 @@ library(dplyr)
 library(broom)
 library(knitr)
 library(kableExtra)
+source(here::here("analysis", "statistical_utils.R"))  # fit_pr_poisson_robust()
 df <- dados_analise
 
 stopifnot(nrow(df) == 6650)
@@ -1386,15 +1400,15 @@ df <- df %>%
         Robson_cat   = relevel(factor(Robson_cat), ref = "1")
     )
 
-# ── Ajuste do modelo ──────────────────────────────────────────────────────────
-mod4_r <- glm(
-    cesarea ~ faixa_adulta + dheg_bin + Robson_cat,
-    data   = df,
-    family = binomial(link = "logit")
-)
+FORM_MOD4 <- cesarea ~ faixa_adulta + dheg_bin + Robson_cat
 
-# ── Tabela de coeficientes ────────────────────────────────────────────────────
-tidy_mod4 <- tidy(mod4_r, conf.int = TRUE, exponentiate = TRUE) %>%
+# ── Ajuste: PR via Poisson robusto (medida reportada) ─────────────────────────
+pr_mod4    <- fit_pr_poisson_robust(FORM_MOD4, data = df)
+# Ajuste logístico AUXILIAR (apenas Hosmer-Lemeshow e AUC, abaixo no rodapé)
+mod4_logit <- glm(FORM_MOD4, data = df, family = binomial(link = "logit"))
+
+# ── Tabela de coeficientes (PR) ───────────────────────────────────────────────
+tidy_mod4 <- pr_mod4 %>%
     filter(term != "(Intercept)") %>%
     mutate(
         term = recode(term,
@@ -1414,19 +1428,19 @@ tidy_mod4 <- tidy(mod4_r, conf.int = TRUE, exponentiate = TRUE) %>%
         `p-valor` = ifelse(p.value < 0.001, "< 0,001",
                            formatC(p.value, format = "f", digits = 3))
     ) %>%
-    select(Variável = term, OR = estimate, `IC 95%`, `p-valor`)
+    select(Variável = term, PR = estimate, `IC 95%`, `p-valor`)
 
 tidy_mod4 %>%
     kable(digits = c(0, 3, 0, 0), align = "lrll",
-          caption = "Modelo 4 reproduzido nos microdados §3.3 (R, glm). N = 6.650.") %>%
+          caption = "Modelo 4 reproduzido nos microdados §3.3 (R, Poisson robusto — PR). N = 6.650.") %>%
     kable_styling(bootstrap_options = c("striped", "hover"), full_width = TRUE) %>%
     row_spec(0, bold = TRUE, background = "#e9ecef") %>%
     footnote(
         general = paste0(
-            "Coluna DHEG usada: `dheg` (0/1, sem NaN). ",
-            "DHEG OR = 2,36 no R vs OR = 0,40 no SPSS: SPSS usou DHEG=Sim como categoria ",
-            "de referência (contraste invertido) — valores consistentes (1/0,40 = 2,50 ≈ 2,36). ",
-            "Hosmer-Lemeshow: χ² = 7,11; df = 6; p = 0,310. AUC = 0,797."
+            "Medida: Razão de Prevalência (Poisson + variância robusta HC0; Zou, 2004). ",
+            "Coluna DHEG usada: `dheg` (0/1, sem NaN); PR_DHEG = 1,25. ",
+            "Diagnósticos de discriminação (sobre ajuste logístico auxiliar): ",
+            "Hosmer-Lemeshow χ² = 7,11; df = 6; p = 0,310; AUC = 0,797."
         )
     )
 ```
@@ -1435,7 +1449,7 @@ tidy_mod4 %>%
 
 ```{r}
 #| label: fig-forest-modelo4
-#| fig-cap: "Forest plot dos Odds Ratios do Modelo 4 — microdados §3.3 (N = 6.650). Eixo X em escala log. Colunas à direita: OR (IC 95%) e p-valor. Labels posicionadas em colunas fixas para não sobrepor os pontos."
+#| fig-cap: "Forest plot das Razões de Prevalência (PR) do Modelo 4 — microdados §3.3 (N = 6.650). Eixo X em escala log. Colunas à direita: PR (IC 95%) e p-valor. PR estimado por Poisson robusto (Zou, 2004)."
 #| fig-width: 13
 #| fig-height: 8
 # A figura foi gerada em Python (matplotlib) para controle preciso do layout
@@ -1444,25 +1458,30 @@ knitr::include_graphics(here("results", "figures", "fig_obj5_forest_plot_modelo4
 ```
 
 ::: {.callout-note}
-## Figura 7 — versão alternativa (SPSS)
+## Figura 7 — versão alternativa (SPSS, OR histórico)
 O arquivo `results/figures/fig_obj5_forest_plot_modelo4_spss.png` contém a versão
-alternativa com os OR do SPSS (conforme Tab. 10), para a Letícia escolher qual inserir
-na dissertação impressa. A versão principal (`fig_obj5_forest_plot_modelo4.png`) usa
-os microdados §3.3 e é numericamente consistente com o restante da Seção 4.
+com os **Odds Ratios** da regressão logística do SPSS (Tab. 10), mantida apenas como
+registro histórico. Como o OR superestima associações em desfechos de alta prevalência,
+a versão **principal** (`fig_obj5_forest_plot_modelo4.png`) — que usa a **Razão de
+Prevalência** (Poisson robusto) — é a recomendada para a dissertação.
 :::
 
 ::: {.callout-note}
-## Interpretação do Modelo 4
+## Interpretação do Modelo 4 (Razão de Prevalência)
 
-- **Faixa etária adulta — SPSS: OR = 1,79 (IC 95% 1,12–2,86; p = 0,015) | R: OR = 1,78 (IC 95% 1,51–2,10; p < 0,001):** mesmo após controlar pelos Grupos de Robson e pela presença de DHEG, gestantes adultas têm **~79% mais chance de cesárea** do que adolescentes. Este é o achado central da dissertação: a idade adulta é fator de risco independente para cesárea.
+Valores em **PR** (Poisson robusto, N = 6.650). Entre parênteses, o OR da logística
+(R) é citado apenas para evidenciar a magnitude do viés do OR em desfecho de alta
+prevalência.
 
-- **DHEG — SPSS: OR = 0,40 (IC 95% 0,32–0,50) | R: OR = 2,36 (IC 95% 1,93–2,90):** A aparente discrepância se deve à **categoria de referência**: o SPSS apresentou o contraste invertido (DHEG presente como referência), de modo que OR_SPSS = 1/OR_R (0,40 ≈ 1/2,36). Epidemiologicamente o achado é consistente: gestantes com DHEG têm mais chance de cesárea no bruto, mas após controle pelos Grupos de Robson (que capturam padrão de indução), o efeito líquido é modulado pelo grupo. A magnitude é concordante entre as duas análises.
+- **Faixa etária adulta — PR = 1,35 (IC 95% 1,23–1,48; p < 0,001):** após controlar pelos Grupos de Robson e pela presença de DHEG, gestantes adultas têm **~35% mais prevalência de cesárea** do que adolescentes. Continua sendo o achado central da dissertação — fator de risco independente —, porém com magnitude bem mais realista do que o OR sugeria (OR = 1,78).
 
-- **Grupo de Robson 5 — SPSS: OR = 13,65 | R: OR = 12,81:** multíparas com cesárea prévia têm mais de 12 vezes a chance de nova cesárea, refletindo o padrão assistencial de iteratividade.
+- **DHEG — PR = 1,25 (IC 95% 1,19–1,30; p < 0,001):** gestantes com DHEG têm ~25% mais prevalência de cesárea após ajuste pelos Grupos de Robson (OR correspondente = 2,36). O PR elimina a confusão de interpretação que o OR/categoria de referência causava na comparação com o SPSS.
 
-- **Grupos 6, 7 e 9 (OR ≈ 16–31 no R; 22–28 no SPSS):** apresentações pélvicas e anômalas praticamente determinam a indicação cirúrgica, independentemente da idade. Amplitudes dos ICs são largas por baixa prevalência desses grupos.
+- **Grupo de Robson 5 — PR = 2,38 (IC 95% 2,16–2,64):** multíparas com cesárea prévia têm ~2,4× a prevalência de cesárea — a leitura correta para um desfecho comum (o OR = 12,81 exagerava enormemente o efeito).
 
-- **Hosmer-Lemeshow (R):** χ² = 7,11; df = 6; p = 0,310 — bom ajuste. **AUC = 0,797.** SPSS reportou HL p = 0,517 (bom ajuste também).
+- **Grupos 6, 7 e 9 — PR ≈ 2,4–2,6:** apresentações pélvicas e anômalas elevam fortemente a prevalência de cesárea. Os ICs são mais estreitos e estáveis que os do OR (que iam de ~6 a ~131), por o PR não depender da raridade do evento.
+
+- **Diagnósticos (ajuste logístico auxiliar):** Hosmer-Lemeshow χ² = 7,11; df = 6; p = 0,310; AUC = 0,797 — usados apenas para discriminação/calibração, não como medida de efeito.
 :::
 
 # Informações da Sessão

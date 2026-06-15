@@ -181,8 +181,11 @@ discriminatório dentro do grupo.
   eletiva pré-trabalho de parto).
 - **IMC e pré-eclâmpsia** ficaram fora pelos motivos da §2; se houver recuperação
   de prontuário do IMC, ele pode ser reincorporado ao Modelo A.
+- **Medida de efeito:** Razão de Prevalência (PR) por Poisson robusto (Zou, 2004),
+  no lugar do OR — menos enviesada para desfecho de alta prevalência. Discriminação
+  (AUC/Brier/calibração) segue calculada sobre o ajuste logístico.
 - **Casos quase-separados** no subgrupo adolescente (apresentações anômalas, ~100%
-  cesárea) foram colapsados; estimativas de OR desses termos devem ser lidas com
+  cesárea) foram colapsados; estimativas desses termos devem ser lidas com
   cautela. Uma regressão de Firth seria uma alternativa robusta para esse subgrupo.
 - Os números deste relatório foram gerados pelo script R canônico
   (`06_modelos_preditivos_cesarea.R`, `mice`/`pROC`/`rms`) e **confirmados** pela
@@ -200,10 +203,11 @@ Rscript analysis/06_modelos_preditivos_cesarea.R
 
 **Arquivos gerados**
 - `results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv`
-- `results/tabelas_dissertacao/tab_modelo_{A_pre_natal,B_pre_parto,C_robson}_OR.csv`
+- `results/tabelas_dissertacao/tab_modelo_{A_pre_natal,B_pre_parto,C_robson}_PR.csv`
 - `results/figures/fig_obj6_roc_modelos.png`
 - `results/figures/fig_obj6_calibracao.png`
 - `results/figures/fig_obj6_comparacao_auc.png`
+- `results/figures/fig_obj6_forest_modelo_{A,B,C}.png` (via `analysis/07_forest_plots_modelos_preditivos.py`, a partir das tabelas `_PR.csv`)
 
 ---
 

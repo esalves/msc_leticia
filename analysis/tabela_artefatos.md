@@ -26,6 +26,11 @@
 | `fig_obj3_indicacoes_forcipe.png` | `03_indicacoes_parto.R` | R |
 | `fig_obj5_forest_plot_modelo4.png` | `05_forest_plot_modelo4.py` | Python |
 | `fig_obj5_forest_plot_modelo4_spss.png` | `05_forest_plot_modelo4.py` | Python |
+| `tab_modelos_preditivos_desempenho.csv` | `06_modelos_preditivos_cesarea.R` | R |
+| `tab_modelo_{A,B,C}_PR.csv` (Razão de Prevalência) | `06_modelos_preditivos_cesarea.R` | R |
+| `fig_obj6_roc_modelos.png` | `06_modelos_preditivos_cesarea.R` | R |
+| `fig_obj6_calibracao.png` | `06_modelos_preditivos_cesarea.R` | R |
+| `fig_obj6_forest_modelo_{A,B,C}.png` | `07_forest_plots_modelos_preditivos.py` (lê `tab_modelo_*_PR.csv`) | Python |
 
 ## Artefatos externos (não gerados pelos scripts novos)
 
@@ -42,9 +47,10 @@
 | Arquivo | Papel |
 |---|---|
 | `00_filtro_elegibilidade.R` | `source()`ado por todos os scripts 01–04; define `aplicar_filtro_3_3()` e `parse_robson()` |
+| `statistical_utils.R` | `source()`ado por 04 e 06; define `perform_appropriate_test()`, `fit_pr_poisson_robust()`, `robust_vcov_hc0()`, `tidy_pr_robust_log()` (Razão de Prevalência via Poisson robusto) |
 
 ## Cache
 
 | Arquivo | Gerado por | Consumido por |
 |---|---|---|
-| `cache/mod4_r.rds` | `04_modelo4_regressao.R` | Disponível para uso futuro; script 05 não o usa (lê CSV) |
+| `cache/mod4_pr.rds` | `04_modelo4_regressao.R` | Objeto glm Poisson (medida de efeito PR); disponível para uso futuro; script 05 lê o CSV |

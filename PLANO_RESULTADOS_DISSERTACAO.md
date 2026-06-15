@@ -159,9 +159,9 @@ Esta seção **expande a §3.5**: em vez de um único modelo, adota-se a estrat�
 **Análise de sensibilidade (subgrupo adolescente, n = 1.367):** a discriminação cai e a hierarquia se inverte (Robson 0,590 < variáveis individuais 0,621), porque 97,9% das adolescentes concentram-se em poucos grupos de Robson e nenhuma no Grupo 5 — confirma a hipótese do orientador. Detalhes em `results/RELATORIO_MODELOS_PREDITIVOS_CESAREA.md`.
 
 - **Tabela P1:** desempenho comparativo dos 3 modelos — `tab_modelos_preditivos_desempenho.csv`.
-- **Tabelas P2–P4:** OR (IC95%) dos Modelos A/B/C — `tab_modelo_{A_pre_natal,B_pre_parto,C_robson}_OR.csv`.
+- **Tabelas P2–P4:** PR (IC95%) dos Modelos A/B/C — `tab_modelo_{A_pre_natal,B_pre_parto,C_robson}_PR.csv`.
 - **Figuras P1–P3:** ROC (`fig_obj6_roc_modelos.png`), comparação de AUC (`fig_obj6_comparacao_auc.png`), calibração (`fig_obj6_calibracao.png`).
-- **Figuras P4–P6:** forest plots dos OR de cada modelo (`fig_obj6_forest_modelo_{A,B,C}.png`).
+- **Figuras P4–P6:** forest plots dos PR de cada modelo (`fig_obj6_forest_modelo_{A,B,C}.png`, gerados por `analysis/07_forest_plots_modelos_preditivos.py`).
 - **Texto pronto:** `results/RELATORIO_RESULTADOS_MODELOS_PREDITIVOS.md` traz a redação de Métodos (para a §3 da dissertação) e a interpretação dos resultados, prontas para adaptar.
 
 **Proposta de ferramenta clínica (a partir do Modelo A — pré-natal).** Como o Modelo A usa apenas dados da primeira consulta, é o candidato a instrumento de aconselhamento. Foram derivados três formatos equivalentes: **escore de pontos** (`tab_escore_pre_natal_pontos.csv` / `tab_escore_pre_natal_risco.csv`), **nomograma** (`fig_obj6_nomograma_pre_natal.png`) e **calculadora interativa** (`calculadora_risco_cesarea.html`), documentados em `results/FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md`. *Enquadramento obrigatório no texto:* apoio ao aconselhamento, não regra de decisão; centro único terciário (tende a superestimar fora dele); validação apenas interna; recomenda-se validação externa e análise de curva de decisão antes de uso assistencial.
@@ -198,9 +198,9 @@ Esta seção **expande a §3.5**: em vez de um único modelo, adota-se a estrat�
 | Figura 7 | Forest plot do Modelo 4 | (criar) | **Não existe** | Subagente Sonnet (R) |
 | **— Modelos preditivos (jun/2026) —** | | | | |
 | Tabela P1 | Desempenho dos 3 modelos (AUC/Brier/R²) | R/Py | Sim — `tab_modelos_preditivos_desempenho.csv` | Pronta |
-| Tabela P2 | OR Modelo A (pré-natal) | R/Py | Sim — `tab_modelo_A_pre_natal_OR.csv` | Pronta |
-| Tabela P3 | OR Modelo B (pré-parto individual) | R/Py | Sim — `tab_modelo_B_pre_parto_OR.csv` | Pronta |
-| Tabela P4 | OR Modelo C (Robson) | R/Py | Sim — `tab_modelo_C_robson_OR.csv` | Pronta |
+| Tabela P2 | PR Modelo A (pré-natal) | R | Sim — `tab_modelo_A_pre_natal_PR.csv` | Pronta |
+| Tabela P3 | PR Modelo B (pré-parto individual) | R | Sim — `tab_modelo_B_pre_parto_PR.csv` | Pronta |
+| Tabela P4 | PR Modelo C (Robson) | R | Sim — `tab_modelo_C_robson_PR.csv` | Pronta |
 | Tabela P5 | Escore de pontos pré-natal | R/Py | Sim — `tab_escore_pre_natal_pontos.csv` | Pronta |
 | Tabela P6 | Escore → risco | R/Py | Sim — `tab_escore_pre_natal_risco.csv` | Pronta |
 | Figura P1 | Curvas ROC dos 3 modelos | Py | Sim — `fig_obj6_roc_modelos.png` | Pronta |

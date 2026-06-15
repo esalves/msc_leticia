@@ -10,6 +10,7 @@ output:
 **Data:** 19 de maio de 2026 · **Atualizado:** 10 de junho de 2026  
 **Arquivos revisados:** `index.qmd`, `manuscript/tabelas_dissertacao.docx`, `manuscript/resultados_redacao.docx`, `results/tab_obj2_*.csv`, `results/tabelas_dissertacao/tab*.csv`, `results/Relatorio Analise SPSS.md`, `manuscript/Dissertação Maio_26.docx`
 **Adicionados em 10/06/2026:** `analysis/06_modelos_preditivos_cesarea.R`, `results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv`, `tab_modelo_{A,B,C}_*_OR.csv`, `tab_escore_pre_natal_*.csv`, `results/figures/fig_obj6_*`, `results/RELATORIO_RESULTADOS_MODELOS_PREDITIVOS.md`, `results/RELATORIO_MODELOS_PREDITIVOS_CESAREA.md`, `results/FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md`, `results/calculadora_risco_cesarea.html`
+**Revisão em 14/06/2026 (OR → PR):** medida de efeito do Modelo 4 e dos modelos preditivos A/B/C migrada de Odds Ratio para **Razão de Prevalência** (Poisson robusto; Zou, 2004). As tabelas `tab_modelo_{A,B,C}_*_OR.csv` foram substituídas por `tab_modelo_{A,B,C}_PR.csv`. Detalhes em `COMPARACAO_OR_vs_PR.md`.
 
 ---
 

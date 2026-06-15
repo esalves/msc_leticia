@@ -6,9 +6,14 @@ Data        : 2026-05-23
 Critérios   : §3.3 — dados lidos de tab10b_comparacao_modelo4_r_vs_spss.csv
               (gerado por 04_modelo4_regressao.R) e tab10_modelo4_spss.csv
 
+Medida de efeito: RAZÃO DE PREVALÊNCIA (PR), não Odds Ratio. A cesárea é
+desfecho de alta prevalência (~56%); o PR é a medida menos enviesada (decisão
+do orientador). O PR é estimado por Poisson robusto (Zou, 2004) no script
+04_modelo4_regressao.R e lido daqui via tab10b (coluna PR_R).
+
 Saídas esperadas:
-  results/figures/fig_obj5_forest_plot_modelo4.png      (OR do R, microdados §3.3)
-  results/figures/fig_obj5_forest_plot_modelo4_spss.png (OR do SPSS)
+  results/figures/fig_obj5_forest_plot_modelo4.png      (PR do R, microdados §3.3)
+  results/figures/fig_obj5_forest_plot_modelo4_spss.png (OR do SPSS — logística, histórico)
 
 Layout: eixo principal (log com ticks customizados 0,5/1/2/5/10/20/50) + duas colunas fixas à direita via GridSpec.
         Labels NÃO sobre os pontos; vírgula decimal (formato pt-BR).
@@ -112,19 +117,19 @@ df10b.columns = df10b.columns.str.strip()
 for col in df10b.select_dtypes(include="object").columns:
     df10b[col] = df10b[col].astype(str).str.strip()
 
-# Colunas esperadas: Variável, OR_R, IC_R, p_R, OR_SPSS, IC_SPSS, p_SPSS, Nota
-def parse_df(df, or_col, ic_col, p_col, label_col="Variável"):
+# Colunas esperadas: Variável, PR_R, IC_R, p_R, OR_SPSS_logistica, IC_SPSS, p_SPSS, Nota
+def parse_df(df, est_col, ic_col, p_col, label_col="Variável"):
     rows = []
     for _, row in df.iterrows():
         var   = str(row[label_col]).strip()
-        or_v  = float(row[or_col])
+        est_v = float(row[est_col])
         lo, hi = parse_ic_comma(row[ic_col])
         p_v   = str(row[p_col]).strip()
-        rows.append(dict(label=var, OR=or_v, lo=lo, hi=hi, p=p_v))
+        rows.append(dict(label=var, est=est_v, lo=lo, hi=hi, p=p_v))
     return rows
 
 
-rows_r = parse_df(df10b, "OR_R", "IC_R", "p_R")
+rows_r = parse_df(df10b, "PR_R", "IC_R", "p_R")
 
 # ---------------------------------------------------------------------------
 # SPSS: lido do tab10_modelo4_spss.csv
@@ -142,12 +147,14 @@ for _, row in df_spss.iterrows():
     lo   = float(row["IC 95% inf"]) if str(row["IC 95% inf"]) not in ("nan", "", "NA") else np.nan
     hi   = float(row["IC 95% sup"]) if str(row["IC 95% sup"]) not in ("nan", "", "NA") else np.nan
     p_v  = str(row["p-valor"]).strip()
-    rows_spss.append(dict(label=var, OR=or_v, lo=lo, hi=hi, p=p_v))
+    rows_spss.append(dict(label=var, est=or_v, lo=lo, hi=hi, p=p_v))
 
 # ---------------------------------------------------------------------------
 # Função genérica de desenho do forest plot
 # ---------------------------------------------------------------------------
-def draw_forest(rows, title, out_path, ref_line=1.0):
+def draw_forest(rows, title, out_path, ref_line=1.0,
+                measure_axis="Razão de Prevalência (escala log)",
+                measure_col="PR (IC 95%)"):
     n = len(rows)
     y = np.arange(n, 0, -1, dtype=float)  # y decrescente = primeira var no topo
 
@@ -171,12 +178,12 @@ def draw_forest(rows, title, out_path, ref_line=1.0):
 
     for i, (row, yi) in enumerate(zip(rows, y)):
         clr = get_color(row["label"])
-        or_v, lo, hi = row["OR"], row["lo"], row["hi"]
+        est_v, lo, hi = row["est"], row["lo"], row["hi"]
 
         if not np.isnan(lo) and not np.isnan(hi):
             ax_plot.plot([lo, hi], [yi, yi], color=clr,
                          linewidth=1.6, solid_capstyle="round")
-        ax_plot.plot(or_v, yi, "o", color=clr, markersize=7, zorder=5,
+        ax_plot.plot(est_v, yi, "o", color=clr, markersize=7, zorder=5,
                      markeredgecolor="white", markeredgewidth=0.5)
 
         # faixa alternada
@@ -185,9 +192,9 @@ def draw_forest(rows, title, out_path, ref_line=1.0):
 
     ax_plot.set_xscale("log")
     all_ci = [v for r in rows for v in [r["lo"], r["hi"]] if not np.isnan(v)]
-    all_or = [r["OR"] for r in rows if not np.isnan(r["OR"])]
+    all_est = [r["est"] for r in rows if not np.isnan(r["est"])]
     xmin = max(min(all_ci) * 0.7, 0.1)
-    xmax = max(all_or + all_ci) * 1.4
+    xmax = max(all_est + all_ci) * 1.4
 
     # Ticks customizados em escala log — clinicamente intuitivos
     candidate_ticks = [0.25, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
@@ -200,7 +207,7 @@ def draw_forest(rows, title, out_path, ref_line=1.0):
     ax_plot.set_ylim(0.4, n + 0.6)
     ax_plot.set_yticks(y)
     ax_plot.set_yticklabels([r["label"] for r in rows], fontsize=9)
-    ax_plot.set_xlabel("Odds Ratio (escala log)", fontsize=10)
+    ax_plot.set_xlabel(measure_axis, fontsize=10)
     ax_plot.tick_params(axis="x", labelsize=9)
     ax_plot.spines[["top", "right", "left"]].set_visible(False)
     ax_plot.grid(axis="x", alpha=0.3, linestyle=":")
@@ -211,15 +218,15 @@ def draw_forest(rows, title, out_path, ref_line=1.0):
     ax_or.set_yticks(y)
     ax_or.set_yticklabels([])
     ax_or.axis("off")
-    ax_or.text(0.5, n + 0.7, "OR (IC 95%)", ha="center", va="bottom",
+    ax_or.text(0.5, n + 0.7, measure_col, ha="center", va="bottom",
                fontsize=9, fontweight="bold")
 
     for row, yi in zip(rows, y):
-        lo, hi, or_v = row["lo"], row["hi"], row["OR"]
+        lo, hi, est_v = row["lo"], row["hi"], row["est"]
         if np.isnan(lo) or np.isnan(hi):
-            txt = to_br(or_v)
+            txt = to_br(est_v)
         else:
-            txt = f"{to_br(or_v)} ({to_br(lo)} – {to_br(hi)})"
+            txt = f"{to_br(est_v)} ({to_br(lo)} – {to_br(hi)})"
         ax_or.text(0.5, yi, txt, ha="center", va="center", fontsize=8.5)
 
     # --- coluna p-valor ---------------------------------------------------
@@ -255,21 +262,25 @@ def draw_forest(rows, title, out_path, ref_line=1.0):
 # ---------------------------------------------------------------------------
 # Gerar os dois forest plots
 # ---------------------------------------------------------------------------
-print("--- fig_obj5_forest_plot_modelo4.png (R — microdados §3.3) ---")
+print("--- fig_obj5_forest_plot_modelo4.png (R — PR, microdados §3.3) ---")
 draw_forest(
     rows_r,
-    title    = "Forest Plot — Modelo 4 (Regressão Logística)\n"
+    title    = "Forest Plot — Modelo 4 (Razão de Prevalência — Poisson robusto)\n"
                "Variável desfecho: Cesárea. N = 6.650. Referência: Robson 1 / Adolescente / DHEG = Não.",
-    out_path = OUT_R
+    out_path = OUT_R,
+    measure_axis = "Razão de Prevalência (escala log)",
+    measure_col  = "PR (IC 95%)"
 )
 
-print("--- fig_obj5_forest_plot_modelo4_spss.png (SPSS) ---")
+print("--- fig_obj5_forest_plot_modelo4_spss.png (SPSS — OR logística, histórico) ---")
 draw_forest(
     rows_spss,
-    title    = "Forest Plot — Modelo 4 (Regressão Logística, análise SPSS)\n"
-               "Hosmer-Lemeshow: chi2 = 5,215; df = 6; p = 0,517. "
-               "Nota: OR DHEG invertido em relação ao R.",
-    out_path = OUT_SPSS
+    title    = "Forest Plot — Modelo 4 (Odds Ratio — regressão logística SPSS, HISTÓRICO)\n"
+               "Atenção: OR superestima associações em desfecho de alta prevalência. "
+               "Medida adotada: PR (figura principal).",
+    out_path = OUT_SPSS,
+    measure_axis = "Odds Ratio (escala log) — histórico",
+    measure_col  = "OR (IC 95%)"
 )
 
 print("\n=== 05_forest_plot_modelo4.py concluído ===")

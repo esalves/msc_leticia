@@ -133,7 +133,13 @@ O arquivo `analysis/requirements.txt` lista as versões mínimas de cada pacote.
 
 ## Notas sobre Comparação R × SPSS (Modelo 4)
 
-O OR da DHEG difere em sinal entre R (OR = 2,36) e SPSS (OR = 0,40).
-Isso é esperado: o SPSS apresentou DHEG = Sim como categoria de referência
-(contraste invertido). As magnitudes são consistentes: 1/0,40 = 2,50 ≈ 2,36.
-Ver `tab10b_comparacao_modelo4_r_vs_spss.csv` coluna "Nota".
+**Medida de efeito (desde 14/06/2026): Razão de Prevalência (PR)**, via Poisson
+robusto (Zou, 2004), substituindo o Odds Ratio — ver `COMPARACAO_OR_vs_PR.md`.
+A Tabela 10 e a Figura 7 reportam PR (`tab10b_...`, coluna `PR_R`); o OR do SPSS
+fica como coluna histórica.
+
+Sobre a divergência histórica de sinal da DHEG: na logística, o OR da DHEG diferia
+entre R (OR = 2,36) e SPSS (OR = 0,40) porque o SPSS usou DHEG = Sim como categoria
+de referência (contraste invertido); as magnitudes eram consistentes (1/0,40 ≈ 2,5).
+No PR isso deixa de ser um problema: a DHEG é fator de risco (PR = 1,25). Ver
+`tab10b_comparacao_modelo4_r_vs_spss.csv` coluna "Nota".

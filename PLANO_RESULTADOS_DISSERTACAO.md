@@ -75,15 +75,15 @@ As **principais indicações mudam radicalmente** entre adolescentes e adultas:
 - **Em adolescentes**, a indicação mais comum é **sofrimento fetal / alteração de vitalidade** (34,8 % nas precoces) seguida de **desproporção céfalo-pélvica (DCP) / fórcipe falhado** (27,5 %). Isso conversa com a literatura sobre **imaturidade pélvica** — a pelve da adolescente nem sempre comporta o feto a termo, e o trabalho de parto é mais frequentemente prolongado, o que justifica o uso de fórcipe.
 - **Em adultas**, as três indicações mais comuns são **patologia materna** (15,4 %), **contraindicação à indução** (10,9 %) e **iteratividade — cesárea prévia repetida** (11,6 %). A iteratividade praticamente não existe em adolescentes (0 % nas precoces) porque elas dificilmente já tiveram outra cesárea.
 
-### 2.5 O que cada fator pesa para a cesárea? (Regressão logística — análises do SPSS)
+### 2.5 O que cada fator pesa para a cesárea? (Modelo 4 — Razão de Prevalência)
 
-A estatística do programa fez **quatro modelos de regressão logística** para prever cesárea. **O modelo definitivo é a Sugestão 4**, que ajusta pelos Grupos de Robson e por hipertensão da gestação. Nele:
+A análise multivariada testou **quatro modelos** para os fatores associados à cesárea. **O modelo definitivo é a Sugestão 4**, que ajusta pelos Grupos de Robson e por hipertensão da gestação. **Desde 14/06/2026, a medida de efeito adotada é a Razão de Prevalência (PR)**, estimada por regressão de Poisson com variância robusta (modified Poisson de Zou, 2004), por ser menos enviesada que o Odds Ratio em desfechos de alta prevalência (a cesárea tem 56% de prevalência nesta coorte). Os OR da logística do SPSS ficam como registro histórico. Nele:
 
-- Ser **adulta** (vs. adolescente) **aumenta em 79 % a chance de cesárea** (OR = 1,79; IC 95 % 1,12–2,86; p = 0,015) — *mesmo* depois de controlar por Robson e DHEG. Isso é provavelmente o achado mais importante da sua dissertação: a idade adulta, por si só, é fator de risco independente para cesárea. Não dá para explicar tudo só por "as adultas têm mais cesárea prévia" ou "as adultas têm mais comorbidade".
-- O **Grupo de Robson 5** (multíparas com cesárea prévia) eleva o OR para **13,65** — coerente com a literatura mundial: cesárea prévia é o principal driver de cesárea atual.
-- A **DHEG aparece como "protetora" (OR = 0,40)** *quando* se ajusta por Robson. Isso parece contraintuitivo mas faz sentido: a DHEG empurra a paciente para o Grupo 2 (indução) ou Grupo 10 (pré-termo), e dentro desses grupos uma parte significativa termina em parto vaginal induzido com sucesso. Esse achado precisa de uma frase cuidadosa na discussão para não confundir o leitor.
+- Ser **adulta** (vs. adolescente) está associado a **~35 % mais prevalência de cesárea** (PR = 1,35; IC 95 % 1,23–1,48; p < 0,001) — *mesmo* depois de controlar por Robson e DHEG. Continua sendo o achado mais importante da dissertação: a idade adulta, por si só, é fator de risco independente para cesárea. A magnitude é mais realista que a do OR (1,78), que exagerava por se tratar de desfecho comum.
+- O **Grupo de Robson 5** (multíparas com cesárea prévia) tem **~2,4× a prevalência de cesárea** (PR = 2,38; IC 95 % 2,16–2,64) — coerente com a literatura mundial: cesárea prévia é o principal driver de cesárea atual. (O OR da logística, 12,81, exagerava enormemente esse efeito.)
+- A **DHEG é fator de risco** no PR (PR = 1,25; IC 95 % 1,19–1,30; p < 0,001) — ~25 % mais prevalência de cesárea. Isso **corrige a aparente "proteção" (OR = 0,40)** que aparecia na logística do SPSS, artefato da categoria de referência invertida que aquele software usou. O PR elimina essa confusão e deve ser a leitura adotada na redação.
 
-> **Atualização jun/2026:** essa análise multivariada foi ampliada para uma estratégia de **três modelos preditivos** (pré-natal, pré-parto individual e pré-parto com Robson), com imputação múltipla e comparação de desempenho — ver §3.7. No novo ajuste (coorte total, R/Python), a DHEG mantém sinal positivo de risco quando entra junto de Robson como classificação completa (OR ~2,4 no Modelo C), diferentemente da referência invertida que o SPSS usou no Modelo 4 — outra razão para conciliar a apresentação dos modelos.
+> **Atualização jun/2026 (OR → PR):** a análise multivariada foi ampliada para uma estratégia de **três modelos preditivos** (pré-natal, pré-parto individual e pré-parto com Robson), com imputação múltipla e comparação de desempenho — ver §3.7. Todas as tabelas de coeficientes (Modelo 4 e modelos A/B/C) passaram a reportar **PR** (Poisson robusto). No ajuste em PR, a DHEG mantém sinal positivo de risco (PR ~1,25–1,33), consistente entre os modelos.
 
 ### 2.6 Desfechos para o bebê (a estatística analisou; depende se vai entrar na dissertação)
 
@@ -137,9 +137,9 @@ Manteve-se a ordem natural: descrever a amostra → descrever exposições (como
 
 ### 3.5 Fatores associados à cesárea — análise multivariada (NOVA, vem do SPSS)
 
-- **Texto curto:** mencione que foram testados 4 modelos de regressão logística e que o **Modelo 4 (com Grupos de Robson + DHEG + faixa etária)** é o adotado por causa do melhor ajuste (Hosmer-Lemeshow p = 0,517) e por não ter multicolinearidade (Modelo 3 tinha redundância entre apresentação fetal e Robson).
-- **Tabela 10:** coeficientes do Modelo 4 — Variável | B | p | OR | IC 95 %. Já pronta no `Relatorio Analise SPSS.md` linha 123-135.
-- **Figura 7 (NOVA, sugerida):** *forest plot* dos OR do Modelo 4, com IC 95 % em escala log — facilita enormemente a leitura. Eduardo gera com poucas linhas em R.
+- **Texto curto:** mencione que foram testados 4 modelos e que o **Modelo 4 (com Grupos de Robson + DHEG + faixa etária)** é o adotado por causa do melhor ajuste (Hosmer-Lemeshow p = 0,517) e por não ter multicolinearidade (Modelo 3 tinha redundância entre apresentação fetal e Robson). A medida de efeito reportada é a **Razão de Prevalência (PR)**, Poisson robusto (Zou, 2004), não o OR.
+- **Tabela 10:** coeficientes do Modelo 4 — Variável | PR | IC 95 % | p. Fonte canônica: `results/tabelas_dissertacao/tab10b_comparacao_modelo4_r_vs_spss.csv` (coluna `PR_R`). Os OR da logística do SPSS ficam como coluna histórica/comparativa.
+- **Figura 7 (NOVA, sugerida):** *forest plot* das **PR** do Modelo 4, com IC 95 % em escala log — facilita enormemente a leitura. Já gerada em PR em `results/figures/fig_obj5_forest_plot_modelo4.png`.
 
 ### 3.6 Desfechos neonatais (opcional — decidir antes de incluir)
 
@@ -154,7 +154,7 @@ Esta seção **expande a §3.5**: em vez de um único modelo, adota-se a estrat�
 - **Modelo B — pré-parto, variáveis individuais:** acrescenta apresentação, IG ao parto, indução, DHEG e DMG.
 - **Modelo C — pré-parto com Robson:** substitui os componentes de Robson pela própria classificação (1–10) + faixa etária + DHEG + DMG.
 
-**Resultado central (coorte total):** a discriminação cresce de forma escalonada — AUC corrigida por otimismo **0,752 → 0,782 → 0,797** —, com boa calibração. O Modelo C iguala o Modelo B usando bem menos variáveis (Robson como preditor sintético). Em **todos** os três modelos, a idade adulta permanece fator de risco independente (adolescentes com OR ~0,28–0,59 vs. adultas), reforçando o achado central da dissertação.
+**Resultado central (coorte total):** a discriminação cresce de forma escalonada — AUC corrigida por otimismo **0,752 → 0,782 → 0,797** —, com boa calibração. O Modelo C iguala o Modelo B usando bem menos variáveis (Robson como preditor sintético). Em **todos** os três modelos, a idade adulta permanece fator de risco independente (adolescentes com PR ~0,72–0,76 vs. adultas, ou seja, ~24–28 % menos prevalência de cesárea), reforçando o achado central da dissertação.
 
 **Análise de sensibilidade (subgrupo adolescente, n = 1.367):** a discriminação cai e a hierarquia se inverte (Robson 0,590 < variáveis individuais 0,621), porque 97,9% das adolescentes concentram-se em poucos grupos de Robson e nenhuma no Grupo 5 — confirma a hipótese do orientador. Detalhes em `results/RELATORIO_MODELOS_PREDITIVOS_CESAREA.md`.
 
@@ -183,7 +183,7 @@ Esta seção **expande a §3.5**: em vez de um único modelo, adota-se a estrat�
 | Tabela 7 | Testes por Robson | R | Sim — `tab_obj2_testes_por_robson.csv` | Eduardo formata |
 | Tabela 8 | Top 5 indicações cesárea | R (qmd) | Código pronto, só rodar | Subagente Sonnet |
 | Tabela 9 | Top 5 indicações fórcipe | R (qmd) | Código pronto, só rodar | Subagente Sonnet |
-| Tabela 10 | Modelo 4 — OR/IC | SPSS | Sim — está no Relatorio Analise SPSS.md | Letícia copia |
+| Tabela 10 | Modelo 4 — **PR**/IC | R (Poisson robusto) | Sim — `tab10b_comparacao_modelo4_r_vs_spss.csv` (col. `PR_R`) | Letícia copia |
 | Tabela 11 | Desfechos neonatais (se incluir) | SPSS | Texto bruto | Eduardo monta |
 | Tabela 12 | Caracterização contínua por faixa | R | Sim — `tab12_caracterizacao_continuas.csv` | Pronta (docx incluído) |
 | Tabela 13 | Proporções derivadas por faixa | R | Sim — `tab13_proporcoes_derivadas.csv` | Pronta (docx incluído) |
@@ -220,7 +220,7 @@ Esta seção **expande a §3.5**: em vez de um único modelo, adota-se a estrat�
 2. **Padronizar a faixa etária de referência.** A dissertação fala de 11–34 anos. O SPSS inclui 35+. Decidir se a dissertação manterá 35+ como faixa adicional ou cortará. **Sugestão: cortar em 34 para manter coerência com os objetivos declarados; usar o grupo 35+ só como menção comparativa pontual na discussão.**
 3. **Gerar Tabela 1 consolidada** em formato pronto para colar no docx (3 colunas + p), salvar em `results/tabelas_dissertacao/`.
 4. **Extrair do `Resultados_finais.ods`** as tabelas de hábitos, comorbidades, patologias gestacionais, indicações e neonatais (se for incluir), exportando para CSV legível.
-5. **Gerar a Figura 7 (forest plot)** dos OR do Modelo 4.
+5. **(FEITO)** Figura 7 (forest plot) do Modelo 4 gerada em **PR** (`fig_obj5_forest_plot_modelo4.png`).
 6. Rodar `quarto render index.qmd` (ou `Rscript -e ...`) para gerar PNGs das Figuras 5 e 6 que hoje só existem como código.
 7. **(jun/2026 — FEITO) `Rscript analysis/06_modelos_preditivos_cesarea.R` executado:** os números do R conferem com a validação em Python (≤ 0,002 na AUC). Tabelas/figuras `fig_obj6_*` regeneradas e relatórios atualizados com os valores canônicos do R.
 8. **(jun/2026) Decidir com o orientador** se a estratégia dos 3 modelos substitui ou complementa o Modelo 4 do SPSS na §3.5/§3.7, e se a ferramenta clínica entra na Discussão. Avaliar gerar a **curva de decisão** (decision curve analysis) para fortalecer a proposta da ferramenta.
@@ -230,7 +230,7 @@ Esta seção **expande a §3.5**: em vez de um único modelo, adota-se a estrat�
 Cada uma dessas pode ser delegada de forma independente, com prompt autosuficiente:
 
 1. **Subagente "tabelas-dissertacao":** Receber os CSVs gerados no passo 5.1 e produzir um arquivo `manuscript/tabelas_dissertacao.docx` com todas as 10–11 tabelas formatadas conforme o estilo da FMUSP (cabeçalho cinza, linha total em negrito, fontes em rodapé). Usar a skill `docx`.
-2. **Subagente "figuras-final":** Tomar os PNGs em `results/figures/` e gerar a Figura 7 (forest plot) com `ggplot2::geom_pointrange` em escala log dos OR. Salvar com 300 dpi.
+2. **Subagente "figuras-final":** Tomar os PNGs em `results/figures/` e gerar a Figura 7 (forest plot) com `geom_pointrange` em escala log das **PR** (Poisson robusto). Salvar com 300 dpi. *(Já gerada por `analysis/05_forest_plot_modelo4.py` em PR.)*
 3. **Subagente "redator-resultados":** Receber o esqueleto da §3 deste documento + as tabelas/figuras prontas + a tradução em linguagem acessível da §2 e redigir parágrafos no estilo acadêmico português, **sem inventar números**, replicando exatamente as estatísticas das tabelas. Output: um docx com a seção 4. Resultados completa, pronto para Letícia revisar.
 4. **Subagente "revisor-numerico":** Cross-checar todos os números na §4. Resultados final contra os CSVs e contra o `Relatorio Analise SPSS.md`. Sinalizar qualquer discrepância > 0,1 ponto percentual.
 
@@ -255,7 +255,7 @@ Cada uma dessas pode ser delegada de forma independente, com prompt autosuficien
 - **Discrepância de n entre R e SPSS** já mencionada — resolver primeiro.
 - **Pequena amostra de adolescentes nos Grupos 6, 7 e 9** (apresentações pélvicas / transversa) — não tentar tirar conclusões inferenciais aqui; descrever apenas.
 - **Os Grupos 4 e 5 só têm adultas.** O teste estatístico não se aplica; mas é exatamente esse o ponto — adolescentes praticamente não entram nesses grupos. Vale uma frase de leitura.
-- **O OR "protetor" da DHEG no Modelo 4** sempre confunde leitor — incluir uma nota de interpretação no texto, igual à que está no `Relatorio Analise SPSS.md`.
+- **A migração para PR resolve o "protetor" da DHEG.** Na logística do SPSS, a DHEG aparecia com OR = 0,40 (artefato da categoria de referência invertida). No PR (Poisson robusto), a DHEG é fator de risco (PR = 1,25) — a leitura correta. Usar o PR na redação e não repetir a interpretação antiga do OR protetor.
 - **O período do estudo (1995–2017)** atravessa três décadas de mudanças de protocolo obstétrico. Pode ser interessante para a discussão mostrar uma análise por sub-período se isso couber no tempo — mas **não é obrigatório**.
 - **Diferença pequena nas porcentagens entre R e SPSS** (ex.: 30,9 % vs. 30,1 % de cesárea em adolescentes precoces). É por causa de filtros ligeiramente diferentes. Padronizar para uma fonte por linha da tabela.
 

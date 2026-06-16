@@ -3,6 +3,8 @@
 **Destinatária:** Letícia Schimidt Arruda (Dissertação de Mestrado)  
 **Data da Análise:** 19 de Maio de 2026
 
+> ⚠️ **Registro histórico (medida de efeito: OR).** As regressões deste relatório foram feitas no SPSS e reportam **Odds Ratio**. Desde **14/06/2026**, a medida de efeito adotada na dissertação é a **Razão de Prevalência (PR)**, estimada por Poisson robusto (Zou, 2004), por ser menos enviesada em desfecho de alta prevalência (cesárea ~56%). Os OR aqui ficam como referência histórica; os valores canônicos do Modelo 4 estão em `results/tabelas_dissertacao/tab10b_comparacao_modelo4_r_vs_spss.csv` (coluna `PR_R`). Ver `COMPARACAO_OR_vs_PR.md`.
+
 Este relatório apresenta um resumo detalhado e interpretado das análises estatísticas realizadas e registradas nas abas **'descrição geral da base de dados'** e **'modelos sugeridos cesarea'** do arquivo de resultados do SPSS. 
 
 ---

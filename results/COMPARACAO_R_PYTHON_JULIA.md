@@ -1,5 +1,7 @@
 # Comparação de Resultados: R vs Python vs Julia
 
+> ⚠️ **DOCUMENTO HISTÓRICO/DEPRECADO (OR).** Esta comparação entre linguagens validou os **Odds Ratio** dos scripts `deprecated_*`, hoje fora do pipeline. Serviu apenas para confirmar a reprodutibilidade numérica entre R/Python/Julia. A medida de efeito atual da dissertação é a **Razão de Prevalência (PR)** — ver `COMPARACAO_OR_vs_PR.md`. Mantido como registro.
+
 **Modelos de Regressão Logística para Cesárea — variável `dheg` corrigida**  
 Gerado em: 2026-05-22 | Tolerância de discrepância: ±0,05 no OR  
 

@@ -3,6 +3,8 @@
 **Data:** 2026-05-22  
 **Scripts gerados:** `analysis/analise_modelos_cesarea_corrigido.R`, `.py`, `.jl`
 
+> ⚠️ **DOCUMENTO HISTÓRICO/DEPRECADO (OR).** Este relatório usa **Odds Ratio** e os scripts `deprecated_analise_modelos_cesarea_corrigido.*`, que **não fazem mais parte do pipeline atual**. A análise vigente de modelos preditivos está em `analysis/06_modelos_preditivos_cesarea.R` e reporta **Razão de Prevalência (PR)** — ver `results/RELATORIO_RESULTADOS_MODELOS_PREDITIVOS.md` e `COMPARACAO_OR_vs_PR.md`. Mantido apenas como registro de rastreabilidade.
+
 ---
 
 ## 1. Contexto e Justificativa da Correção

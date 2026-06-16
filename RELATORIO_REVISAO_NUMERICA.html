@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Relatório de Revisão Numérica Cruzada</title>
+  <title>Relatório de Revisão Numérica</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -16,19 +16,19 @@
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">Relatório de Revisão Numérica Cruzada</h1>
+<h1 class="title">Relatório de Revisão Numérica</h1>
 </header>
 <h1 id="relatório-de-revisão-numérica-cruzada">Relatório de Revisão Numérica Cruzada</h1>
 <p><strong>Dissertação de Mestrado — Letícia Schimidt Arruda (FMUSP)</strong><br />
 <strong>Revisor:</strong> Sub-agente Sonnet (revisão automática)<br />
 <strong>Data:</strong> 19 de maio de 2026 · <strong>Atualizado:</strong> 10 de junho de 2026<br />
-<strong>Arquivos revisados:</strong> <code>index.qmd</code>, <code>manuscript/tabelas_dissertacao.docx</code>, <code>manuscript/resultados_redacao.docx</code>, <code>results/tab_obj2_*.csv</code>, <code>results/tabelas_dissertacao/tab*.csv</code>, <code>results/Relatorio Analise SPSS.md</code>, <code>manuscript/Dissertação Maio_26.docx</code> <strong>Adicionados em 10/06/2026:</strong> <code>analysis/06_modelos_preditivos_cesarea.R</code>, <code>results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv</code>, <code>tab_modelo_{A,B,C}_*_OR.csv</code>, <code>tab_escore_pre_natal_*.csv</code>, <code>results/figures/fig_obj6_*</code>, <code>results/RELATORIO_RESULTADOS_MODELOS_PREDITIVOS.md</code>, <code>results/RELATORIO_MODELOS_PREDITIVOS_CESAREA.md</code>, <code>results/FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md</code>, <code>results/calculadora_risco_cesarea.html</code></p>
+<strong>Arquivos revisados:</strong> <code>index.qmd</code>, <code>manuscript/tabelas_dissertacao.docx</code>, <code>manuscript/resultados_redacao.docx</code>, <code>results/tab_obj2_*.csv</code>, <code>results/tabelas_dissertacao/tab*.csv</code>, <code>results/Relatorio Analise SPSS.md</code>, <code>manuscript/Dissertação Maio_26.docx</code> <strong>Adicionados em 10/06/2026:</strong> <code>analysis/06_modelos_preditivos_cesarea.R</code>, <code>results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv</code>, <code>tab_modelo_{A,B,C}_PR.csv</code> (originalmente <code>_OR.csv</code>; migrados para PR em 14/06/2026), <code>tab_escore_pre_natal_*.csv</code>, <code>results/figures/fig_obj6_*</code>, <code>results/RELATORIO_RESULTADOS_MODELOS_PREDITIVOS.md</code>, <code>results/RELATORIO_MODELOS_PREDITIVOS_CESAREA.md</code>, <code>results/FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md</code>, <code>results/calculadora_risco_cesarea.html</code> <strong>Revisão em 14/06/2026 (OR → PR):</strong> medida de efeito do Modelo 4 e dos modelos preditivos A/B/C migrada de Odds Ratio para <strong>Razão de Prevalência</strong> (Poisson robusto; Zou, 2004). As tabelas <code>tab_modelo_{A,B,C}_*_OR.csv</code> foram substituídas por <code>tab_modelo_{A,B,C}_PR.csv</code>. Detalhes em <code>COMPARACAO_OR_vs_PR.md</code>.</p>
 <hr />
 <h2 id="sumário-executivo">Sumário Executivo</h2>
 <ul>
-<li><strong>OK:</strong> Tabela 10 (Modelo 4) está numericamente perfeita — todos os OR, IC 95% e p-valores batem exatamente com o Relatorio Analise SPSS.md (linhas 123–135). Forest plot (<code>fig_obj5_forest_plot_modelo4.png</code>) foi gerado e corresponde aos mesmos valores.</li>
+<li><strong>OK:</strong> Tabela 10 (Modelo 4) — os OR do SPSS batem exatamente entre si (Relatorio Analise SPSS.md linhas 123–135 e docx). <strong>Porém, desde 14/06/2026 a medida adotada é a PR</strong> (Poisson robusto): a Tabela 10 e a Figura 7 da dissertação devem reportar o PR de <code>tab10b_comparacao_modelo4_r_vs_spss.csv</code> (coluna <code>PR_R</code>), tratando os OR do SPSS como histórico. O forest plot principal (<code>fig_obj5_forest_plot_modelo4.png</code>) já foi regerado em PR.</li>
 <li><strong>OK:</strong> Tabelas 5 e 6 são internamente consistentes — para cada célula, <code>n_cesárea / n_total</code> coincide com a taxa percentual da Tabela 6 (verificado em todos os 12 grupos com dados disponíveis).</li>
-<li><strong>OK:</strong> Todos os números de comorbidades (§4.2) e de regressão logística (§4.5) na redação têm origem rastreável e conferem com o Relatorio SPSS.</li>
+<li><strong>OK:</strong> Todos os números de comorbidades (§4.2) e da análise multivariada (§4.5) na redação têm origem rastreável e conferem com a fonte. <strong>Atenção:</strong> a §4.5 deve passar a citar PR (Poisson robusto), não OR da logística — ver documento de revisão da dissertação.</li>
 <li><strong>CRÍTICO:</strong> Existem quatro valores distintos de N total circulando nos documentos (6.646, 6.663, 6.830 e 8.300/8.724). Nenhuma tabela usa exatamente o mesmo N, e os cinco placeholders da redação ainda não foram preenchidos.</li>
 <li><strong>IMPORTANTE:</strong> CSVs derivados (<code>tab05/tab06_*.csv</code>) têm valores diferentes dos CSVs primários (<code>tab_obj2_*.csv</code>) em quatro células — as Tabelas 5–7 do docx foram construídas corretamente a partir dos primários, mas os derivados contêm um bug de recomputação.</li>
 <li><strong>IMPORTANTE:</strong> Figuras 5 e 6 (indicações de cesárea e fórcipe) são citadas na redação §4.4 mas os arquivos PNG não existem em <code>results/figures/</code>. Figura 7 (forest plot) existe mas não é referenciada na redação.</li>
@@ -391,7 +391,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Conclusão:</strong> Tabela 10 está perfeita. Sem correções necessárias.</p>
+<p><strong>Conclusão:</strong> A Tabela 10 do SPSS está internamente consistente (todos os OR batem entre <code>Relatorio Analise SPSS.md</code> e o docx). <strong>Atenção (migração OR → PR, 14/06/2026):</strong> estes OR são da regressão logística do SPSS e passaram a ser tratados como <strong>registro histórico</strong>. A medida adotada na dissertação é agora a <strong>Razão de Prevalência (PR)</strong>, estimada por Poisson robusto (Zou, 2004) — ver <code>tab10b_comparacao_modelo4_r_vs_spss.csv</code> (coluna <code>PR_R</code>) e <code>COMPARACAO_OR_vs_PR.md</code>. A Tabela 10 e a Figura 7 da dissertação devem reportar o PR, não estes OR.</p>
 <hr />
 <h3 id="tabela-7-arredondamento-do-p-valor-do-grupo-3">1.13 Tabela 7 — arredondamento do p-valor do Grupo 3</h3>
 <p><strong>Arquivo:</strong> <code>tab_obj2_testes_por_robson.csv</code> vs <code>tabelas_dissertacao.docx</code> Tabela 7 vs <code>resultados_redacao.docx</code> §4.3.2</p>
@@ -421,7 +421,7 @@
 <p><strong>Correção sugerida:</strong> Padronizar para p = 0,001 ou reportar o valor exato p = 0,0014 em ambos. Para revistas científicas e banca de mestrado, reportar p = 0,001 é aceitável (arredondamento a 3 casas). Manter a consistência entre docx e redação — ambos já usam 0,001, então está OK.</p>
 <hr />
 <h3 id="modelos-preditivos-de-cesárea-novo-10062026">1.14 Modelos preditivos de cesárea (NOVO — 10/06/2026)</h3>
-<p><strong>Arquivos:</strong> <code>analysis/06_modelos_preditivos_cesarea.R</code>, <code>results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv</code>, <code>tab_modelo_{A,B,C}_*_OR.csv</code>, <code>tab_escore_pre_natal_*.csv</code>, <code>results/figures/fig_obj6_*</code>, relatórios em <code>results/RELATORIO_*MODELOS_PREDITIVOS*.md</code> e <code>FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md</code>.</p>
+<p><strong>Arquivos:</strong> <code>analysis/06_modelos_preditivos_cesarea.R</code>, <code>results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv</code>, <code>tab_modelo_{A,B,C}_*_PR.csv</code> (antes <code>_OR.csv</code>, removidos na migração de 14/06/2026), <code>tab_escore_pre_natal_*.csv</code>, <code>results/figures/fig_obj6_*</code>, relatórios em <code>results/RELATORIO_*MODELOS_PREDITIVOS*.md</code> e <code>FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md</code>.</p>
 <p>Acrescentou-se a estratégia de <strong>três modelos</strong> (A pré-natal, B pré-parto individual, C pré-parto com Robson), ajustados na coorte total (N = 6.650) com imputação múltipla (MICE) e comparados por AUC, Brier, R² de Nagelkerke e calibração.</p>
 <p><strong>Verificações realizadas (consistência interna — OK):</strong></p>
 <table>
@@ -449,8 +449,8 @@
 <td>Confirmada: diferenças ≤ 0,002 na AUC entre <code>mice</code> (R) e <code>miceforest</code> (Python)</td>
 </tr>
 <tr class="even">
-<td>Direção/magnitude dos OR</td>
-<td>Clinicamente coerentes: cesárea prévia ~12,6; Robson 5 ~12,6; Robson 6/7/9 de 16 a 31; adolescentes OR &lt; 1 vs. adultas em todos os modelos</td>
+<td>Direção/magnitude da medida de efeito (agora <strong>PR</strong>)</td>
+<td>Clinicamente coerentes: cesárea prévia PR ~2,2–2,3; Robson 5 PR ~2,4; Robson 6/7/9 PR ~2,4–2,6; adolescentes PR &lt; 1 vs. adultas em todos os modelos. Direção e significância idênticas às do OR; só a magnitude foi atenuada (desfecho de alta prevalência)</td>
 </tr>
 <tr class="odd">
 <td>Escore de pontos × calculadora</td>
@@ -464,9 +464,9 @@
 </table>
 <p><strong>Pontos de atenção (não são erros, mas precisam de registro):</strong></p>
 <ol type="1">
-<li><strong>Origem dos números (RESOLVIDO em 10/06/2026).</strong> O script R canônico (<code>06_modelos_preditivos_cesarea.R</code>, <code>mice</code>/<code>pROC</code>/<code>rms</code>) foi executado e a <code>tab_modelos_preditivos_desempenho.csv</code> resultante reproduz os valores da validação em Python (<code>miceforest</code>) dentro de ±0,002 na AUC. Os relatórios passam a citar os valores do R como canônicos. Os arquivos OR foram padronizados nos nomes do R (<code>tab_modelo_A_pre_natal_OR.csv</code>, <code>tab_modelo_B_pre_parto_OR.csv</code>, <code>tab_modelo_C_robson_OR.csv</code>); as duplicatas com nomes do Python foram removidas.</li>
+<li><strong>Origem dos números (RESOLVIDO em 10/06/2026).</strong> O script R canônico (<code>06_modelos_preditivos_cesarea.R</code>, <code>mice</code>/<code>pROC</code>/<code>rms</code>) foi executado e a <code>tab_modelos_preditivos_desempenho.csv</code> resultante reproduz os valores da validação em Python (<code>miceforest</code>) dentro de ±0,002 na AUC. Os relatórios passam a citar os valores do R como canônicos. As tabelas de coeficientes foram migradas de OR para <strong>PR</strong> em 14/06/2026 (<code>tab_modelo_A_pre_natal_PR.csv</code>, <code>tab_modelo_B_pre_parto_PR.csv</code>, <code>tab_modelo_C_robson_PR.csv</code>); as versões <code>_OR.csv</code> e as duplicatas com nomes do Python foram removidas.</li>
 <li><strong>Calibração aparente.</strong> As inclinações/intercepto de calibração “perfeitos” são triviais por construção (ajuste e avaliação na mesma base); por isso reporta-se AUC corrigida por otimismo (bootstrap) e calibração por decis (<code>fig_obj6_calibracao.png</code>). Não confundir com validação.</li>
-<li><strong>Subgrupo adolescente — Modelo C.</strong> Robson foi colapsado (6/7/9 → “anômala”) e a AUC corrigida pode sair <code>NA</code> por separação quase-perfeita; interpretar OR desses termos com cautela.</li>
+<li><strong>Subgrupo adolescente — Modelo C.</strong> Robson foi colapsado (6/7/9 → “anômala”) e a AUC corrigida pode sair <code>NA</code> por separação quase-perfeita; interpretar o PR desses termos com cautela.</li>
 <li><strong>Variáveis fora dos modelos</strong> (IMC 74% ausente; pré-eclâmpsia 15 casos; gestação múltipla = Grupo 8 já excluído; renda/SUS ausente) — documentado nos relatórios; coerente com os critérios §3.3.</li>
 <li><strong>Ferramenta clínica</strong> derivada do Modelo A — sem validação externa; enquadrar como apoio ao aconselhamento, não regra de decisão.</li>
 </ol>

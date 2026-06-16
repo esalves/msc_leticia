@@ -1,11 +1,11 @@
-"Via de Parto","Grupo","Indicação","n","%"
-"Cesárea","Adolescentes","Não informada",264,68.4
-"Cesárea","Adolescentes","Distocia funcional",37,9.6
-"Cesárea","Adolescentes","Mecônio",35,9.1
-"Cesárea","Adolescentes","Sofrimento fetal",28,7.3
-"Cesárea","Adolescentes","Desproporção céfalo-pélvica",22,5.7
-"Cesárea","Adultas","Sofrimento fetal",552,27.6
-"Cesárea","Adultas","Não informada",514,25.7
-"Cesárea","Adultas","Patologia materna",381,19.1
-"Cesárea","Adultas","Distocia funcional",288,14.4
-"Cesárea","Adultas","Iteratividade",263,13.2
+Via de Parto,Grupo,Indicação,n,%
+Cesárea,Adolescentes,Sofrimento fetal,122,28.2
+Cesárea,Adolescentes,Distocia funcional,78,18.0
+Cesárea,Adolescentes,Outras,74,17.1
+Cesárea,Adolescentes,Desproporção céfalo-pélvica,73,16.9
+Cesárea,Adolescentes,Apresentação pélvica,33,7.6
+Cesárea,Adultas,Sofrimento fetal,728,22.0
+Cesárea,Adultas,Patologia materna,486,14.7
+Cesárea,Adultas,Distocia funcional,401,12.1
+Cesárea,Adultas,Iteratividade,371,11.2
+Cesárea,Adultas,Contraindicação de indução,340,10.3

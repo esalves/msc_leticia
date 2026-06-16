@@ -397,3 +397,108 @@ de Rubin."*
 | O efeito é confiável? | IC 95% da PR | não cruzou o 1 = significativo |
 | O modelo prevê bem? | AUC | 0,5 ruim → 1,0 ótimo |
 | O modelo está calibrado? | Hosmer-Lemeshow | p **alto** = bom |
+
+---
+
+## 8. Seção 5.4 — Indicações de parto operatório (atualização dos dados)
+
+**O que mudou e por quê.** As indicações de **cesárea** passaram a ser agrupadas pela
+variável hierárquica **`Indicacao_final`** (banco `BD_completo_corrigido_13-05-2026.xls`,
+aba `BD_leticia_08-05`), que organiza em categorias clínicas os motivos antes dispersos
+ou ausentes em `indicacao_cat`. O ganho é grande: na versão anterior, **68,4% das
+cesáreas de adolescentes** apareciam como *"Não informada"*; com `Indicacao_final`, essa
+lacuna **praticamente desaparece** e as indicações ficam classificadas.
+
+> **Fórcipe:** **todos** os partos a fórcipe têm `Indicacao_final = 888` (a variável não
+> subdivide o fórcipe). Por isso as indicações de fórcipe **continuam vindo de
+> `indicacao_cat`** — a Tabela 9 mantém a mesma lógica de antes (apenas recalculada na
+> coorte unificada).
+
+**Coorte e procedimento (para os Métodos).** Para manter a consistência com o resto da
+dissertação (coorte §3.3, **N = 6.650**), os campos `Indicacao_final` e `indicacao_cat`
+do banco 13-05 foram **unidos por chave (RGHC + idade + tipo de parto)** à coorte já
+elegível. O pareamento cobriu **4.651 dos 4.653 partos operatórios** (2 casos sem
+correspondência no banco novo → "Não informada"). Cada código de `Indicacao_final` foi
+rotulado pelo seu `indicacao_cat` predominante. Reprodução: `analysis/03_indicacoes_parto.R`.
+
+> **Frase sugerida para os Métodos:** "As indicações de cesárea foram agrupadas segundo
+> a variável `Indicacao_final`, que classifica hierarquicamente os motivos registrados
+> em `indicacao_cat`. As indicações de parto a fórcipe foram descritas a partir de
+> `indicacao_cat`. Os percentuais foram calculados sobre o total de cada via em cada
+> grupo etário."
+
+### 8.1 Tabela 8 (NOVA) — Indicações de cesárea, top 5 por grupo
+
+Percentuais sobre o total de cesáreas do grupo (Adolescentes = 433; Adultas = 3.313).
+
+| Grupo | Indicação | n | % |
+|---|---|---|---|
+| Adolescentes | Sofrimento fetal | 122 | 28,2 |
+| Adolescentes | Distocia funcional | 78 | 18,0 |
+| Adolescentes | Outras | 74 | 17,1 |
+| Adolescentes | Desproporção céfalo-pélvica | 73 | 16,9 |
+| Adolescentes | Apresentação pélvica | 33 | 7,6 |
+| Adultas | Sofrimento fetal | 728 | 22,0 |
+| Adultas | Patologia materna | 486 | 14,7 |
+| Adultas | Distocia funcional | 401 | 12,1 |
+| Adultas | Iteratividade | 371 | 11,2 |
+| Adultas | Contraindicação de indução | 340 | 10,3 |
+
+Rodapé sugerido: *"'Outras' reúne o código `Indicacao_final` 999 (motivo não
+especificado) e casos residuais. Percentuais sobre o total de cesáreas de cada grupo."*
+
+### 8.2 Tabela 9 (atualizada) — Indicações de fórcipe, top 5 por grupo
+
+Percentuais sobre o total de fórcipes do grupo (Adolescentes = 363; Adultas = 544).
+
+| Grupo | Indicação | n | % |
+|---|---|---|---|
+| Adolescentes | Não informada | 216 | 59,5 |
+| Adolescentes | Alívio materno-fetal | 62 | 17,1 |
+| Adolescentes | Abreviação do período expulsivo | 41 | 11,3 |
+| Adolescentes | Distocia de rotação | 36 | 9,9 |
+| Adolescentes | Mecônio | 4 | 1,1 |
+| Adultas | Alívio materno-fetal | 208 | 38,2 |
+| Adultas | Abreviação do período expulsivo | 177 | 32,5 |
+| Adultas | Distocia de rotação | 95 | 17,5 |
+| Adultas | Não informada | 37 | 6,8 |
+| Adultas | Sofrimento fetal | 10 | 1,8 |
+
+> ⚠️ **Limitação a registrar:** o fórcipe nas adolescentes tem **59,5% de indicação não
+> informada** (216 de 363). Isso precisa ser dito no texto — a leitura das indicações de
+> fórcipe nesse grupo é parcial. Diferente da cesárea, o fórcipe não dispõe da
+> classificação `Indicacao_final` para recuperar esses motivos.
+
+### 8.3 Figuras (regeneradas)
+
+`results/figures/fig_obj3_indicacoes_cesarea.png` e `fig_obj3_indicacoes_forcipe.png`
+foram regeradas (barras horizontais, dodge por grupo etário; vermelho = adolescentes,
+verde-azulado = adultas). Substituir as imagens das Figuras 5 e 6 da dissertação.
+
+### 8.4 Texto de resultados — sugestões
+
+**5.4.1 Cesárea:** "Entre as adolescentes, as principais indicações de cesárea foram
+sofrimento fetal (28,2%), distocia funcional (18,0%), desproporção céfalo-pélvica
+(16,9%) e apresentação pélvica (7,6%). Entre as adultas predominaram sofrimento fetal
+(22,0%), patologia materna (14,7%), distocia funcional (12,1%), iteratividade (11,2%) e
+contraindicação de indução (10,3%). Destacam-se, nas adultas, a **iteratividade** e a
+**patologia materna** — praticamente ausentes entre as adolescentes —, coerentes com o
+maior número de cesáreas prévias e de comorbidades nesse grupo. A desproporção
+céfalo-pélvica e a apresentação pélvica tiveram peso proporcionalmente maior entre as
+adolescentes."
+
+**5.4.2 Fórcipe:** "Entre as adultas, as indicações de fórcipe foram majoritariamente o
+alívio materno-fetal (38,2%) e a abreviação do período expulsivo (32,5%), seguidas de
+distocia de rotação (17,5%). O mesmo padrão apareceu nas adolescentes (alívio
+materno-fetal 17,1%; abreviação do período expulsivo 11,3%; distocia de rotação 9,9%),
+embora a maioria dos fórcipes nesse grupo não tivesse a indicação registrada (59,5%), o
+que limita a interpretação."
+
+### 8.5 Checklist da Seção 5.4
+
+- [ ] Substituir a Tabela 8 (cesárea) pela versão baseada em `Indicacao_final`.
+- [ ] Atualizar a Tabela 9 (fórcipe) com os valores recalculados na coorte unificada.
+- [ ] Trocar as Figuras 5 e 6 pelas novas (`fig_obj3_*`).
+- [ ] Acrescentar a frase de método (uso de `Indicacao_final` + união por RGHC).
+- [ ] Registrar a limitação do alto % de fórcipe sem indicação nas adolescentes.
+- [ ] Reescrever os parágrafos de 5.4.1 e 5.4.2 (sugestões acima).

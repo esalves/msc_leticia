@@ -1,8 +1,8 @@
 # Revisão da dissertação — o que atualizar nos Métodos, Resultados e Discussão
 
-**Versão revisada:** `manuscript/Dissertação 15 Jun 26 revisto Galletta.pdf`
-**Data:** 15/06/2026
-**Motivo:** alinhar a dissertação à migração **Odds Ratio (OR) → Razão de Prevalência (PR)**
+**Versão revisada:** `manuscript/Dissertacao16_06_2026.pdf` (16/06/2026)
+**Atualizado:** 17/06/2026
+**Motivo:** alinhar a dissertação à migração **Odds Ratio (OR) → Razão de Prevalência**
 decidida pelo orientador (ver `COMPARACAO_OR_vs_PR.md`). A análise multivariada já foi
 reprocessada em PR (Poisson robusto; Zou, 2004); **falta refletir isso no texto da
 dissertação.**
@@ -12,8 +12,26 @@ dissertação.**
 > **forma de descrever** os efeitos. O achado central (idade adulta = fator de risco
 > independente para cesárea) permanece intacto.
 
-Fonte canônica dos números novos: `results/tabelas_dissertacao/tab10b_comparacao_modelo4_r_vs_spss.csv`
-(coluna `PR_R`), idêntica à Seção 2 de `COMPARACAO_OR_vs_PR.md`.
+> ✅ **Estado no manuscrito 16/06 (conferido):**
+> - **Métodos** — já incluem o parágrafo do Poisson com variância robusta para a razão
+>   de prevalência (citando Zou, 10.1002/sim.7059). **Porém** o texto ainda menciona
+>   também o Odds Ratio; ver §1 (precisa decidir entre as duas medidas e padronizar a
+>   sigla — você usou **"RP"** no manuscrito e o código/CSVs usam **"PR"**; escolha uma).
+> - **Resultados §5.5** — **ainda em OR** (Tabela 10, Figura 7 e texto). Você mesma
+>   deixou o comentário *"Retomar isso aqui para alterar OR"* (LA19). As mudanças da §2
+>   deste documento continuam **pendentes**.
+> - **Seção 5.4** — já usa a tabulação da estatística (365/3.228 cesáreas). Há uma
+>   **incoerência de tamanho amostral** com a Tabela 4 (433/3.313): ver §8.7 e a
+>   **Seção 0 do `RELATORIO_REVISAO_NUMERICA`**.
+
+Fonte canônica dos números (oficial): arquivo da estatística `modelagem_de Robson.xlsx`,
+exportado para `results/tabelas_dissertacao/tab10_modelo4_PR.csv` (modelo principal) e
+`tab10c_modelo4_interacao_PR.csv` (modelo de interação). Estes substituem as estimativas
+anteriores em R.
+
+> **Nota de sigla:** neste documento uso **PR** (como no código). No manuscrito você
+> escreveu **RP** (razão de prevalência) — em português, "RP" é a sigla mais natural.
+> Tanto faz, desde que **a mesma sigla** apareça em Métodos, Tabela 10 e Figura 7.
 
 > 📖 **Lê:** se quiser entender o que cada teste estatístico faz antes de mexer no
 > texto, comece pela **Seção 7 — "Para a Lê: os testes estatísticos em linguagem
@@ -30,101 +48,143 @@ Fonte canônica dos números novos: `results/tabelas_dissertacao/tab10b_comparac
 > simultaneamente a faixa etária, síndromes hipertensivas obstétricas e os grupos
 > de Robson reduzidos, tendo como categoria de referência o Grupo 1."
 
-**O que mudar:** acrescentar que a **medida de efeito reportada é a Razão de
-Prevalência (PR)**, não o Odds Ratio, e por quê. Sugestão de redação para inserir ao
-final do parágrafo:
+> ⚠️ **Atualização (16/06):** o parágrafo do Poisson/RP **já foi inserido** nos Métodos
+> ("…análise de Poisson, com variância robusta e função log-linear, para estimar as
+> razões de prevalência (RP)… 10.1002/sim.7059"). **Ação pendente:** o mesmo parágrafo
+> ainda menciona estimar **Odds Ratios (OR)** — como a medida adotada passou a ser a RP,
+> **remova (ou reposicione como histórico) a menção ao OR** para não dar a impressão de
+> que as duas medidas foram reportadas em paralelo. A redação sugerida abaixo serve de
+> referência para o texto final.
+
+**O que mudar:** deixar claro que a **medida de efeito reportada é a Razão de
+Prevalência**, não o Odds Ratio, e por quê. Sugestão de redação (consolidando o que já
+está no texto):
 
 > "Como a cesárea é um desfecho de **alta prevalência** nesta coorte (~56%), o Odds
 > Ratio superestimaria a magnitude das associações. Por isso, a medida de efeito
-> reportada é a **Razão de Prevalência (PR)**, estimada por **regressão de Poisson com
-> variância robusta** (*modified Poisson*; Zou, 2004), na qual o coeficiente
-> exponenciado estima diretamente o PR. As estimativas e os intervalos de confiança
-> de 95% do Modelo 4 foram obtidos no software R; os critérios de seleção do modelo
-> (calibração de Hosmer-Lemeshow) foram avaliados sobre o ajuste logístico
-> correspondente."
+> reportada é a **Razão de Prevalência (RP)**, estimada por **regressão de Poisson com
+> variância robusta e função log-linear** (*modified Poisson*; Zou, 2004), na qual o
+> coeficiente exponenciado estima diretamente a RP. O Modelo 4 ajustou simultaneamente
+> os **grupos de Robson reduzidos** (referência: Robson 1) e a **faixa etária em três
+> categorias** (referência: 11–15 anos). A qualidade do ajuste foi de 0,463
+> (Qui-quadrado de Pearson por grau de liberdade)."
 
-**Atenção adicional:** o parágrafo anterior diz que "as análises estatísticas foram
-realizadas no software SPSS". Isso continua válido para as análises descritivas e os
-testes bivariados, mas o **Modelo 4 (medida de efeito PR) foi estimado no R**. Vale
-deixar essa distinção explícita para não haver contradição na banca.
+> ⚠️ **Mudanças estruturais nos valores oficiais da estatística (arquivo
+> `modelagem_de Robson.xlsx`), a refletir no texto:**
+> 1. **Faixa etária em 3 categorias** (11–15 ref., 16–19, 20–34) — não mais "adulta vs.
+>    adolescente". Isso muda a leitura do achado central (ver §2.3 e §3).
+> 2. **O Modelo 4 oficial não inclui a DHEG** — só Robson reduzido + faixa etária. O
+>    texto atual dos Métodos descreve o Modelo 4 como "faixa + DHEG + Robson"; **é
+>    preciso reconciliar**: ou se acrescenta a DHEG ao modelo da estatística, ou se
+>    remove a DHEG da descrição. Como está, há divergência entre a descrição e a tabela.
+> 3. A RP foi estimada **no SPSS** (GENLIN, Poisson com covariância robusta), não no R.
+>    Ajustar a frase para não dizer que foi no R.
 
 **Referência a incluir na bibliografia:** Zou G. *A modified Poisson regression
 approach to prospective studies with binary data.* Am J Epidemiol. 2004;159(7):702–706.
+(DOI 10.1002/sim.7059 corresponde ao artigo de extensão de Zou & Donner, 2013 — conferir
+qual referência a estatística pretende citar.)
 
 ---
 
 ## 2. Resultados (Seção 5.5 — Fatores associados à cesárea)
 
-### 2.1 Tabela 10 — substituir OR por PR
+### 2.1 Tabela 10 — valores oficiais de PR (estatística, `modelagem_de Robson.xlsx`)
 
-A Tabela 10 atual traz a coluna **OR**. Substituir pela coluna **PR** com os novos
-valores e IC 95% (mantendo a mesma ordem de variáveis):
+Substituir a coluna **OR** pela **PR (RP)** com os valores oficiais abaixo. **Modelo:
+Robson reduzido + faixa etária (3 categorias).** Referências: Robson 1 e faixa 11–15.
 
-| Variável | OR atual (remover) | **PR novo (usar)** | **IC 95% novo** | p |
-|---|---|---|---|---|
-| Faixa etária adulta (vs. adolescente) | 1,78 | **1,35** | **1,23 – 1,48** | < 0,001 |
-| DHEG (sim vs. não) | 2,36 | **1,25** | **1,19 – 1,30** | < 0,001 |
-| Robson 2 (vs. Robson 1) | 3,66 | **1,90** | **1,71 – 2,10** | < 0,001 |
-| Robson 3 (vs. Robson 1) | 0,44 | **0,58** | **0,49 – 0,68** | < 0,001 |
-| Robson 4 (vs. Robson 1) | 1,41 | **1,29** | **1,12 – 1,48** | < 0,001 |
-| Robson 5 (vs. Robson 1) | 12,81 | **2,38** | **2,16 – 2,64** | < 0,001 |
-| Robson 6 (vs. Robson 1) | 31,28 | **2,57** | **2,27 – 2,90** | < 0,001 |
-| Robson 7 (vs. Robson 1) | 16,02 | **2,45** | **2,21 – 2,71** | < 0,001 |
-| Robson 9 (vs. Robson 1) | 17,72 | **2,49** | **2,18 – 2,85** | < 0,001 |
-| Robson 10 (vs. Robson 1) | 2,18 | **1,58** | **1,42 – 1,75** | < 0,001 |
+| Variável | PR | IC 95% | p |
+|---|---|---|---|
+| Faixa etária 20–34 (vs. 11–15) | **1,43** | 1,24 – 1,65 | < 0,001 |
+| Faixa etária 16–19 (vs. 11–15) | **1,05** | 0,89 – 1,24 | 0,539 (n.s.) |
+| Robson 2 (vs. Robson 1) | **1,96** | 1,75 – 2,20 | < 0,001 |
+| Robson 3 (vs. Robson 1) | **0,60** | 0,50 – 0,72 | < 0,001 |
+| Robson 4 (vs. Robson 1) | **1,42** | 1,21 – 1,66 | < 0,001 |
+| Robson 5 (vs. Robson 1) | **2,40** | 2,15 – 2,68 | < 0,001 |
+| Robson 6 (vs. Robson 1) | **2,59** | 2,23 – 2,99 | < 0,001 |
+| Robson 7 (vs. Robson 1) | **2,59** | 2,32 – 2,90 | < 0,001 |
+| Robson 9 (vs. Robson 1) | **2,65** | 2,32 – 3,04 | < 0,001 |
+| Robson 10 (vs. Robson 1) | **1,60** | 1,43 – 1,80 | < 0,001 |
 
-**Legenda/rodapé da Tabela 10 — trocar:**
+CSV pronto: `results/tabelas_dissertacao/tab10_modelo4_PR.csv`.
+
+**Legenda/rodapé da Tabela 10:**
 - Título: "Modelo 4 de regressão logística múltipla..." → "**Modelo 4 — fatores
   associados ao nascimento por cesariana (Razão de Prevalência)**".
-- Rodapé: "OR = odds ratio; IC 95% = intervalo de confiança de 95%." →
-  "**PR = razão de prevalência, estimada por regressão de Poisson com variância
-  robusta (Zou, 2004); IC 95% = intervalo de confiança de 95%.** Grupo de referência:
-  Robson 1. Seleção do modelo por Hosmer-Lemeshow (χ² = 5,215; gl = 6; p = 0,517)."
+- Rodapé: "**RP = razão de prevalência, estimada por regressão de Poisson com variância
+  robusta e função log-linear (Zou, 2004); IC 95% = intervalo de confiança de 95% de
+  Wald.** Referências: Robson 1 e faixa etária 11–15 anos. Qualidade do ajuste = 0,463
+  (Qui-quadrado de Pearson por grau de liberdade)."
 
-> O p do Robson 4 era p = 0,007 no OR; no PR é **p < 0,001**. Todos os efeitos
-> permanecem significativos.
+> ⚠️ **Note as diferenças em relação à versão anterior deste documento:** (i) a faixa
+> etária aparece em **3 categorias** (a tardia 16–19 **não** difere da precoce 11–15:
+> PR 1,05; p = 0,539); (ii) **não há linha de DHEG** (ver §1); (iii) os PR de Robson
+> mudaram um pouco em relação à minha estimativa em R (ex.: Robson 5 2,40 vs. 2,38) —
+> **valem os da estatística**.
 
-### 2.2 Figura 7 — forest plot
+### 2.2 Figura 7 — forest plot (regenerado com os valores oficiais)
 
-- **Legenda atual:** "Figura 7 – Forest plot dos **Odds Ratios** do Modelo 4. (...)
-  Colunas à direita: **OR (IC 95%)** e p-valor."
-- **Trocar para:** "Figura 7 – Forest plot das **Razões de Prevalência (PR)** do
-  Modelo 4. Eixo X em escala logarítmica. Colunas à direita: **PR (IC 95%)** e
-  p-valor. PR estimada por regressão de Poisson com variância robusta (Zou, 2004)."
-- **Arquivo de imagem:** já regenerado em PR (`results/figures/fig_obj5_forest_plot_modelo4.png`).
-  Conferir que a versão colada no documento é a nova (eixo e colunas em PR).
+- **Legenda:** "Figura 7 – Forest plot das **Razões de Prevalência (PR)** do Modelo 4.
+  Eixo X em escala logarítmica. Colunas à direita: PR (IC 95%) e p-valor. RP estimada
+  por regressão de Poisson com variância robusta (Zou, 2004); referências: Robson 1 e
+  faixa 11–15."
+- **Arquivo:** `results/figures/fig_obj5_forest_plot_modelo4.png` — **regenerado com os
+  valores da estatística** (10 linhas: 2 de faixa + 8 de Robson).
+
+![Forest plot do Modelo 4 — Razão de Prevalência (valores oficiais da estatística)](results/figures/fig_obj5_forest_plot_modelo4.png)
 
 ### 2.3 Texto narrativo da Seção 5.5 — reescrever as leituras
 
-Trocar todas as frases que falam em "chance" / "OR" por leituras de **prevalência**:
+Reescrever em **prevalência**, já com os valores oficiais e a faixa em 3 categorias:
 
-| Trecho atual | Como reescrever |
+| O que dizer | Redação sugerida |
 |---|---|
-| "as adultas apresentaram **78% mais chance** de cesárea (...) OR = 1,78 (IC 95%: 1,51 a 2,10)" | "as adultas apresentaram **cerca de 35% mais prevalência** de cesárea que as adolescentes — **PR = 1,35 (IC 95%: 1,23 a 1,48; p < 0,001)** — mesmo após ajuste." |
-| "O Grupo de Robson 6 (...) foi o **preditor de maior magnitude**: OR = 31,29 (IC 95%: 9,47 a 193,44)" | "Os Grupos de apresentação anômala (6, 7 e 9) e o Grupo 5 foram os de maior magnitude, com prevalência de cesárea cerca de **2,4 a 2,6 vezes** a do Grupo 1 — p. ex. **Robson 6: PR = 2,57 (IC 95%: 2,27 a 2,90)**. Cabe notar que o Grupo 6 é o de menor tamanho amostral (n = 41)." |
-| "O grupo 9 (OR = 17,72; IC 95%: 7,04 a 59,55) (...) **intervalo de confiança amplo**, devido ao pequeno tamanho amostral" | "No Grupo 9, **PR = 2,49 (IC 95%: 2,18 a 2,85)**; diferentemente do OR, o intervalo de confiança do PR permaneceu **estreito e estável**, sem o alargamento que a baixa prevalência do grupo provocava na estimativa em OR." |
-| "O Grupo 3 (...) fator protetor: OR = 0,44 (IC 95%: 0,35 a 0,55)" | "O Grupo 3 manteve-se como fator protetor: **PR = 0,58 (IC 95%: 0,49 a 0,68; p < 0,001)** — multíparas em trabalho espontâneo têm **~42% menos prevalência** de cesárea que as nulíparas do Grupo 1." |
-| "a hipertensão obstétrica apresentou OR = 2,36 (...) este resultado indica que a hipertensão obstétrica **dobra a chance** do nascimento ocorrer por cesárea" | "a hipertensão obstétrica (DHEG) associou-se a **~25% mais prevalência** de cesárea — **PR = 1,25 (IC 95%: 1,19 a 1,30; p < 0,001)**." ⚠️ **Remover a frase "dobra a chance"** — era um exagero do OR; em PR o efeito é de +25%. |
+| Achado central (idade) | "Após ajuste pelos grupos de Robson, as **adultas (20–34)** apresentaram **cerca de 43% mais prevalência** de cesárea que as adolescentes precoces (11–15) — **PR = 1,43 (IC 95%: 1,24–1,65; p < 0,001)**. Já as **adolescentes tardias (16–19) não diferiram** das precoces (PR = 1,05; IC 95%: 0,89–1,24; p = 0,539)." |
+| Grupos de maior magnitude | "Os grupos de apresentação anômala (6, 7 e 9) e o Grupo 5 tiveram a maior prevalência relativa de cesárea — cerca de **2,4 a 2,7 vezes** a do Grupo 1 (Robson 9: PR = 2,65; Robson 7: 2,59; Robson 6: 2,59; Robson 5: 2,40)." |
+| Grupo 3 (protetor) | "O Grupo 3 (multíparas em trabalho espontâneo) manteve-se protetor: **PR = 0,60 (IC 95%: 0,50–0,72; p < 0,001)** — ~40% menos prevalência de cesárea que o Grupo 1." |
+| Grupos 2, 4 e 10 | "Robson 2: PR = 1,96; Robson 4: 1,42; Robson 10: 1,60 (todos p < 0,001)." |
 
-> **Por que a magnitude cai tanto (ex.: Robson 5 de 12,81 para 2,38):** o OR só
-> aproxima o risco relativo quando o desfecho é raro. Com cesárea a 56%, o OR inflava
-> os efeitos. O PR é a leitura correta ("2,4× a prevalência") e tem ICs mais estreitos.
-> **Esse é um ponto forte para defender na banca**, não uma fragilidade.
+> ⚠️ **Remover a frase "dobra a chance" da DHEG** e qualquer leitura em "chance/OR".
+> Como o Modelo 4 oficial **não inclui a DHEG**, a frase sobre DHEG na §5.5 precisa
+> ser **removida** ou movida para a análise bivariada — a menos que vocês decidam
+> reincluir a DHEG no modelo (ver §1).
 
-### 2.4 Sub-modelo de interação (final da Seção 5.5) — DECISÃO PENDENTE
+> **Por que a magnitude é menor que a do OR (ex.: Robson 5 ~2,4 vs. OR 12,8):** o OR só
+> aproxima o risco relativo quando o desfecho é raro; com cesárea a 56%, ele inflava os
+> efeitos. A PR é a leitura correta ("2,4× a prevalência") e com ICs estreitos. **É um
+> ponto forte para a banca**, não fragilidade.
 
-O trecho do "modelo de regressão logística múltipla com termos de interação" (Grupo 2
-OR = 0,38; Grupo 10 OR = 0,21; Grupo 3 OR = 1,95) **ainda está em OR** e **não foi
-migrado** — não fazia parte do escopo reprocessado. Duas opções:
+### 2.4 Sub-modelo de interação (final da Seção 5.5) — valores oficiais de PR
 
-1. **(Recomendado para consistência)** reestimar o modelo de interação também em PR
-   (Poisson robusto) e atualizar os três valores. Posso gerar isso se você quiser.
-2. **Manter em OR**, mas então **declarar explicitamente** no texto que, neste modelo
-   exploratório de interação, a medida é o OR (e justificar). Não é ideal ter as duas
-   medidas no mesmo trabalho sem aviso.
+A estatística também enviou o **modelo de interação faixa × Robson em PR** (referência:
+**Adolescentes do Robson 1**). Substituir os OR antigos (0,38 / 0,21 / 1,95) por estes:
 
-> Há ainda uma **nota de edição solta** no texto — "*a tabela de interação da aba
-> robson interação*" — que parece um lembrete e deve ser **removida** da versão final.
+| Termo | PR | IC 95% | p |
+|---|---|---|---|
+| Adultas — Robson 1 | 1,29 | 1,06 – 1,56 | 0,010 |
+| Adolescentes — Robson 2 | 1,94 | 1,59 – 2,36 | < 0,001 |
+| Adultas — Robson 2 | 2,65 | 2,36 – 2,99 | < 0,001 |
+| Adolescentes — Robson 3 | 0,98 | 0,72 – 1,35 | 0,908 (n.s.) |
+| Adultas — Robson 3 | 0,74 | 0,61 – 0,90 | 0,002 |
+| Adultas — Robson 4 | 1,92 | 1,64 – 2,24 | < 0,001 |
+| Adultas — Robson 5 | 3,25 | 2,90 – 3,63 | < 0,001 |
+| Adolescentes — Robson 6 | 3,68 | 3,30 – 4,11 | < 0,001 |
+| Adultas — Robson 6 | 3,42 | 2,94 – 3,97 | < 0,001 |
+| Adolescentes — Robson 7 | 3,51 | 3,05 – 4,05 | < 0,001 |
+| Adultas — Robson 7 | 3,41 | 3,04 – 3,83 | < 0,001 |
+| Adolescentes — Robson 9 | 3,68 | 3,30 – 4,11 | < 0,001 |
+| Adultas — Robson 9 | 3,38 | 2,93 – 3,91 | < 0,001 |
+| Adolescentes — Robson 10 | 0,96 | 0,72 – 1,27 | 0,778 (n.s.) |
+| Adultas — Robson 10 | 2,28 | 2,02 – 2,57 | < 0,001 |
+
+CSV pronto: `results/tabelas_dissertacao/tab10c_modelo4_interacao_PR.csv`.
+
+> ⚠️ **Cautela (separação quase-perfeita):** os valores de **Adolescentes nos Robson 6,
+> 7 e 9** repousam sobre **pouquíssimos casos** (n = 1–5, quase todos cesárea) — daí os
+> PR idênticos (3,68) nos grupos 6 e 9. Interpretar apenas qualitativamente e registrar
+> a limitação. Remover também a **nota de edição solta** "*a tabela de interação da aba
+> robson interação*" do texto final.
 
 ---
 
@@ -137,17 +197,21 @@ migrado** — não fazia parte do escopo reprocessado. Duas opções:
 
 **Trocar para:**
 > "(...) a faixa etária adulta atua como fator de risco independente para a ocorrência
-> de cesárea, apresentando **cerca de 35% mais prevalência** de cesárea (PR = 1,35) em
-> comparação com as adolescentes, mesmo após ajuste pelo perfil obstétrico (Robson) e
-> pela presença de DHEG."
+> de cesárea, apresentando **cerca de 43% mais prevalência** de cesárea (PR = 1,43;
+> IC 95%: 1,24–1,65) em comparação com as adolescentes precoces (11–15), mesmo após
+> ajuste pelo perfil obstétrico (grupos de Robson). As adolescentes tardias (16–19),
+> por sua vez, não diferiram das precoces (PR = 1,05; p = 0,539)."
 
 **Demais pontos da Discussão:**
 - O restante da Seção 6.1 discute **pontos percentuais de taxa de cesárea** por grupo
   de Robson (ex.: "10 pontos percentuais", "47,2% → 71,8%", "35,1 pontos percentuais").
   **Esses números não dependem de OR/PR** e **permanecem inalterados**.
 - Onde o texto interpreta o Grupo 5 como "principal determinante", continua válido — em
-  PR ele está entre os de maior efeito (PR = 2,38), junto de 6/7/9. Só evitar
+  PR ele está entre os de maior efeito (PR = 2,40), junto de 6/7/9. Só evitar
   linguagem de "chance" e dizer "prevalência".
+- ⚠️ Se a Discussão mencionar a **DHEG** como fator do Modelo 4, reveja: o modelo
+  oficial atual **não inclui** a DHEG (ver §1). A DHEG continua válida na análise
+  bivariada/descritiva (§6.2), mas não como coeficiente ajustado do Modelo 4.
 - **Sugestão (opcional, mas valoriza o trabalho):** acrescentar 1–2 frases na Discussão
   ou nas Limitações explicando a **escolha metodológica do PR** (desfecho de alta
   prevalência → OR enviesado → modified Poisson de Zou). Isso antecipa pergunta de banca.
@@ -174,9 +238,9 @@ precisam de alteração**.
 - [ ] Métodos §4: esclarecer que o Modelo 4 foi estimado no R (não SPSS).
 - [ ] Tabela 10: substituir coluna OR → PR (10 linhas) + IC novos + título + rodapé.
 - [ ] Figura 7: trocar legenda (OR → PR) e confirmar a imagem nova.
-- [ ] Texto §5.5: reescrever as 5 leituras (78%→35%; remover "dobra a chance"; etc.).
+- [ ] Texto §5.5: reescrever as leituras (78%→43%; faixa em 3 categorias; remover "dobra a chance" e a DHEG do Modelo 4; etc.).
 - [ ] §5.5 interação: decidir migrar para PR **ou** declarar OR; remover a nota solta.
-- [ ] Discussão §6.1: "chance 78% maior" → "~35% mais prevalência (PR = 1,35)".
+- [ ] Discussão §6.1: "chance 78% maior" → "~43% mais prevalência (PR = 1,43; adultas vs. precoces 11–15)".
 - [ ] Listas de figuras/tabelas: atualizar legendas da Tabela 10 e Figura 7.
 - [ ] (Opcional) Discussão/Limitações: justificar a escolha do PR.
 
@@ -316,16 +380,16 @@ A **Razão de Prevalência (PR)** faz isso de forma direta:
 
 Leitura por exemplos:
 
-- **PR = 1,35** (adultas vs. adolescentes) → as adultas têm **35% mais** cesárea.
-- **PR = 2,38** (Robson 5) → esse grupo tem **2,4 vezes** a prevalência de cesárea do
+- **PR = 1,43** (adultas 20–34 vs. precoces 11–15) → as adultas têm **43% mais** cesárea.
+- **PR = 2,40** (Robson 5) → esse grupo tem **2,4 vezes** a prevalência de cesárea do
   grupo de referência.
-- **PR = 0,58** (Robson 3) → esse grupo tem **42% menos** cesárea (PR abaixo de 1 =
+- **PR = 0,60** (Robson 3) → esse grupo tem **40% menos** cesárea (PR abaixo de 1 =
   fator de proteção).
 - **PR = 1** → nenhuma diferença.
 
 A PR vem acompanhada de um **intervalo de confiança de 95% (IC 95%)** — a faixa de
-valores plausíveis. Ex.: PR 1,35 (IC 1,23–1,48) significa "o valor mais provável é 1,35,
-e quase certamente está entre 1,23 e 1,48". **Se o IC não cruza o 1, o efeito é
+valores plausíveis. Ex.: PR 1,43 (IC 1,24–1,65) significa "o valor mais provável é 1,43,
+e quase certamente está entre 1,24 e 1,65". **Se o IC não cruza o 1, o efeito é
 significativo.**
 
 ### 7.8 Por que trocamos o Odds Ratio (OR) pela PR
@@ -336,9 +400,9 @@ das gestantes — está longe de ser rara. Nesse cenário, o **OR exagera** o ta
 efeito.
 
 Foi exatamente o que aconteceu: o OR dizia que o Robson 5 multiplicava o desfecho por
-**12,8** e a DHEG "dobrava" a chance; em PR, os efeitos reais são **2,4×** e **+25%**.
-A direção e a significância continuam as mesmas — só a magnitude ficou **realista**.
-Por isso a PR é a medida recomendada para desfechos comuns, e é a que vai na dissertação.
+**12,8**; em PR, o efeito real é de **~2,4×** a prevalência. A direção e a significância
+continuam as mesmas — só a magnitude ficou **realista**. Por isso a PR é a medida
+recomendada para desfechos comuns, e é a que vai na dissertação.
 
 ### 7.9 Como a PR foi calculada (regressão de Poisson com variância robusta)
 
@@ -393,7 +457,7 @@ de Rubin."*
 | Um número difere entre 3 grupos? | Kruskal-Wallis | p < 0,05 = sim (há diferença global) |
 | Entre quais grupos está a diferença? | Dunn + correção de Holm | compara par a par |
 | Essa diferença é grande? | ε² (epsilon-quadrado) | 0 = nula; perto de 1 = grande |
-| Qual o tamanho do efeito (cesárea)? | Razão de Prevalência (PR) | 1,35 = +35%; 0,58 = −42% |
+| Qual o tamanho do efeito (cesárea)? | Razão de Prevalência (PR) | 1,43 = +43%; 0,60 = −40% |
 | O efeito é confiável? | IC 95% da PR | não cruzou o 1 = significativo |
 | O modelo prevê bem? | AUC | 0,5 ruim → 1,0 ótimo |
 | O modelo está calibrado? | Hosmer-Lemeshow | p **alto** = bom |
@@ -450,19 +514,17 @@ especificado) e casos residuais. Percentuais sobre o total de cesáreas de cada 
 ### 8.2 Tabela 9 (atualizada) — Indicações de fórcipe, top 5 por grupo
 
 Percentuais sobre o total de fórcipes do grupo (Adolescentes = 363; Adultas = 544).
+União das 5 principais indicações de cada grupo; n (%) por faixa etária em colunas.
 
-| Grupo | Indicação | n | % |
-|---|---|---|---|
-| Adolescentes | Não informada | 216 | 59,5 |
-| Adolescentes | Alívio materno-fetal | 62 | 17,1 |
-| Adolescentes | Abreviação do período expulsivo | 41 | 11,3 |
-| Adolescentes | Distocia de rotação | 36 | 9,9 |
-| Adolescentes | Mecônio | 4 | 1,1 |
-| Adultas | Alívio materno-fetal | 208 | 38,2 |
-| Adultas | Abreviação do período expulsivo | 177 | 32,5 |
-| Adultas | Distocia de rotação | 95 | 17,5 |
-| Adultas | Não informada | 37 | 6,8 |
-| Adultas | Sofrimento fetal | 10 | 1,8 |
+| Indicação | Adolescentes n (%) | Adultas n (%) |
+|---|---|---|
+| Não informada | 216 (59,5) | 37 (6,8) |
+| Alívio materno-fetal | 62 (17,1) | 208 (38,2) |
+| Abreviação do período expulsivo | 41 (11,3) | 177 (32,5) |
+| Distocia de rotação | 36 (9,9) | 95 (17,5) |
+| Mecônio | 4 (1,1) | 3 (0,6) |
+| Sofrimento fetal | 3 (0,8) | 10 (1,8) |
+| **Total de fórcipes** | **363 (100)** | **544 (100)** |
 
 > ⚠️ **Limitação a registrar:** o fórcipe nas adolescentes tem **59,5% de indicação não
 > informada** (216 de 363). Isso precisa ser dito no texto — a leitura das indicações de
@@ -474,6 +536,10 @@ Percentuais sobre o total de fórcipes do grupo (Adolescentes = 363; Adultas = 5
 `results/figures/fig_obj3_indicacoes_cesarea.png` e `fig_obj3_indicacoes_forcipe.png`
 foram regeradas (barras horizontais, dodge por grupo etário; vermelho = adolescentes,
 verde-azulado = adultas). Substituir as imagens das Figuras 5 e 6 da dissertação.
+
+![Principais indicações para cesárea (top 5 por grupo) — banco unido por RGHC](results/figures/fig_obj3_indicacoes_cesarea.png)
+
+![Principais indicações para fórcipe (top 5 por grupo)](results/figures/fig_obj3_indicacoes_forcipe.png)
 
 ### 8.4 Texto de resultados — sugestões
 
@@ -502,3 +568,73 @@ que limita a interpretação."
 - [ ] Acrescentar a frase de método (uso de `Indicacao_final` + união por RGHC).
 - [ ] Registrar a limitação do alto % de fórcipe sem indicação nas adolescentes.
 - [ ] Reescrever os parágrafos de 5.4.1 e 5.4.2 (sugestões acima).
+
+### 8.6 Versão alternativa — Tabela e Figura de cesárea com os dados da estatística (Stela)
+
+A estatística forneceu a tabulação oficial `ind_final × grupo` (arquivo
+`IndicacaoCesareaStela.xlsx`). Ela usa **três faixas etárias** (11–15, 16–19, 20–34),
+**categorias agrupadas próprias** (algumas fundem motivos — ex.: "Sofrimento fetal /
+Mecônio / Alteração de Vitalidade"; "Desproporção Céfalo-Pélvico / Fórcipe Falhado /
+Vício pélvico / Macrossomia") e **percentuais de coluna** (dentro de cada grupo etário).
+O total de cesáreas dela (n = 3.593; 138 + 227 + 3.228) difere ligeiramente do meu
+(n = 3.746), por ser outra extração/filtragem — algo a alinhar com ela antes do depósito.
+
+Gerei a versão correspondente:
+
+- Tabela: `results/tabelas_dissertacao/tab08_indicacoes_cesarea_estatistica.csv`
+- Figura: `results/figures/fig_obj3_indicacoes_cesarea_estatistica.png`
+
+![Indicações de cesárea por faixa etária (dados da estatística)](results/figures/fig_obj3_indicacoes_cesarea_estatistica.png)
+
+**Tabela (todas as categorias; % dentro do grupo).** Denominadores: precoces = 138;
+tardias = 227; adultas = 3.228.
+
+| Indicação (ind_final) | Precoces n (%) | Tardias n (%) | Adultas n (%) |
+|---|---|---|---|
+| Sofrimento fetal / Mecônio / Alteração de Vitalidade | 48 (34,8) | 75 (33,0) | 738 (22,9) |
+| Patologia materna | 3 (2,2) | 3 (1,3) | 497 (15,4) |
+| Distocia funcional / Parada de progressão / falha de indução | 27 (19,6) | 53 (23,3) | 406 (12,6) |
+| Iteratividade | 0 (0,0) | 1 (0,4) | 375 (11,6) |
+| Contraindicação de indução | 2 (1,4) | 13 (5,7) | 352 (10,9) |
+| Desproporção céfalo-pélvica / fórcipe falhado / vício pélvico / macrossomia | 38 (27,5) | 43 (18,9) | 242 (7,5) |
+| Patologia fetal / Malformação fetal | 4 (2,9) | 4 (1,8) | 249 (7,7) |
+| Apresentação anômala | 9 (6,5) | 24 (10,6) | 159 (4,9) |
+| Patologia obstétrica | 3 (2,2) | 4 (1,8) | 84 (2,6) |
+| Outros | 4 (2,9) | 7 (3,1) | 79 (2,4) |
+| Placenta prévia | 0 (0,0) | 0 (0,0) | 47 (1,5) |
+| **Total** | **138 (100)** | **227 (100)** | **3.228 (100)** |
+
+**Leituras que saltam (úteis para o texto):** o **sofrimento fetal** é a principal
+indicação em todas as faixas, mas pesa mais nas adolescentes (34,8% e 33,0% vs. 22,9%).
+A **desproporção/macrossomia** é marcante nas adolescentes precoces (27,5%) e cai nas
+adultas (7,5%). Já **patologia materna** (15,4%) e **iteratividade** (11,6%) são quase
+exclusivas das adultas — coerentes com mais comorbidades e cesárea prévia.
+
+> **Qual versão usar?** Esta (8.6) reflete a tabulação da estatística e mantém 3 faixas
+> etárias e as categorias agrupadas dela. A da §8.1 vem do banco unido por RGHC (coorte
+> §3.3, 2 faixas, rótulos por `indicacao_cat` dominante). **Recomendo padronizar pela
+> versão da estatística** se ela for a fonte oficial — alinhando antes o N (3.593 vs.
+> 3.746) e decidindo entre 2 ou 3 faixas etárias.
+
+### 8.7 ⚠️ Coerência de tamanho amostral — pendência aberta no manuscrito 16/06
+
+O manuscrito 16/06 já adotou a **Tabela 8 da estatística** (precoces 138 + tardias 227 =
+**365 cesáreas em adolescentes**; **3.228 em adultas**; total **3.593**). Mas a **Tabela 4
+(vias de parto)** do mesmo manuscrito — e a coorte §3.3 — contam **433 cesáreas em
+adolescentes** (166 + 267), **3.313 em adultas** e **3.746 no total**. Ou seja, **o número
+de cesáreas muda entre a Tabela 4 e a Tabela 8** (Δ = 153 cesáreas). Os denominadores de
+**fórcipe** (363 / 544), por outro lado, batem.
+
+Pontos concretos a corrigir/decidir (detalhe e verificação por execução na **Seção 0 do
+`RELATORIO_REVISAO_NUMERICA`**):
+
+1. **Rodapé da Tabela 8** diz adultas **"n = 3.338 cesáreas"** — não bate nem com a
+   coluna da própria tabela (3.228) nem com a coorte (3.313). **Erro de digitação a
+   corrigir.**
+2. **Resumo/Abstract** cita adultas **"n = 5.279"**; a coorte e o corpo dos Resultados
+   dizem **5.283**. **Corrigir para 5.283.**
+3. **Decisão de fundo:** padronizar a base das indicações de cesárea. Ou (a) usar a coorte
+   §3.3 (`analysis/03_indicacoes_parto.R`: 433 / 3.313 / 3.746 — rastreável e coerente com
+   a Tabela 4), ou (b) manter a tabulação da estatística, **documentando o filtro dela**
+   (por que 3.593 e não 3.746) e assumindo no texto que a base de indicações difere da
+   base das vias de parto. **Não dá para deixar as duas contagens convivendo sem nota.**

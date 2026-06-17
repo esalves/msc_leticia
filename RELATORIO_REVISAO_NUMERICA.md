@@ -7,10 +7,55 @@ output:
 # Relatório de Revisão Numérica Cruzada
 **Dissertação de Mestrado — Letícia Schimidt Arruda (FMUSP)**  
 **Revisor:** Sub-agente Sonnet (revisão automática)  
-**Data:** 19 de maio de 2026 · **Atualizado:** 10 de junho de 2026  
+**Data:** 19 de maio de 2026 · **Atualizado:** 17 de junho de 2026  
+**Manuscrito mais recente revisado:** `manuscript/Dissertacao16_06_2026.pdf` (16/06/2026)  
 **Arquivos revisados:** `index.qmd`, `manuscript/tabelas_dissertacao.docx`, `manuscript/resultados_redacao.docx`, `results/tab_obj2_*.csv`, `results/tabelas_dissertacao/tab*.csv`, `results/Relatorio Analise SPSS.md`, `manuscript/Dissertação Maio_26.docx`
 **Adicionados em 10/06/2026:** `analysis/06_modelos_preditivos_cesarea.R`, `results/tabelas_dissertacao/tab_modelos_preditivos_desempenho.csv`, `tab_modelo_{A,B,C}_PR.csv` (originalmente `_OR.csv`; migrados para PR em 14/06/2026), `tab_escore_pre_natal_*.csv`, `results/figures/fig_obj6_*`, `results/RELATORIO_RESULTADOS_MODELOS_PREDITIVOS.md`, `results/RELATORIO_MODELOS_PREDITIVOS_CESAREA.md`, `results/FERRAMENTA_CLINICA_ESCORE_PRE_NATAL.md`, `results/calculadora_risco_cesarea.html`
 **Revisão em 14/06/2026 (OR → PR):** medida de efeito do Modelo 4 e dos modelos preditivos A/B/C migrada de Odds Ratio para **Razão de Prevalência** (Poisson robusto; Zou, 2004). As tabelas `tab_modelo_{A,B,C}_*_OR.csv` foram substituídas por `tab_modelo_{A,B,C}_PR.csv`. Detalhes em `COMPARACAO_OR_vs_PR.md`.
+
+**Revisão em 17/06/2026 (coerência de tamanhos amostrais — manuscrito 16/06):** verificação dos N de todo o capítulo de Resultados contra a **execução da coorte §3.3** e os **CSVs gerados pelos scripts**. Resultado em §0 (abaixo). Método: o ambiente atual **não tem R**; a coorte §3.3 foi reproduzida por uma réplica em Python do `00_filtro_elegibilidade.R` que **reproduz N = 6.650 exatamente** (538 / 829 / 5.283) e **bate com os CSVs versionados** (`tab04_vias_parto_geral.csv`, `tab06_taxa_cesarea_robson.csv`) gerados pelo pipeline R. Nada foi estimado ou inventado: cada número abaixo foi recomputado a partir do dado bruto ou lido de um CSV de saída do script.
+
+---
+
+## 0. Coerência dos tamanhos amostrais (manuscrito 16/06 — verificação por execução)
+
+### 0.1 Verificado e COERENTE (recomputado da coorte §3.3 / CSVs dos scripts)
+
+Todos os itens abaixo foram recomputados e **conferem exatamente** com o manuscrito:
+
+| Item | Manuscrito 16/06 | Recomputado (§3.3) | Situação |
+|---|---|---|---|
+| N final | 6.650 | 6.650 | ✓ |
+| Precoces / Tardias / Adultas | 538 / 829 / 5.283 | 538 / 829 / 5.283 | ✓ |
+| Adolescentes (total) | 1.367 | 1.367 | ✓ |
+| Vias de parto — precoces (V/C/F) | 238 / 166 / 134 | 238 / 166 / 134 | ✓ |
+| Vias de parto — tardias (V/C/F) | 333 / 267 / 229 | 333 / 267 / 229 | ✓ |
+| Vias de parto — adultas (V/C/F) | 1.426 / 3.313 / 544 | 1.426 / 3.313 / 544 | ✓ |
+| Vias de parto — total (V/C/F) | 1.997 / 3.746 / 907 | 1.997 / 3.746 / 907 | ✓ |
+| Tamanhos dos grupos de Robson × faixa | (todos os 9 grupos) | idem `tab06` | ✓ (14/14 células conferidas) |
+| Taxas de cesárea por Robson × faixa | (todas) | idem `tab06` | ✓ |
+| Grupos 4 e 5 (só adultas) | 424 / 1.175 | 424 / 1.175 | ✓ |
+| Nº de consultas com dado | 5.235 | 5.235 | ✓ |
+| Indicações de **fórcipe** (denominadores) | 363 (adol) / 544 (adultas) | 363 / 544 | ✓ |
+
+> Conclusão: o "esqueleto" de N do capítulo (coorte, vias de parto, Robson, consultas, fórcipe) está **estável e rastreável** ao filtro §3.3 e aos CSVs dos scripts.
+
+### 0.2 INCONSISTÊNCIAS a corrigir (com a fonte correta indicada)
+
+1. **Resumo/Abstract — nº de adultas.** O resumo (PT e EN) diz adultas **"n = 5.279 / 5,279"**, mas a coorte §3.3 e o próprio corpo dos Resultados dizem **5.283**. Corrigir o resumo para **5.283** (Δ = 4). Fonte: filtro §3.3 (5.283 adultas).
+
+2. **Seção 5.4 / Tabela 8 — denominadores de cesárea não batem com o resto da dissertação.** A Tabela 8 (indicações de cesárea) usa a extração da estatística: precoces 138 + tardias 227 = **365 adolescentes** e **3.228 adultas** (total 3.593). Mas a **Tabela 4 (vias de parto) do mesmo manuscrito** — e a coorte §3.3 — têm **433 cesáreas em adolescentes** (166 + 267), **3.313 em adultas** e **3.746 no total**. Ou seja, o número de cesáreas muda entre a Tabela 4 e a Tabela 8 (Δ: +68 adolescentes, +85 adultas, +153 no total). Os denominadores de **fórcipe** (363 / 544), em contraste, batem com a coorte. **Esta é a principal incoerência de tamanho amostral do manuscrito.**
+
+3. **Tabela 8 — rodapé com terceiro valor.** O rodapé da Tabela 8 diz adultas **"n = 3.338 cesáreas"**, que não bate nem com a coluna da própria tabela (**3.228**) nem com a coorte (**3.313**). É um erro de digitação e precisa ser corrigido.
+
+### 0.3 DÚVIDA registrada (não resolvível sem decisão de vocês)
+
+A extração de cesáreas da estatística usada na Seção 5.4 (**total 3.593**) **não é reproduzível** a partir da coorte §3.3 / dos scripts deste repositório (**total 3.746**). A diferença de **153 cesáreas** vem de critérios de filtragem distintos (a tabulação da estatística foi feita em ferramenta externa, sobre outra extração). **Não inventei nenhum valor para conciliar.** Duas saídas possíveis, a decidir com a estatística/orientador:
+
+- **(a) Padronizar pela coorte §3.3 (recomendado para coerência interna):** usar `analysis/03_indicacoes_parto.R`, que recalcula as indicações de cesárea sobre os mesmos 6.650 casos (433 adol / 3.313 adultas / 3.746) — totalmente rastreável e coerente com a Tabela 4. O custo é abrir mão das categorias agregadas da estatística (que podem ser remapeadas no script).
+- **(b) Manter a tabulação da estatística:** então é preciso **documentar o filtro dela** (por que 3.593 e não 3.746) e **assumir explicitamente** no texto que a base de indicações difere da base das vias de parto. Sem essa documentação, a divergência fica sem rastreabilidade.
+
+Enquanto não houver decisão, os denominadores de cesárea da Seção 5.4 permanecem **inconsistentes** com a Tabela 4 e com a coorte §3.3.
 
 ---
 
@@ -19,9 +64,10 @@ output:
 - **OK:** Tabela 10 (Modelo 4) — os OR do SPSS batem exatamente entre si (Relatorio Analise SPSS.md linhas 123–135 e docx). **Porém, desde 14/06/2026 a medida adotada é a PR** (Poisson robusto): a Tabela 10 e a Figura 7 da dissertação devem reportar o PR de `tab10b_comparacao_modelo4_r_vs_spss.csv` (coluna `PR_R`), tratando os OR do SPSS como histórico. O forest plot principal (`fig_obj5_forest_plot_modelo4.png`) já foi regerado em PR.
 - **OK:** Tabelas 5 e 6 são internamente consistentes — para cada célula, `n_cesárea / n_total` coincide com a taxa percentual da Tabela 6 (verificado em todos os 12 grupos com dados disponíveis).
 - **OK:** Todos os números de comorbidades (§4.2) e da análise multivariada (§4.5) na redação têm origem rastreável e conferem com a fonte. **Atenção:** a §4.5 deve passar a citar PR (Poisson robusto), não OR da logística — ver documento de revisão da dissertação.
-- **CRÍTICO:** Existem quatro valores distintos de N total circulando nos documentos (6.646, 6.663, 6.830 e 8.300/8.724). Nenhuma tabela usa exatamente o mesmo N, e os cinco placeholders da redação ainda não foram preenchidos.
+- **RESOLVIDO (17/06):** o N total convergiu para **6.650** em todo o manuscrito 16/06, recomputado e validado contra o filtro §3.3 e os CSVs dos scripts (ver §0.1). Os valores antigos divergentes (6.646, 6.663, 6.830, 8.300/8.724) não aparecem mais no corpo dos Resultados.
+- **CRÍTICO (coerência de N, 17/06):** a Seção 5.4 (indicações de cesárea, Tabela 8) usa **365 / 3.228** cesáreas (extração da estatística), enquanto a Tabela 4 e a coorte §3.3 têm **433 / 3.313** (total 3.746 vs 3.593). Há ainda um terceiro valor no rodapé (3.338). Além disso, o resumo cita adultas **5.279** em vez de **5.283**. Detalhes e fontes em **§0.2/§0.3**.
 - **IMPORTANTE:** CSVs derivados (`tab05/tab06_*.csv`) têm valores diferentes dos CSVs primários (`tab_obj2_*.csv`) em quatro células — as Tabelas 5–7 do docx foram construídas corretamente a partir dos primários, mas os derivados contêm um bug de recomputação.
-- **IMPORTANTE:** Figuras 5 e 6 (indicações de cesárea e fórcipe) são citadas na redação §4.4 mas os arquivos PNG não existem em `results/figures/`. Figura 7 (forest plot) existe mas não é referenciada na redação.
+- **RESOLVIDO (jun/2026):** as Figuras 5 e 6 (indicações de cesárea e fórcipe) foram geradas — `results/figures/fig_obj3_indicacoes_cesarea.png` e `fig_obj3_indicacoes_forcipe.png` — agora com a cesárea agrupada por `Indicacao_final` (ver documento de revisão da dissertação, §8). A Figura 7 (forest plot) existe e passou a ser referenciada (e está em PR).
 - **NOVO (10/06/2026):** Acrescentada a estratégia de **três modelos preditivos** (`analysis/06_modelos_preditivos_cesarea.R`). Coorte total N = **6.650** (filtro §3.3 codificado em `00_filtro_elegibilidade.R`) — quinto valor de N em circulação, mas agora **determinístico e versionado** (ver §1.1). O script R foi **executado** e seus resultados **conferem com a validação em Python** (≤ 0,002 na AUC); coeficientes clinicamente coerentes e tabelas/figuras consistentes (ver §1.14). Pendência remanescente: validação externa + curva de decisão antes de uso clínico da ferramenta derivada.
 
 ---
@@ -48,7 +94,10 @@ output:
 - **6.830** = SPSS: inclui os 184 casos que o R exclui por Robson ausente/inválido ou IG < 22.
 - **8.300** e **8.724** = dissertação original: inclui gestantes ≥ 35 anos (n ≈ 1.469 no SPSS) e casos pré-filtro; os dois valores são incompatíveis entre si (diferença de 424), indicando que §154 e as legendas das Tabelas 1–2 da dissertação usam cortes distintos.
 
-**Correção sugerida:** Adotar **6.663** como N definitivo das análises de via de parto (Tabelas 4–7), pois é o valor que soma os n de todos os grupos de Robson no docx e é internamente consistente com a soma das células das Tabelas 5–7. Adotar **6.830** (ou o n exato que o SPSS usou) para as Tabelas 1–3 (sociodemografia, hábitos, comorbidades), com nota clara de que o denominador difere por incluir casos sem Robson/IG. Eliminar as referências a 8.300 e 8.724 no texto corrido ou explicar explicitamente que esses são os totais brutos pré-critérios. Os cinco placeholders ([N_TOTAL], [N_ADOL], [N_PREC], [N_TARD], [N_ADUL]) devem ser preenchidos com os valores da tabela de análise escolhida (ver Seção 3).
+**Correção sugerida (ATUALIZADA 17/06/2026):** a tabela acima reflete o estado *anterior* dos documentos. No manuscrito **16/06**, o N convergiu para **6.650** (filtro §3.3) de forma consistente — ver §0.1, onde cada célula foi recomputada e validada. **A fonte definitiva é o pipeline modular `analysis/00–06` (`00_filtro_elegibilidade.R`), N = 6.650 (538 / 829 / 5.283)**, versionado e testado. As Tabelas 4–7 do manuscrito 16/06 já batem com ele. Observações:
+- O valor **5.279** que aparece no **resumo/abstract** não corresponde a 5.283 (§3.3) nem ao CSV atual `tab_obj2_vias_parto_geral.csv` (que hoje traz adultas 5.295 / total 6.663, fruto de uma extração anterior). Recomenda-se **corrigir o resumo para 5.283** e, se ainda em uso, **regenerar `tab_obj2_*` pelo pipeline §3.3** para eliminar o 6.663 residual.
+- Para Tabelas 1–3 (sociodemografia, hábitos, comorbidades), manter o denominador §3.3 (6.650) e reportar por célula o `n` válido + `% ausente` quando houver dado faltante, em vez de adotar o N do SPSS (6.830).
+- Eliminar do texto as referências a 8.300 / 8.724 (totais brutos pré-critérios) ou marcá-las explicitamente como pré-filtro.
 
 ---
 

@@ -6,6 +6,15 @@
 Prevalência (PR) em todas as análises de associação com a cesárea, por ser uma
 estimativa **menos enviesada para desfechos de alta prevalência**.
 
+> ⚠️ **ATUALIZAÇÃO 17/06/2026 — valores oficiais.** Os PR do Modelo 4 e do modelo de
+> interação que valem para a dissertação são os **enviados pela estatística**
+> (`modelagem_de Robson.xlsx`), exportados para
+> `results/tabelas_dissertacao/tab10_modelo4_PR.csv` e `tab10c_modelo4_interacao_PR.csv`.
+> O modelo oficial é **Robson reduzido + faixa etária (3 categorias; ref. Robson 1 e
+> 11–15 anos), sem DHEG**. Os números abaixo (Seção 2) são da minha estimativa anterior
+> em R e ficam apenas como **registro histórico** — onde divergirem, **valem os da
+> estatística** (ex.: faixa adulta vs. precoces PR 1,43; Robson 5 PR 2,40).
+
 Este documento é um registro de controle do que foi alterado: a justificativa
 metodológica, o método de estimação adotado, os números antes/depois (OR vs PR)
 e a lista de arquivos modificados e pendências. Os códigos alterados estão
